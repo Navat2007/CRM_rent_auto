@@ -1,5 +1,5 @@
 {
-  "name": "car_share",
+  "name": "CRM_rent_auto",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,10 +9,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.29"
+    "axios": "^1.7.2",
+    "lodash": "^4.17.21",
+    "pinia": "^2.1.7",
+    "radix-vue": "^1.8.3",
+    "vite-svg-loader": "^5.1.0",
+    "vue": "^3.4.27",
+    "vue-hooks-form": "^0.3.1",
+    "vue-router": "^4.3.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
-    "vite": "^5.3.1"
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "sass": "^1.77.6",
+    "tailwindcss": "^3.4.4",
+    "vite": "^5.2.13"
   }
 }
