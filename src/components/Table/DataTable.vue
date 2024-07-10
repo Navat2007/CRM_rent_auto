@@ -3,6 +3,7 @@ import {computed, ref, onMounted} from "vue";
 import lodash from "lodash";
 import SearchForm from "../SearchForm.vue";
 import TablePagination from "./TablePagination.vue";
+import moment from "moment";
 
 const props = defineProps({
   title: {
@@ -32,32 +33,135 @@ const startIndex = ref(0);
 const pageIndex = ref(1);
 
 const filteredItems = computed(() => {
-  let result = props.items;
+  function checkItem(config, itemValue, filterValue, prop) {
+    if (prop === "search_string") {
+      let tmpFilter = {};
 
-  if (searchFilter.value !== '') {
-    if (props.items.length > 0) {
-      console.log(searchFilter.value);
-
-      props.columns.map(column => {
-        switch (column.type) {
-          case 'string':
-            console.log(column.field);
-            console.log(result);
-            result = result.filter(item => {
-              console.log(item[column.field]);
-              return item[column.field].toLowerCase().includes(searchFilter.value.toLowerCase());
-            });
-            console.log(result);
-            break;
-          case 'number':
-            console.log(column.field);
-            console.log(result);
-            result = result.filter(item => item[column.field].toString().toLowerCase().includes(searchFilter.value.toLowerCase()));
-            console.log(result);
-            break;
+      for (const itemKey in itemValue) {
+        if (itemValue[itemKey] !== null) {
+          tmpFilter[itemKey] = !!itemValue[itemKey]
+              .toString()
+              .toLowerCase()
+              .includes(filterValue["search_string"].toLowerCase());
         }
-      })
+      }
+
+      if (Object.keys(tmpFilter).some((key) => tmpFilter[key]))
+        return true;
     }
+
+    switch (config?.type) {
+      case "int":
+        return (
+            parseInt(itemValue[prop]) ===
+            parseInt(filterValue[prop])
+        );
+
+      case "string":
+        return config.filter === "select"
+            ? itemValue[prop] === filterValue[prop]
+            : itemValue[prop]
+                .toLowerCase()
+                .includes(filterValue[prop].toLowerCase());
+
+      case "date":
+        if ("linkKey" in config) {
+          if (
+              "dateFilter" in config &&
+              config.dateFilter === "to"
+          )
+            return moment(
+                itemValue[config["linkKey"]]
+            ).isBefore(moment(filterValue[prop]));
+          if (
+              "dateFilter" in config &&
+              config.dateFilter === "from"
+          )
+            return moment(itemValue[config["linkKey"]]).isAfter(
+                moment(filterValue[prop])
+            );
+        }
+
+        const date = moment(itemValue[prop]);
+
+        return moment(
+            `${date.year()}-${
+                date.month() <= 9 ? "0" + (date.month() + 1) : date.month() + 1
+            }-${date.date()}`
+        ).isSame(moment(filterValue[prop]));
+
+      case "datetime":
+        if ("linkKey" in config) {
+          if (
+              "dateFilter" in config &&
+              config.dateFilter === "to"
+          )
+            return moment(
+                itemValue[config["linkKey"]]
+            ).isBefore(moment(filterValue[prop]));
+          if (
+              "dateFilter" in config &&
+              config.dateFilter === "from"
+          )
+            return moment(itemValue[config["linkKey"]]).isAfter(
+                moment(filterValue[prop])
+            );
+        }
+
+        const itemDate = moment(itemValue[prop]);
+        return moment({
+          year: itemDate.get("year"),
+          month: itemDate.get("month"),
+          day: itemDate.get("date"),
+        }).isSame(moment(filterValue[prop]));
+
+      case "array":
+        return itemValue[prop].some(item => item[config.arrayKey].toLowerCase().includes(filterValue[prop].toLowerCase()));
+
+      default:
+        if (itemValue[prop])
+          return itemValue[prop] === filterValue[prop];
+        else
+          return false;
+    }
+
+    return false;
+  }
+
+  let result = [];
+
+  if (searchFilter.value) {
+    if (props.items.length > 0) {
+      let resultArray = new Set();
+
+      for (const item of props.items) {
+        let tmpFilter = {};
+
+        for (let prop in searchFilter.value)
+        {
+          console.log(prop);
+          tmpFilter[prop] = !!(
+              searchFilter.value[prop] === "" ||
+              searchFilter.value[prop] === "Все" ||
+              checkItem(
+                  props.columns.find(itemConfig => itemConfig.key === prop),
+                  item,
+                  searchFilter.value,
+                  prop
+              )
+          );
+        }
+
+        if (!Object.keys(tmpFilter).some((key) => !tmpFilter[key])) {
+          resultArray.add(item);
+        }
+      }
+
+      result = Array.from(resultArray);
+    }
+  }
+  else {
+    result = props.items
   }
 
   return result;

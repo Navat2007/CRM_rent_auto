@@ -8,17 +8,29 @@ import AlertModal from "@components/Modals/AlertModal.vue";
 import BaseModal from "@components/Modals/BaseModal.vue";
 import UserAddForm from "@components/Forms/UserAddForm.vue";
 import UserEditForm from "@components/Forms/UserEditForm.vue";
+import UserService from "@services/UserService.js";
 
 const columns = ref([
   {
     label: 'ID',
-    field: 'ID',
+    field: 'id',
     type: 'number',
+    filter: "number",
+    sorting: true,
   },
   {
-    label: 'Логин',
-    field: 'login',
+    label: 'Email',
+    field: 'email',
     type: 'string',
+    filter: "string",
+    sorting: true,
+  },
+  {
+    label: 'Статус',
+    field: 'status',
+    type: 'string',
+    filter: "select",
+    sorting: true,
   }
 ]);
 const items = ref([]);
@@ -32,30 +44,17 @@ const isAddModalOpen = ref(false);
 const isEditModalOpen = ref(false);
 
 const loadData = async () => {
-  items.value = [];
-  error.value = '';
-  loading.value = true
-
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}/admin/users/load.php`);
-
-  if(response.data.params)
-  {
-    items.value = response.data.params;
-  }
-
-  loading.value = false
+  UserService.getUsers(loading).then(data => items.value = data);
 }
 const handleRowClick = (item) => {
-  rowItem.value = item
-  isEditModalOpen.value = true
+  //rowItem.value = item
+  //isEditModalOpen.value = true
 }
 const handleAdd = (data) => {
-  let form = new FormData();
-  buildFormData(form, data);
-
   console.log(data);
 
-  axios.post(`${import.meta.env.VITE_API_URL}/admin/users/add.php`, form).then((response) => {
+  UserService.addUser(data).then((response) => {
+    console.log(response);
     isAddModalOpen.value = false
 
     if (response.data) {
@@ -124,7 +123,7 @@ onMounted(() => {
     </div>
     <div v-else>
       <Table title="Таблица пользователей" :items="items" :columns="columns" @onRowClick="handleRowClick">
-        <button @click="isAddModalOpen = true" type="button" class="flex min-w-28 items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+        <button @click="isAddModalOpen = true" type="button" class="flex min-w-28 items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
           <svg class="h-5 w-5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
           </svg>

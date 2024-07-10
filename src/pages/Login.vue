@@ -5,6 +5,7 @@ import {useRouter} from "vue-router";
 import {useAuthStore} from "@stores";
 
 import Logo from "@assets/images/logo.png";
+import DarkToggle from "@components/DarkToggle.vue";
 
 const router = useRouter();
 const login = ref('');
@@ -24,7 +25,12 @@ const handleSubmit = async () => {
 </script>
 
 <template>
+
   <section class="h-screen w-screen bg-gray-50 dark:bg-gray-900">
+    <div class="absolute top-0 right-0 flex items-end justify-center pr-2 pt-2">
+      <DarkToggle />
+    </div>
+
     <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
       <RouterLink to="/" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
         <img class="w-24 h-24 mr-2" :src="Logo" alt="logo">

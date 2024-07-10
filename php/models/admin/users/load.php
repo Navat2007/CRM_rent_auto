@@ -5,14 +5,14 @@ header('Access-Control-Allow-Headers: Origin, Authorization, Content-Type, X-Aut
 require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
-$search = htmlspecialchars($_POST["search"]);
+$search = isset($_POST["search"]) ? htmlspecialchars($_POST["search"]) : '';
 
 $error = 0;
 $error_text = "";
 $sqls = array();
 $params = array();
 
-$sql = "SELECT * FROM users WHERE archive = 0";
+$sql = "SELECT * FROM users WHERE archive = 0 AND email LIKE '%{$search}%'";
 $sqls[] = $sql;
 $result = pg_query($conn, $sql);
 
@@ -23,7 +23,7 @@ if(pg_num_rows($result) > 0)
         $params[] = (object)[
             'id' => (int)$row->id,
             'email' => htmlspecialchars_decode($row->email),
-            'status' => (int)$row->active == 1 ? "Активен" : "Отключен",
+            'status' => (int)$row->status == 0 ? "Активен" : "Отключен",
         ];
     }
 

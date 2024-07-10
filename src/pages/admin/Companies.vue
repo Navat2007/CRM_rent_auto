@@ -42,8 +42,6 @@ const loadData = async () => {
 
   const response = await axios.post(`${import.meta.env.VITE_API_URL}/admin/companies/load.php`);
 
-  console.log(response);
-
   if(response.data.params)
   {
     items.value = response.data.params;
@@ -143,10 +141,10 @@ onMounted(() => {
   <AlertModal :isOpen="isSuccessModalOpen" @close="isSuccessModalOpen = false" title="Запрос выполнен" accept/>
   <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
   <BaseModal :isOpen="isAddModalOpen" @close="isAddModalOpen = false" title="Добавление компании">
-    <UserAddForm @onSubmit="handleAdd"/>
+
   </BaseModal>
   <BaseModal :isOpen="isEditModalOpen" @close="isEditModalOpen = false" title="Редактирование компании">
-    <UserEditForm :item="rowItem" @onSubmit="handleEdit" @onDelete="handleDelete"/>
+
   </BaseModal>
 </template>
 

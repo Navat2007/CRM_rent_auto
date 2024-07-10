@@ -6,6 +6,7 @@ import {useAuthStore} from "@stores";
 
 import Logo from "@assets/images/logo.png";
 import AlertModal from "@components/Modals/AlertModal.vue";
+import DarkToggle from "@components/DarkToggle.vue";
 
 const isLogoutModalOpen = ref(false);
 
@@ -66,6 +67,7 @@ const handleLogout = async () => {
           </router-link>
         </div>
         <div class="flex items-center lg:order-2">
+          <DarkToggle/>
           <button
               @click="isLogoutModalOpen = true"
               type="button"
