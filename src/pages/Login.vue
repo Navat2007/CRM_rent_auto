@@ -25,7 +25,6 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-
   <section class="h-screen w-screen bg-gray-50 dark:bg-gray-900">
     <div class="absolute top-0 right-0 flex items-end justify-center pr-2 pt-2">
       <DarkToggle />
@@ -34,6 +33,10 @@ const handleSubmit = async () => {
     <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
       <RouterLink to="/" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
         <img class="w-24 h-24 mr-2" :src="Logo" alt="logo">
+        <div>
+          <span class="block self-center text-2xl font-semibold whitespace-nowrap text-gray-800 dark:text-white">БИ КАРС</span>
+          <span class="block self-center text-sm font-semibold whitespace-nowrap text-gray-300 dark:text-gray-500">АВТОПРОКАТ</span>
+        </div>
       </RouterLink>
       <div
           class="w-full min-w-72 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">

@@ -4,45 +4,82 @@ import { useAuthStore } from '@stores';
 import PublicLayout from "@layouts/PublicLayout.vue";
 import AdminLayout from "@layouts/AdminLayout.vue";
 
+import NotFound from "@pages/404.vue";
+
 const publicRoutes = [
     {
         path: '/login',
         name: 'Login',
-        component: () => import('../pages/Login.vue')
+        component: import('@pages/Login.vue')
     },
     {
         path: '/',
         name: 'Index',
-        component: () => import('../pages/public/Index.vue')
+        component: import('@pages/public/Index.vue')
     },
 ];
 
 const adminRoutes = [
     {
-        path: '/admin/companies',
-        name: 'AdminCompanies',
-        component: () => import('../pages/admin/Companies.vue'),
+        path: '/admin',
+        name: 'Admin',
+        component: import('@pages/admin/Admin.vue'),
         meta: {
             layout: AdminLayout,
-            requiresAuth: true
+            requiresAuth: true,
+        }
+    },
+    {
+        path: '/admin/companies',
+        name: 'AdminCompanies',
+        component: import('@pages/admin/Companies.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Компании',
         }
     },
     {
         path: '/admin/users',
         name: 'AdminUsers',
-        component: () => import('../pages/admin/Users.vue'),
+        component: import('@pages/admin/users/Users.vue'),
         meta: {
             layout: AdminLayout,
-            requiresAuth: true
+            requiresAuth: true,
+            title: 'Пользователи',
+        }
+    },
+    {
+        path: '/admin/users/new',
+        name: 'AdminAddUser',
+        component: import('@pages/admin/users/AddUser.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Новый пользователь',
+        }
+    },
+    {
+        path: '/admin/users/:id',
+        name: 'AdminEditUser',
+        component: import('@pages/admin/users/EditUser.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Редактирование пользователя',
         }
     },
 ];
 
 const routes = [...publicRoutes, ...adminRoutes,
     {
-        path: '/:pathMatch(.*)*',
+        path: '/:catchAll(.*)',
         name: '404',
-        component: () => import('../pages/404.vue')
+        component: NotFound,
+        meta: {
+            title: 'Страница не найдена',
+        }
     },
 ];
 
@@ -51,15 +88,15 @@ const router = createRouter({
     routes
 });
 
+const DEFAULT_TITLE = 'БИ КАРС АВТОПРОКАТ';
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
 
+    document.title = to.meta.title || DEFAULT_TITLE;
+
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!auth.user) {
-            next({
-                path: '/login',
-                //query: { redirect: to.fullPath }
-            });
+            next({path: '/login'});
         } else {
             next();
         }

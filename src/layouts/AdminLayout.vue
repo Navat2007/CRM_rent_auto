@@ -63,7 +63,10 @@ const handleLogout = async () => {
                 class="mr-3 h-12"
                 alt="Bee Cars Logo"
             />
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">БИ КАРС</span>
+            <div>
+              <span class="block self-center text-2xl font-semibold whitespace-nowrap text-gray-800 dark:text-white">БИ КАРС</span>
+              <span class="block self-center text-sm font-semibold whitespace-nowrap text-gray-300 dark:text-gray-500">АВТОПРОКАТ</span>
+            </div>
           </router-link>
         </div>
         <div class="flex items-center lg:order-2">

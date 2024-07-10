@@ -9,6 +9,7 @@ import BaseModal from "@components/Modals/BaseModal.vue";
 import UserAddForm from "@components/Forms/UserAddForm.vue";
 import UserEditForm from "@components/Forms/UserEditForm.vue";
 import UserService from "@services/UserService.js";
+import router from "@router";
 
 const columns = ref([
   {
@@ -47,8 +48,7 @@ const loadData = async () => {
   UserService.getUsers(loading).then(data => items.value = data);
 }
 const handleRowClick = (item) => {
-  //rowItem.value = item
-  //isEditModalOpen.value = true
+  router.push({ name: 'AdminEditUser', params: { id: item.id } });
 }
 const handleAdd = (data) => {
   console.log(data);
