@@ -44,9 +44,6 @@ const isSuccessModalOpen = ref(false);
 const isAddModalOpen = ref(false);
 const isEditModalOpen = ref(false);
 
-const loadData = async () => {
-  UserService.getUsers(loading).then(data => items.value = data);
-}
 const handleRowClick = (item) => {
   router.push({ name: 'AdminEditUser', params: { id: item.id } });
 }
@@ -112,7 +109,7 @@ const handleDelete = (data) => {
 }
 
 onMounted(() => {
-  loadData();
+  UserService.getUsers(loading).then(data => items.value = data);
 });
 </script>
 

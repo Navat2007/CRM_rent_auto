@@ -32,11 +32,32 @@ const adminRoutes = [
     {
         path: '/admin/companies',
         name: 'AdminCompanies',
-        component: import('@pages/admin/Companies.vue'),
+        component: import('@pages/admin/companies/Companies.vue'),
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
             title: 'Компании',
+        }
+    },
+    {
+        path: '/admin/companies/new',
+        name: 'AdminAddCompany',
+        component: import('@pages/admin/companies/AddCompany.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Новая компания',
+        }
+    },
+    {
+        path: '/admin/companies/:id',
+        name: 'AdminEditCompany',
+        component: import('@pages/admin/companies/EditCompany.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Редактирование компании',
         }
     },
     {

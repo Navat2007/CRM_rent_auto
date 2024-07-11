@@ -121,7 +121,7 @@ const handleLogout = async () => {
             />
           </div>
         </form>
-        <ul class="space-y-2">
+        <ul class="space-y-2 pt-4">
           <li>
             <router-link
                 :to="{ name: 'AdminCompanies' }"
