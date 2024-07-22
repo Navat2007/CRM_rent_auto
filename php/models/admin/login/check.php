@@ -24,7 +24,23 @@ if (strlen($password) > 72) {
 }
 
 if (!empty($login) && !empty($password)) {
-    $sql = "SELECT * FROM users WHERE email = '$login'";
+    $sql = "
+        SELECT 
+            t1.*, t2.firing_date as firing_date, 
+            t2.full_name as user_full_name, t2.birth_date as user_birth_date,
+            t2.first_name as user_first_name, t2.second_name as user_second_name,
+            t2.middle_name as user_middle_name, t2.user_type,
+            t4.id as company_id, t4.name as company_name
+        FROM 
+            users as t1
+        LEFT JOIN 
+            users_info as t2 on t2.user_id = t1.id
+        LEFT JOIN 
+            users_company as t3 on t3.user_id = t1.id
+        LEFT JOIN 
+            company as t4 on t4.id = t3.company_id
+        WHERE 
+            t1.email = '$login' AND t1.archive = 0";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
     $params->sql = $sql;
@@ -32,7 +48,7 @@ if (!empty($login) && !empty($password)) {
     if (pg_num_rows($result) > 0) {
         $row = pg_fetch_object($result);
 
-        if ((int)$row->status == 1) {
+        if ((int)$row->status == 1 || $row->firing_date != null) {
             $error = 1;
             $error_text = "Ошибка, данный пользователь не может войти в систему";
         }
@@ -81,6 +97,14 @@ function get_all_info($row, $conn): object
     return (object)[
         'id' => (int)$row->id,
         'email' => $row->email,
+        'company_id' => (int)$row->company_id,
+        'company_name' => $row->company_name != null ? htmlspecialchars_decode($row->company_name) : '',
+        'user_type' => (int)$row->user_type,
+        'user_full_name' => $row->user_full_name != null ? htmlspecialchars_decode($row->user_full_name) : '',
+        'user_first_name' => $row->user_first_name != null ? htmlspecialchars_decode($row->user_first_name) : '',
+        'user_second_name' => $row->user_second_name != null ? htmlspecialchars_decode($row->user_second_name) : '',
+        'user_middle_name' => $row->user_middle_name != null ? htmlspecialchars_decode($row->user_middle_name) : '',
+        'user_birth_date' => $row->user_birth_date,
         'token' => $token,
         'token_created_at' => new DateTime(),
     ];

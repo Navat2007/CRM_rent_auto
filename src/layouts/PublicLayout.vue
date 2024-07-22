@@ -88,7 +88,7 @@ const scrollToTop = () => {
             </li>
           </ul>
           <div class="flex items-center lg:order-2">
-            <RouterLink :to="{ name: 'AdminUsers' }">
+            <RouterLink :to="{ name: 'Admin' }">
               <button
                   type="button"
                   data-dropdown-toggle="notification-dropdown"

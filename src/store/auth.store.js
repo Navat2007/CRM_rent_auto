@@ -32,7 +32,7 @@ export const useAuthStore = defineStore({
 
             axios.defaults.headers.post['Authorization'] = `${user.token}&${user.id}`;
 
-            await router.push(this.returnUrl || {name: 'AdminCompanies'});
+            await router.push(this.returnUrl || {name: 'Admin'});
         },
         async logout() {
             this.user = null;

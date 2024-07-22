@@ -29,66 +29,52 @@ const adminRoutes = [
             requiresAuth: true,
         }
     },
+    // Employers
     {
-        path: '/admin/companies',
-        name: 'AdminCompanies',
-        component: import('@pages/admin/companies/Companies.vue'),
+        path: '/admin/employers',
+        component: import('@pages/admin/employers/Employers.vue'),
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Компании',
+            title: 'Сотрудники',
         }
     },
     {
-        path: '/admin/companies/new',
-        name: 'AdminAddCompany',
-        component: import('@pages/admin/companies/AddCompany.vue'),
+        path: '/admin/employers/new',
+        component: import('@pages/admin/employers/AddEmployer.vue'),
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Новая компания',
+            title: 'Новый сотрудник',
         }
     },
     {
-        path: '/admin/companies/:id',
-        name: 'AdminEditCompany',
-        component: import('@pages/admin/companies/EditCompany.vue'),
+        path: '/admin/employers/:id',
+        component: import('@pages/admin/employers/EditEmployer.vue'),
         props: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Редактирование компании',
+            title: 'Редактирование сотрудника',
         }
     },
+    // Directory
     {
-        path: '/admin/users',
-        name: 'AdminUsers',
-        component: import('@pages/admin/users/Users.vue'),
+        path: '/admin/directory/positions',
+        component: import('@pages/admin/directory/position/Positions.vue'),
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Пользователи',
+            title: 'Должности',
         }
     },
     {
-        path: '/admin/users/new',
-        name: 'AdminAddUser',
-        component: import('@pages/admin/users/AddUser.vue'),
+        path: '/admin/directory/advertising_types',
+        component: import('@pages/admin/directory/advertising_types/AdvertisingTypes.vue'),
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Новый пользователь',
-        }
-    },
-    {
-        path: '/admin/users/:id',
-        name: 'AdminEditUser',
-        component: import('@pages/admin/users/EditUser.vue'),
-        props: true,
-        meta: {
-            layout: AdminLayout,
-            requiresAuth: true,
-            title: 'Редактирование пользователя',
+            title: 'Виды рекламы',
         }
     },
 ];
@@ -109,9 +95,10 @@ const router = createRouter({
     routes
 });
 
-const DEFAULT_TITLE = 'БИ КАРС АВТОПРОКАТ';
+
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
+    const DEFAULT_TITLE = auth.user.company_name || 'АВТОПРОКАТ';
 
     document.title = to.meta.title || DEFAULT_TITLE;
 
