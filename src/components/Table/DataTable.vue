@@ -137,8 +137,7 @@ const filteredItems = computed(() => {
       for (const item of props.items) {
         let tmpFilter = {};
 
-        for (let prop in searchFilter.value)
-        {
+        for (let prop in searchFilter.value) {
           console.log(prop);
           tmpFilter[prop] = !!(
               searchFilter.value[prop] === "" ||
@@ -159,8 +158,7 @@ const filteredItems = computed(() => {
 
       result = Array.from(resultArray);
     }
-  }
-  else {
+  } else {
     result = props.items
   }
 
@@ -204,9 +202,12 @@ const handleChangePage = (index) => {
           <div class="w-full md:w-1/2">
             <SearchForm @search="handleSearch" :columns="columns"/>
           </div>
-          <div class="buttons-container">
-            <slot/>
+          <div class="flex">
+            <slot name="buttons"/>
           </div>
+        </div>
+        <div class="flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-4 p-4">
+          <slot name="filter"/>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -224,7 +225,7 @@ const handleChangePage = (index) => {
             </thead>
             <tbody>
             <tr
-                v-for="item in paginatedItems" :key="item.ID"
+                v-for="item in paginatedItems" :key="item.id"
                 @click="emit('onRowClick', item)"
                 class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
             >

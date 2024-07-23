@@ -23,6 +23,7 @@ const adminRoutes = [
     {
         path: '/admin',
         name: 'Admin',
+        exact: true,
         component: import('@pages/admin/Admin.vue'),
         meta: {
             layout: AdminLayout,
@@ -32,6 +33,7 @@ const adminRoutes = [
     // Employers
     {
         path: '/admin/employers',
+        exact: true,
         component: import('@pages/admin/employers/Employers.vue'),
         meta: {
             layout: AdminLayout,
@@ -42,6 +44,7 @@ const adminRoutes = [
     {
         path: '/admin/employers/new',
         component: import('@pages/admin/employers/AddEmployer.vue'),
+        exact: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
@@ -51,6 +54,7 @@ const adminRoutes = [
     {
         path: '/admin/employers/:id',
         component: import('@pages/admin/employers/EditEmployer.vue'),
+        exact: true,
         props: true,
         meta: {
             layout: AdminLayout,
@@ -62,10 +66,30 @@ const adminRoutes = [
     {
         path: '/admin/directory/positions',
         component: import('@pages/admin/directory/position/Positions.vue'),
+        exact: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
             title: 'Должности',
+        }
+    },
+    {
+        path: '/admin/directory/positions/new',
+        component: import('@pages/admin/directory/position/AddPositions.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Новая должность',
+        }
+    },
+    {
+        path: '/admin/directory/positions/:id',
+        component: import('@pages/admin/directory/position/EditPositions.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Редактирование должности',
         }
     },
     {
@@ -75,6 +99,25 @@ const adminRoutes = [
             layout: AdminLayout,
             requiresAuth: true,
             title: 'Виды рекламы',
+        }
+    },
+    {
+        path: '/admin/directory/advertising_types/new',
+        component: import('@pages/admin/directory/advertising_types/AddAdvertisingTypes.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Новый вид рекламы',
+        }
+    },
+    {
+        path: '/admin/directory/advertising_types/:id',
+        component: import('@pages/admin/directory/advertising_types/EditAdvertisingTypes.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Редактирование вида рекламы',
         }
     },
 ];
