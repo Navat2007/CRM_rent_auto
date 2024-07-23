@@ -4,18 +4,33 @@ import { useAuthStore } from '@stores';
 import PublicLayout from "@layouts/PublicLayout.vue";
 import AdminLayout from "@layouts/AdminLayout.vue";
 
+// Public routes
+import Index from "@pages/public/Index.vue";
+import Login from "@pages/Login.vue";
 import NotFound from "@pages/404.vue";
+
+// Admin routes
+import Admin from "@pages/admin/Admin.vue";
+import AdminAddEmployer from "@pages/admin/employers/AddEmployer.vue";
+import AdminEditEmployer from "@pages/admin/employers/EditEmployer.vue";
+import AdminEmployers from "@pages/admin/employers/Employers.vue";
+import AdminPositions from "@pages/admin/directory/position/Positions.vue";
+import AdminAddPositions from "@pages/admin/directory/position/AddPositions.vue";
+import AdminEditPositions from "@pages/admin/directory/position/EditPositions.vue";
+import AdminAdvertisingTypes from "@pages/admin/directory/advertising_types/AdvertisingTypes.vue";
+import AdminAddAdvertisingTypes from "@pages/admin/directory/advertising_types/AddAdvertisingTypes.vue";
+import AdminEditAdvertisingTypes from "@pages/admin/directory/advertising_types/EditAdvertisingTypes.vue";
 
 const publicRoutes = [
     {
         path: '/login',
         name: 'Login',
-        component: import('@pages/Login.vue')
+        component: Login
     },
     {
         path: '/',
         name: 'Index',
-        component: import('@pages/public/Index.vue')
+        component: Index
     },
 ];
 
@@ -24,7 +39,7 @@ const adminRoutes = [
         path: '/admin',
         name: 'Admin',
         exact: true,
-        component: import('@pages/admin/Admin.vue'),
+        component: Admin,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
@@ -34,7 +49,7 @@ const adminRoutes = [
     {
         path: '/admin/employers',
         exact: true,
-        component: import('@pages/admin/employers/Employers.vue'),
+        component: AdminEmployers,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
@@ -43,7 +58,7 @@ const adminRoutes = [
     },
     {
         path: '/admin/employers/new',
-        component: import('@pages/admin/employers/AddEmployer.vue'),
+        component: AdminAddEmployer,
         exact: true,
         meta: {
             layout: AdminLayout,
@@ -53,7 +68,7 @@ const adminRoutes = [
     },
     {
         path: '/admin/employers/:id',
-        component: import('@pages/admin/employers/EditEmployer.vue'),
+        component: AdminEditEmployer,
         exact: true,
         props: true,
         meta: {
@@ -65,7 +80,7 @@ const adminRoutes = [
     // Directory
     {
         path: '/admin/directory/positions',
-        component: import('@pages/admin/directory/position/Positions.vue'),
+        component: AdminPositions,
         exact: true,
         meta: {
             layout: AdminLayout,
@@ -75,7 +90,7 @@ const adminRoutes = [
     },
     {
         path: '/admin/directory/positions/new',
-        component: import('@pages/admin/directory/position/AddPositions.vue'),
+        component: AdminAddPositions,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
@@ -84,7 +99,7 @@ const adminRoutes = [
     },
     {
         path: '/admin/directory/positions/:id',
-        component: import('@pages/admin/directory/position/EditPositions.vue'),
+        component: AdminEditPositions,
         props: true,
         meta: {
             layout: AdminLayout,
@@ -94,7 +109,7 @@ const adminRoutes = [
     },
     {
         path: '/admin/directory/advertising_types',
-        component: import('@pages/admin/directory/advertising_types/AdvertisingTypes.vue'),
+        component: AdminAdvertisingTypes,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
@@ -103,7 +118,7 @@ const adminRoutes = [
     },
     {
         path: '/admin/directory/advertising_types/new',
-        component: import('@pages/admin/directory/advertising_types/AddAdvertisingTypes.vue'),
+        component: AdminAddAdvertisingTypes,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
@@ -112,7 +127,7 @@ const adminRoutes = [
     },
     {
         path: '/admin/directory/advertising_types/:id',
-        component: import('@pages/admin/directory/advertising_types/EditAdvertisingTypes.vue'),
+        component: AdminEditAdvertisingTypes,
         props: true,
         meta: {
             layout: AdminLayout,
@@ -137,7 +152,6 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 });
-
 
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore();

@@ -160,7 +160,7 @@ const handleLogout = async () => {
               </li>
             </ul>
           </li>
-        </ul> 
+        </ul>
       </div>
     </aside>
 

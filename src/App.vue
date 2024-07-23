@@ -3,7 +3,7 @@ import {RouterView} from 'vue-router';
 import axios from "axios";
 import moment from "moment";
 
-import {useAuthStore} from "@stores";
+import {useAuthStore} from "/src/store/";
 
 const expireDays = 30;
 const authStore = useAuthStore();

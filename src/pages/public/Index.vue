@@ -1,7 +1,10 @@
 <script setup>
 import router from "@router";
+import {onMounted} from "vue";
 
-router.push({ path: '/login' })
+onMounted(() => {
+  router.push({ path: '/login' });
+})
 </script>
 
 <template>
