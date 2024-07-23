@@ -141,7 +141,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
-    const DEFAULT_TITLE = auth.user.company_name || 'АВТОПРОКАТ';
+    const DEFAULT_TITLE = auth.user?.company_name || 'АВТОПРОКАТ';
 
     document.title = to.meta.title || DEFAULT_TITLE;
 

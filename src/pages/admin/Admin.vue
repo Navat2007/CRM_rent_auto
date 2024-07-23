@@ -1,9 +1,12 @@
 <script setup>
 
+import PageContainer from "@components/Containers/PageContainer.vue";
 </script>
 
 <template>
-admin
+  <PageContainer>
+    Главная страница админ панели
+  </PageContainer>
 </template>
 
 <style scoped>
