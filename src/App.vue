@@ -5,6 +5,8 @@ import moment from "moment";
 
 import {useAuthStore} from "/src/store/";
 
+import EmptyLayout from "@layouts/EmptyLayout.vue";
+
 const expireDays = 30;
 const authStore = useAuthStore();
 
@@ -70,7 +72,7 @@ if (authStore.user) {
 export default {
   computed: {
     layout() {
-      return this.$route.meta.layout || 'public'
+      return this.$route.meta.layout || EmptyLayout;
     }
   }
 }

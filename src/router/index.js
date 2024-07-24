@@ -25,12 +25,15 @@ const publicRoutes = [
     {
         path: '/login',
         name: 'Login',
-        component: Login
+        component: Login,
     },
     {
         path: '/',
         name: 'Index',
-        component: Index
+        component: Index,
+        meta: {
+            layout: PublicLayout,
+        }
     },
 ];
 
