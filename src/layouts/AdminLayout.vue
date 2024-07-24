@@ -17,7 +17,7 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="antialiased bg-gray-50 dark:bg-gray-900">
+  <div class="antialiased bg-gray-50 dark:bg-gray-950">
     <!-- Navbar -->
     <nav class="bg-white border-b border-gray-200 px-4 py-2.5 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50">
       <div class="flex flex-wrap justify-between items-center">
@@ -93,34 +93,6 @@ const handleLogout = async () => {
         id="drawer-navigation"
     >
       <div class="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800">
-        <form action="#" method="GET" class="hidden mb-2">
-          <label for="sidebar-search" class="sr-only">Search</label>
-          <div class="relative">
-            <div
-                class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"
-            >
-              <svg
-                  class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                ></path>
-              </svg>
-            </div>
-            <input
-                type="text"
-                name="search"
-                id="sidebar-search"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="Search"
-            />
-          </div>
-        </form>
         <ul class="space-y-2 pt-4">
           <li>
             <button type="button" class="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group dark:text-white cursor-auto" aria-controls="dropdown-pages" data-collapse-toggle="dropdown-pages">
@@ -182,10 +154,10 @@ const handleLogout = async () => {
 
 <style scoped>
 .router-link{
-  @apply flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-secondary-300 dark:hover:bg-secondary-600;
+  @apply flex items-center p-2 text-base font-medium text-primary-900 rounded-lg dark:text-white hover:bg-primary-300 dark:hover:bg-primary-600;
 }
 
 .router-link-exact-active{
-  @apply bg-secondary-400 dark:bg-secondary-700;
+  @apply bg-primary-400 dark:bg-primary-700;
 }
 </style>
