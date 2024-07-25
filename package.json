@@ -22,7 +22,12 @@
     "vite-svg-loader": "^5.1.0",
     "vue": "^3.4.27",
     "vue-hooks-form": "^0.3.1",
-    "vue-router": "^4.3.3"
+    "vue-router": "^4.3.3",
+    "@vueuse/core": "^10.7.1",
+    "apexcharts": "^3.45.1",
+    "flatpickr": "^4.6.13",
+    "jsvectormap": "^1.5.3",
+    "vue3-apexcharts": "^1.4.4"
   },
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.0.1",

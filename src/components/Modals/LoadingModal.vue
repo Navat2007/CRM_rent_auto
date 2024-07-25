@@ -23,7 +23,7 @@ const emit = defineEmits(['close'])
         leave-to-class="opacity-0">
       <div
           v-if="isOpen"
-          class="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm w-screen h-screen flex justify-center items-center"
+          class="fixed z-999999 inset-0 bg-black bg-opacity-25 backdrop-blur-sm w-screen h-screen flex justify-center items-center"
       >
         <div
             v-if="isOpen" tabindex="-1" aria-hidden="true"

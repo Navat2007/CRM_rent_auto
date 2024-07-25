@@ -1,4 +1,7 @@
 <script setup>
+import { onClickOutside } from '@vueuse/core'
+import {ref} from "vue";
+
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -14,6 +17,11 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['close'])
+const target = ref(null)
+
+onClickOutside(target, () => {
+  emit('close')
+})
 </script>
 
 <template>
@@ -35,7 +43,7 @@ const emit = defineEmits(['close'])
         >
           <div class="relative p-4 w-full max-h-full">
             <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div ref="target" class="relative bg-white rounded-lg shadow dark:bg-gray-700">
               <!-- Modal header -->
               <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -79,7 +87,7 @@ const emit = defineEmits(['close'])
 
 <style scoped>
 .background {
-  @apply fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm w-screen h-screen flex justify-center items-center;
+  @apply fixed z-999999 inset-0 bg-black bg-opacity-25 backdrop-blur-sm w-screen h-screen flex justify-center items-center;
 }
 
 .modal {

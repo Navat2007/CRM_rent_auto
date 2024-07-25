@@ -18,7 +18,7 @@ const emit = defineEmits(['close'])
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
       <div v-if="isOpen"
-           class="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm z-10 w-screen h-screen flex justify-center items-center">
+           class="fixed z-999999 inset-0 bg-black bg-opacity-25 backdrop-blur-sm z-10 w-screen h-screen flex justify-center items-center">
         <transition
             enter-active-class="transition ease-out duration-300 transform "
             enter-from-class="opacity-0 translate-y-10 scale-95"

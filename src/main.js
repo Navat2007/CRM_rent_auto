@@ -77,6 +77,7 @@ const MyPreset = definePreset(Aura, {
 app.use(createPinia());
 app.use(router);
 app.use(PrimeVue, {
+    ripple: true,
     locale: {
         "accept": "Да",
         "addRule": "Добавить правило",

@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router';
 import DirectoryService from "@services/DirectoryService.js";
 
 import AlertModal from "@components/Modals/AlertModal.vue";
-import PageContainer from "@components/Containers/PageContainer.vue";
+import PageContainer from "@components/Containers/Admin/PageContainer.vue";
 import DirectoryAdvertisingTypesEditForm from "@components/Forms/Directory/DirectoryAdvertisingTypesEditForm.vue";
 
 const item = ref(null);
@@ -19,7 +19,7 @@ const isSuccessModalOpen = ref(false);
 const breadcrumbs = ref([
   {
     name: 'Виды рекламы',
-    route: '/admin/directory/advertising_types'
+    route: '/Admin/directory/advertising_types'
   },
   {
     name: 'Редактирование вида рекламы',
@@ -47,7 +47,7 @@ const handleEdit = (data) => {
 
 const onSuccess = () => {
   isSuccessModalOpen.value = false;
-  router.push('/admin/directory/advertising_types');
+  router.push('/Admin/directory/advertising_types');
 }
 
 async function fetchData() {

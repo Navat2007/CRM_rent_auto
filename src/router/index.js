@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import { useAuthStore } from '@stores';
+import { useAuthStore, useSidebarStore } from '@stores';
 
 import PublicLayout from "@layouts/PublicLayout.vue";
 import AdminLayout from "@layouts/AdminLayout.vue";
@@ -39,7 +39,7 @@ const publicRoutes = [
 
 const adminRoutes = [
     {
-        path: '/admin',
+        path: '/Admin',
         name: 'Admin',
         exact: true,
         component: Admin,
@@ -50,7 +50,7 @@ const adminRoutes = [
     },
     // Employers
     {
-        path: '/admin/employers',
+        path: '/Admin/employers',
         exact: true,
         component: AdminEmployers,
         meta: {
@@ -60,7 +60,7 @@ const adminRoutes = [
         }
     },
     {
-        path: '/admin/employers/new',
+        path: '/Admin/employers/new',
         component: AdminAddEmployer,
         exact: true,
         meta: {
@@ -70,7 +70,7 @@ const adminRoutes = [
         }
     },
     {
-        path: '/admin/employers/:id',
+        path: '/Admin/employers/:id',
         component: AdminEditEmployer,
         exact: true,
         props: true,
@@ -82,7 +82,7 @@ const adminRoutes = [
     },
     // Directory
     {
-        path: '/admin/directory/positions',
+        path: '/Admin/directory/positions',
         component: AdminPositions,
         exact: true,
         meta: {
@@ -92,7 +92,7 @@ const adminRoutes = [
         }
     },
     {
-        path: '/admin/directory/positions/new',
+        path: '/Admin/directory/positions/new',
         component: AdminAddPositions,
         meta: {
             layout: AdminLayout,
@@ -101,7 +101,7 @@ const adminRoutes = [
         }
     },
     {
-        path: '/admin/directory/positions/:id',
+        path: '/Admin/directory/positions/:id',
         component: AdminEditPositions,
         props: true,
         meta: {
@@ -111,7 +111,7 @@ const adminRoutes = [
         }
     },
     {
-        path: '/admin/directory/advertising_types',
+        path: '/Admin/directory/advertising_types',
         component: AdminAdvertisingTypes,
         meta: {
             layout: AdminLayout,
@@ -120,7 +120,7 @@ const adminRoutes = [
         }
     },
     {
-        path: '/admin/directory/advertising_types/new',
+        path: '/Admin/directory/advertising_types/new',
         component: AdminAddAdvertisingTypes,
         meta: {
             layout: AdminLayout,
@@ -129,7 +129,7 @@ const adminRoutes = [
         }
     },
     {
-        path: '/admin/directory/advertising_types/:id',
+        path: '/Admin/directory/advertising_types/:id',
         component: AdminEditAdvertisingTypes,
         props: true,
         meta: {
@@ -153,14 +153,20 @@ const routes = [...publicRoutes, ...adminRoutes,
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+        return savedPosition || { left: 0, top: 0 }
+    }
 });
 
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
+    const { toggleSidebar } = useSidebarStore();
     const DEFAULT_TITLE = auth.user?.company_name || 'АВТОПРОКАТ';
 
     document.title = to.meta.title || DEFAULT_TITLE;
+
+    toggleSidebar(false);
 
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!auth.user) {

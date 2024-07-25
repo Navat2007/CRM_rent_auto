@@ -1,4 +1,7 @@
 <script setup>
+import { onClickOutside } from '@vueuse/core'
+import {ref} from "vue";
+
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -27,6 +30,11 @@ const props = defineProps({
   }
 });
 const emit = defineEmits(['close', 'accept'])
+const target = ref(null)
+
+onClickOutside(target, () => {
+  emit('close')
+})
 </script>
 
 <template>
@@ -40,7 +48,7 @@ const emit = defineEmits(['close', 'accept'])
         leave-to-class="opacity-0">
       <div
           v-if="isOpen"
-          class="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm w-screen h-screen flex justify-center items-center"
+          class="fixed z-999999 inset-0 bg-black bg-opacity-25 backdrop-blur-sm w-screen h-screen flex justify-center items-center"
       >
         <div
             v-if="isOpen" tabindex="-1" aria-hidden="true"
@@ -48,7 +56,7 @@ const emit = defineEmits(['close', 'accept'])
         >
           <div class="relative p-4 w-full max-h-full">
             <!-- Modal content -->
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div ref="target" class="relative bg-white rounded-lg shadow dark:bg-gray-700">
               <button @click="$emit('close')" type="button"
                       class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                       data-modal-hide="popup-modal">
@@ -72,7 +80,7 @@ const emit = defineEmits(['close', 'accept'])
                 <button
                     v-if="withButtons" @click="$emit('accept')"
                     data-modal-hide="popup-modal" type="button"
-                    class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
+                    class="text-white bg-primary-600 hover:bg-primary-500 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:focus:ring-primary-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
                 >
                   Да
                 </button>

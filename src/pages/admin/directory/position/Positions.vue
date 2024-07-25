@@ -7,6 +7,7 @@ import router from "@router";
 import Checkbox from "@components/Inputs/Checkbox.vue";
 import Table from "@components/Table/DataTable.vue";
 import DirectoryService from "@services/DirectoryService.js";
+import PageContainer from "@components/Containers/Admin/PageContainer.vue";
 
 const {useField, validateFields} = useForm({
   defaultValues: {
@@ -49,13 +50,18 @@ const error = ref('');
 const loading = ref(true);
 
 const archive = useField('active');
+const breadcrumbs = ref([
+  {
+    name: 'Должности',
+    route: null
+  },
+]);
 
 const handleAddButtonClick = (item) => {
-  router.push('/admin/directory/positions/new');
+  router.push('/Admin/directory/positions/new');
 }
 const handleRowClick = (item) => {
-  //router.push({ name: 'AdminEditUser', params: { id: item.id } });
-  router.push('/admin/directory/positions/' + item.id);
+  router.push('/Admin/directory/positions/' + item.id);
 }
 
 const handleFilters = () => {
@@ -75,19 +81,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full h-full p-4">
+  <PageContainer :breadcrumbs="breadcrumbs">
     <Table title="Должности" :items="items" :columns="columns" :loading="loading" @onRowClick="handleRowClick">
       <template #columns>
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" sortable></Column>
       </template>
       <template #buttons>
-        <Button type="button" icon="pi pi-plus" label="Добавить" @click="handleAddButtonClick" />
+        <Button type="button" icon="pi pi-plus" label="Добавить" class="main-button" @click="handleAddButtonClick" />
       </template>
       <template #filter>
         <Checkbox title="Показывать архивные значения?" id="archive" :model="archive" @onChange="handleFilters"/>
       </template>
     </Table>
-  </div>
+  </PageContainer>
 </template>
 
 <style scoped>

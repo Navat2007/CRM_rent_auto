@@ -6,7 +6,7 @@ import DirectoryService from "@services/DirectoryService.js";
 
 import AlertModal from "@components/Modals/AlertModal.vue";
 import DirectoryPositionAddForm from "@components/Forms/Directory/DirectoryPositionAddForm.vue";
-import PageContainer from "@components/Containers/PageContainer.vue";
+import PageContainer from "@components/Containers/Admin/PageContainer.vue";
 
 const error = ref('');
 const loading = ref(false);
@@ -16,7 +16,7 @@ const isSuccessModalOpen = ref(false);
 const breadcrumbs = ref([
   {
     name: 'Должности',
-    route: '/admin/directory/positions'
+    route: '/Admin/directory/positions'
   },
   {
     name: 'Добавление должности',
@@ -42,7 +42,7 @@ const handleAdd = (data) => {
 
 const onSuccess = () => {
   isSuccessModalOpen.value = false;
-  router.push('/admin/directory/positions');
+  router.push('/Admin/directory/positions');
 }
 </script>
 

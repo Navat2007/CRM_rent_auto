@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router';
 import DirectoryService from "@services/DirectoryService.js";
 
 import AlertModal from "@components/Modals/AlertModal.vue";
-import PageContainer from "@components/Containers/PageContainer.vue";
+import PageContainer from "@components/Containers/Admin/PageContainer.vue";
 import DirectoryPositionEditForm from "@components/Forms/Directory/DirectoryPositionEditForm.vue";
 
 const item = ref(null);
@@ -19,7 +19,7 @@ const isSuccessModalOpen = ref(false);
 const breadcrumbs = ref([
   {
     name: 'Должности',
-    route: '/admin/directory/positions'
+    route: '/Admin/directory/positions'
   },
   {
     name: 'Редактирование должности',
@@ -47,7 +47,7 @@ const handleEdit = (data) => {
 
 const onSuccess = () => {
   isSuccessModalOpen.value = false;
-  router.push('/admin/directory/positions');
+  router.push('/Admin/directory/positions');
 }
 
 async function fetchData() {

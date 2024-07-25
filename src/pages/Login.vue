@@ -6,6 +6,7 @@ import {useAuthStore} from "@stores";
 
 import Logo from "@assets/images/logo.png";
 import DarkToggle from "@components/DarkToggle.vue";
+import DarkModeSwitcher from "@components/DarkModeSwitcher.vue";
 
 const router = useRouter();
 const login = ref('');
@@ -38,10 +39,10 @@ const handleSubmit = async () => {
           d="M1397.5 154.8c47.2-10.6 93.6-25.3 138.6-43.8c21.7-8.9 43-18.8 63.9-29.5V0H643.4c62.9 41.7 129.7 78.2 202.1 107.4C1020.4 178.1 1214.2 196.1 1397.5 154.8z"></path>
   </svg>
   <div class="absolute z-50 top-0 right-0 flex items-end justify-center pr-2 pt-2">
-    <DarkToggle />
+    <DarkModeSwitcher />
   </div>
 
-  <div class="absolute left-0 right-0 bottom-0">
+  <div class="absolute top-0 left-0 right-0 bottom-0">
     <div class="flex min-h-screen items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
       <!--      <RouterLink to="/" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">-->
       <!--        <img class="w-24 h-24 mr-2" :src="Logo" alt="logo">-->
@@ -60,7 +61,7 @@ const handleSubmit = async () => {
             <label for="email1" class="block text-900 font-medium mb-2">Email</label>
             <InputText id="email1" type="text" placeholder="Введите email" class="w-full mb-5" v-model="login" inputClass="w-full"/>
 
-            <label for="password1" class="block text-900 font-medium mb-2">Password</label>
+            <label for="password1" class="block text-900 font-medium mb-2">Пароль</label>
             <Password id="password1" v-model="password" placeholder="Введите пароль" :toggleMask="true" :feedback="false" class="w-full mb-3" inputClass="w-full"></Password>
 
             <span v-if="error" class="text-red-400">{{ error.value }}</span>
