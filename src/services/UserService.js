@@ -2,9 +2,7 @@ import axios from "axios";
 import buildFormData from "@utils/buildFormData.js";
 
 class UserService {
-    static async getUsers(company_id, loading) {
-        loading.value = true
-
+    static async getUsers(company_id) {
         let form = new FormData();
         form.append('company_id', company_id);
 
@@ -14,8 +12,6 @@ class UserService {
         if (response.data.params) {
             result = response.data.params;
         }
-
-        loading.value = false
 
         return result;
     }

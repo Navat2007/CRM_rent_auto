@@ -6,8 +6,7 @@ import {PrimeVueResolver} from '@primevue/auto-import-resolver';
 import path from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig(({mode}) => ({
-    base: './',
+export default defineConfig({
     plugins: [
         vue(),
         svgLoader(),
@@ -18,6 +17,7 @@ export default defineConfig(({mode}) => ({
         })
     ],
     resolve: {
+        extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
         alias: {
             '@': path.resolve(__dirname, './src'),
             '@components': path.resolve(__dirname, './src/components'),
@@ -30,7 +30,4 @@ export default defineConfig(({mode}) => ({
             '@services': path.resolve(__dirname, './src/services'),
         }
     },
-    define: {
-        __VUE_PROD_DEVTOOLS__: mode !== 'production'
-    },
-}))
+});

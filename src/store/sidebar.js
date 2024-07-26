@@ -4,12 +4,16 @@ import { ref } from 'vue'
 
 export const useSidebarStore = defineStore('sidebar', () => {
   const isSidebarOpen = ref(false)
-  const selected = useStorage('selected', ref('Admin'))
-  const page = useStorage('page', ref('Admin'))
+  const selected = useStorage('selected', ref('Дашборд'))
+  const page = useStorage('page', ref('Дашборд'))
 
   function toggleSidebar() {
     isSidebarOpen.value = !isSidebarOpen.value
   }
 
-  return { isSidebarOpen, toggleSidebar, selected, page }
+  function setSidebarState(state) {
+    isSidebarOpen.value = state
+  }
+
+  return { isSidebarOpen, setSidebarState, toggleSidebar, selected, page }
 })

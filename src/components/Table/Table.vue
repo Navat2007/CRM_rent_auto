@@ -1,7 +1,7 @@
 <script setup>
+import {ref} from "vue";
 import DataTable from "primevue/datatable";
 import {FilterMatchMode} from '@primevue/core/api';
-import {onMounted, ref} from "vue";
 
 const props = defineProps({
   title: {
@@ -21,6 +21,14 @@ const props = defineProps({
     type: Array,
     required: true
   },
+  filters: {
+    type: Object,
+    required: false,
+  },
+  filterFields: {
+    type: Array,
+    required: false,
+  },
   loading: {
     type: Boolean,
     required: false,
@@ -30,7 +38,8 @@ const props = defineProps({
 const emit = defineEmits(['onRowClick']);
 
 const table = ref();
-const filters = ref();
+const tableSaveKey = ref(props.title + "_table");
+const finalFilters = ref();
 const skeletonItems = ref(new Array(10));
 
 const handleRowClick = (item) => {
@@ -40,8 +49,9 @@ const clearFilter = () => {
   initFilters();
 };
 const initFilters = () => {
-  filters.value = {
-    global: {value: null, matchMode: FilterMatchMode.CONTAINS},
+  finalFilters.value = {
+    ...props.filters,
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS }
   };
 };
 const exportCSV = () => {
@@ -53,7 +63,19 @@ initFilters();
 
 <template>
   <Card>
-    <template #title>{{ title }}</template>
+    <template #title>
+      <Toolbar class="mb-6">
+      <template #start>
+        <slot name="buttons"/>
+      </template>
+
+      <template #end>
+        <!--              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />-->
+        <Button type="button" icon="pi pi-filter-slash" class="main-button" label="Очистить"
+                @click="clearFilter()"/>
+      </template>
+    </Toolbar>
+    </template>
     <template #content>
       <DataTable v-if="loading" :value="skeletonItems">
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header">
@@ -65,26 +87,19 @@ initFilters();
       <DataTable
           v-else
           ref="table" :value="items" @row-click="handleRowClick"
-          stateStorage="session" :stateKey="title"
-          showGridlines stripedRows paginator :rows="pageSize" :rowsPerPageOptions="[5, 10, 20, 50]"
+          stateStorage="local" :stateKey="tableSaveKey"
+          showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize" :rowsPerPageOptions="[5, 10, 20, 50]"
           resizableColumns columnResizeMode="fit"
           sortField="id" :sortOrder="1" removableSort
-          filterDisplay="row" v-model:filters="filters"
+          filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"
       >
         <template #header>
-          <div class="flex justify-between">
-            <div class="flex space-x-3">
-              <slot name="buttons"/>
-              <IconField>
-                <InputIcon class="pi pi-search"/>
-                <InputText v-model="filters['global'].value" placeholder="Поиск"/>
-              </IconField>
-            </div>
-            <div class="flex space-x-3">
-              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />
-              <Button type="button" icon="pi pi-filter-slash" class="main-button" label="Очистить фильтры"
-                      @click="clearFilter()"/>
-            </div>
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl">{{ title }}</h2>
+            <IconField>
+              <InputIcon class="pi pi-search"/>
+              <InputText v-model="finalFilters['global'].value" placeholder="Поиск"/>
+            </IconField>
           </div>
         </template>
         <template #empty> Результаты не найдены.</template>

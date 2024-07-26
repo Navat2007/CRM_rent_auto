@@ -3,7 +3,7 @@ import {onMounted, ref} from "vue";
 import axios from "axios";
 import buildFormData from "@utils/buildFormData.js";
 
-import Table from "@components/Table/DataTable.vue";
+import Table from "@components/Table/Table.vue";
 import AlertModal from "@components/Modals/AlertModal.vue";
 import BaseModal from "@components/Modals/BaseModal.vue";
 import UserAddForm from "@components/Forms/UserAddForm.vue";

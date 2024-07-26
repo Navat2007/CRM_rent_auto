@@ -2,7 +2,7 @@
 import router from "@router";
 import {onMounted, ref} from "vue";
 
-import Table from "@components/Table/DataTable.vue";
+import Table from "@components/Table/Table.vue";
 import CompanyService from "@services/CompanyService.js";
 
 const columns = ref([

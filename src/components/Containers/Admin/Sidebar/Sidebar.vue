@@ -2,21 +2,12 @@
 import {RouterLink} from "vue-router";
 import {ref} from "vue";
 import { onClickOutside } from '@vueuse/core'
-import { useAuthStore } from '@stores';
-import {useSidebarStore} from "@stores/sidebar.js";
+import { useAuthStore, useSidebarStore } from '@stores';
 
 import SidebarItem from "@components/Containers/Admin/Sidebar/SidebarItem.vue";
 import Logo from "@assets/images/logo.png";
 
 const target = ref(null);
-
-const sidebarStore = useSidebarStore();
-const authStore = useAuthStore();
-
-onClickOutside(target, () => {
-  sidebarStore.isSidebarOpen = false
-})
-
 const menuGroups = ref([
   {
     name: 'МЕНЮ',
@@ -98,13 +89,20 @@ const menuGroups = ref([
         label: 'Справочники',
         route: '',
         children: [
-            { label: 'Виды рекламы', route: '/Admin/directory/advertising_types' },
-            { label: 'Должности', route: '/Admin/directory/positions' }
+          { label: 'Виды рекламы', route: '/Admin/directory/advertising_types' },
+          { label: 'Должности', route: '/Admin/directory/positions' }
         ]
       }
     ]
   },
 ])
+
+const sidebarStore = useSidebarStore();
+const authStore = useAuthStore();
+
+onClickOutside(target, () => {
+  sidebarStore.isSidebarOpen = false
+});
 </script>
 
 <template>
