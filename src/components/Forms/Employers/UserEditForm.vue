@@ -1,7 +1,7 @@
 <script setup>
 import {useForm} from 'vue-hooks-form'
 import {onMounted, ref} from "vue";
-import AlertModal from "../Modals/AlertModal.vue";
+import AlertModal from "../../Modals/AlertModal.vue";
 
 const {useField, validateFields} = useForm({
   defaultValues: {

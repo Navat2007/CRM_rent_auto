@@ -15,13 +15,17 @@ $params = array();
 
 $sql = "
     SELECT 
-        users.* 
+        users.*, ui.full_name, ui.firing_date, dp.name as position_name
     FROM 
         users as users
     LEFT JOIN 
         users_company as uc on users.id = uc.user_id
+    LEFT JOIN 
+        users_info as ui on users.id = ui.user_id
+    LEFT JOIN 
+        directory_position as dp on dp.id = ui.user_type
     WHERE 
-        users.archive = 0 AND users.email LIKE '%{$search}%'";
+        users.archive = 0 AND users.is_employee = true AND users.email LIKE '%{$search}%'";
 
 if($company_id != 0){
     $sql .= " AND uc.company_id = '{$company_id}'";
@@ -36,8 +40,11 @@ if(pg_num_rows($result) > 0)
     {
         $params[] = (object)[
             'id' => (int)$row->id,
+            'full_name' => $row->full_name == null ? "Не заполнено" : htmlspecialchars_decode($row->full_name),
+            'position' => (int)$row->id == 1 ? 'Разработчик' : ($row->position_name == null ? "Не найдена" : htmlspecialchars_decode($row->position_name)),
+            'firing_date' => $row->firing_date,
             'email' => htmlspecialchars_decode($row->email),
-            'status' => (int)$row->status == 0 ? "Активен" : "Отключен",
+            'status' => (int)$row->archive == 1 ? "В архиве" : "Активен",
         ];
     }
 

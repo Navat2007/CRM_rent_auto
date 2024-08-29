@@ -6,8 +6,8 @@ import buildFormData from "@utils/buildFormData.js";
 import Table from "@components/Table/Table.vue";
 import AlertModal from "@components/Modals/AlertModal.vue";
 import BaseModal from "@components/Modals/BaseModal.vue";
-import UserAddForm from "@components/Forms/UserAddForm.vue";
-import UserEditForm from "@components/Forms/UserEditForm.vue";
+import UserAddForm from "@components/Forms/Employers/UserAddForm.vue";
+import UserEditForm from "@components/Forms/Employers/UserEditForm.vue";
 import UserService from "@services/UserService.js";
 import router from "@router";
 
