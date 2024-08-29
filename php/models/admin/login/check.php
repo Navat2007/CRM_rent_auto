@@ -48,7 +48,7 @@ if (!empty($login) && !empty($password)) {
     if (pg_num_rows($result) > 0) {
         $row = pg_fetch_object($result);
 
-        if ((int)$row->status == 1 || $row->firing_date != null) {
+        if ((int)$row->status == 0 || $row->firing_date != null) {
             $error = 1;
             $error_text = "Ошибка, данный пользователь не может войти в систему";
         }
