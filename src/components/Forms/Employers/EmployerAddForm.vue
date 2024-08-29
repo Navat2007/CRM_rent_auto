@@ -1,6 +1,7 @@
 <script setup>
 import {useAuthStore} from "@stores";
 import {useVuelidate} from '@vuelidate/core';
+import moment from "moment";
 import {email, helpers, required, minLength, sameAs} from '@vuelidate/validators';
 import {computed, reactive, ref, unref, onMounted} from "vue";
 import Divider from "primevue/divider";
@@ -15,13 +16,55 @@ const props = defineProps({
     required: false,
     default: false
   },
-})
+});
 const emit = defineEmits(['onSubmit']);
 
+const genders = ref([
+  {label: 'Мужской', value: 0,},
+  {label: 'Женский', value: 1},
+]);
 const positions = ref([]);
 const loadingPositions = ref(true);
+const age = computed(() => {
+  const declOfNum = (number, words) => {
+    return words[(number % 100 > 4 && number % 100 < 20) ? 2 : [2, 0, 1, 1, 1, 2][(number % 10 < 5) ? Math.abs(number) % 10 : 5]];
+  }
 
-const lettersAndDash = helpers.regex(/^[a-zA-Zа-яА-Я-]*$/)
+  const today = new Date();
+  const birthDate = new Date(state.birthday);
+  let age = today.getFullYear() - birthDate.getFullYear();
+
+  if (today.getMonth() < birthDate.getMonth() ||
+      (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return state.birthday ? age + ' ' + declOfNum(age, ['год', 'года', 'лет']) : null;
+});
+const zodiac = computed(() => {
+  function getZodiacSign(date) {
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    if (month == 1 && day >= 20 || month == 2 && day <= 18) return "Водолей";
+    else if (month == 2 && day >= 19 || month == 3 && day <= 20) return "Рыбы";
+    else if (month == 3 && day >= 21 || month == 4 && day <= 19) return "Овен";
+    else if (month == 4 && day >= 20 || month == 5 && day <= 20) return "Телец";
+    else if (month == 5 && day >= 21 || month == 6 && day <= 21) return "Близнецы";
+    else if (month == 6 && day >= 22 || month == 7 && day <= 22) return "Рак";
+    else if (month == 7 && day >= 23 || month == 8 && day <= 22) return "Лев";
+    else if (month == 8 && day >= 23 || month == 9 && day <= 22) return "Дева";
+    else if (month == 9 && day >= 23 || month == 10 && day <= 22) return "Весы";
+    else if (month == 10 && day >= 23 || month == 11 && day <= 21) return "Скорпион";
+    else if (month == 11 && day >= 22 || month == 12 && day <= 21) return "Стрелец";
+    else if (month == 12 && day >= 22 || month == 1 && day <= 19) return "Козерог";
+  }
+
+  const birthDate = new Date(moment(state.birthday).format('YYYY-MM-DD'));
+  return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
+});
+
+const lettersAndDash = helpers.regex(/^[a-zA-Zа-яА-Я-]*$/);
 
 const state = reactive({
   companyId: user.company_id,
@@ -77,13 +120,8 @@ const rules = computed(() => {
     actsOnBasis: {},
     rate: {},
   }
-})
+});
 const v$ = useVuelidate(rules, state);
-
-const genders = ref([
-  { label: 'Мужской', value: 0, },
-  { label: 'Женский', value: 1 },
-]);
 
 const onFormSubmit = async (e) => {
   const isFormCorrect = await unref(v$).$validate();
@@ -91,7 +129,7 @@ const onFormSubmit = async (e) => {
   if (isFormCorrect) {
     emit('onSubmit', state);
   }
-}
+};
 
 async function fetchPositions() {
   positions.value = (await DirectoryService.getPositions(user.company_id)).filter(position => position.archive === "Активен");
@@ -162,44 +200,51 @@ onMounted(() => {
           <div>
             <label for="birthday"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
-            <DatePicker v-model="state.birthday" id="birthday" dateFormat="dd.mm.yy" mask="99/99/9999" slotChar="dd.mm.yy" showIcon showButtonBar iconDisplay="input"/>
+            <div>
+              <DatePicker v-model="state.birthday" id="birthday" dateFormat="dd.mm.yy" mask="99/99/9999"
+                          slotChar="dd.mm.yy" showIcon showButtonBar iconDisplay="input"/>
+              <span class="ml-6">{{ age }}{{ zodiac }}</span>
+            </div>
             <FormError :errors="v$.birthday.$errors"/>
           </div>
           <!-- Пол -->
           <div>
             <label for="gender"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Пол</label>
-            <Select v-model="state.gender" :options="genders" :modelValue="state.gender" optionLabel="label" optionValue="value" placeholder="Выберите пол" class="w-full" />
+            <Select v-model="state.gender" :options="genders" :modelValue="state.gender" optionLabel="label"
+                    optionValue="value" placeholder="Выберите пол" class="w-full"/>
           </div>
           <!-- Телефон -->
           <div>
             <label for="phone"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Телефон</label>
-            <InputMask id="phone" v-model="state.phone" mask="(999) 999-9999" placeholder="(999) 999-9999" fluid />
+            <InputMask id="phone" v-model="state.phone" mask="(999) 999-9999" placeholder="(999) 999-9999" fluid/>
           </div>
           <!-- Должность -->
           <div>
             <label for="position"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Должность</label>
-            <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name" optionValue="id" placeholder="Выберите должность" showClear class="w-full" />
+            <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name"
+                    optionValue="id" placeholder="Выберите должность" showClear class="w-full"/>
           </div>
           <!-- СНИЛС -->
           <div>
             <label for="snils"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">СНИЛС</label>
-            <InputMask id="snils" v-model="state.snils" mask="999-999-999 99" placeholder="999-999-999 99" fluid />
+            <InputMask id="snils" v-model="state.snils" mask="999-999-999 99" placeholder="999-999-999 99" fluid/>
           </div>
           <!-- ИНН -->
           <div>
             <label for="inn"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ИНН</label>
-            <InputMask id="inn" v-model="state.inn" mask="999999999999" placeholder="999999999999" fluid />
+            <InputMask id="inn" v-model="state.inn" mask="999999999999" placeholder="999999999999" fluid/>
           </div>
           <!-- Дата найма -->
           <div>
             <label for="hireDate"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата найма</label>
-            <DatePicker v-model="state.hireDate" id="hireDate" dateFormat="dd.mm.yy" mask="99/99/9999" slotChar="dd.mm.yy" showIcon showButtonBar iconDisplay="input"/>
+            <DatePicker v-model="state.hireDate" id="hireDate" dateFormat="dd.mm.yy" mask="99/99/9999"
+                        slotChar="dd.mm.yy" showIcon showButtonBar iconDisplay="input"/>
             <FormError :errors="v$.hireDate.$errors"/>
           </div>
           <!-- Действует на основании -->
@@ -239,7 +284,8 @@ onMounted(() => {
           <div>
             <label for="confirmPassword"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить пароль*</label>
-            <Password id="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль" :toggleMask="true"
+            <Password id="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
+                      :toggleMask="true"
                       :feedback="false" class="w-full mb-3" inputClass="w-full"/>
             <FormError :errors="v$.confirmPassword.$errors"/>
           </div>

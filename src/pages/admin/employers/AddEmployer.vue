@@ -27,12 +27,10 @@ const breadcrumbs = ref([
 ]);
 
 const handleAdd = (data) => {
-  console.log(data);
   data.birthday = moment(data.birthday).format('YYYY-MM-DD');
   data.hireDate = moment(data.hireDate).format('YYYY-MM-DD');
 
   UserService.addUser(data).then((response) => {
-    console.log(response.data);
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
