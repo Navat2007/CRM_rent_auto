@@ -62,6 +62,9 @@ importers:
       vue:
         specifier: ^3.4.38
         version: 3.4.38
+      vue-disable-autocomplete:
+        specifier: ^0.0.4
+        version: 0.0.4
       vue-hooks-form:
         specifier: ^0.3.1
         version: 0.3.1(vue@3.4.38)
@@ -1223,6 +1226,9 @@ packages:
       '@vue/composition-api':
         optional: true
 
+  vue-disable-autocomplete@0.0.4:
+    resolution: {integrity: sha512-NtEMoepVfFScR6f7d37g3tQh3F5VU75ai+5+GHoQ0pt3ftrLUeOWXi0ozQDExTwPFgLK3Yk86NeyokSZMlXvFg==}
+
   vue-hooks-form@0.3.1:
     resolution: {integrity: sha512-fsDfyTS2oUrnQo809gGdeuVY1+Q3ARTAdBuBQItLkAdl1vcH8VB2E8Z72rzjxNVBAGy1/YtVBHAMTlP1zGmQpQ==}
     peerDependencies:
@@ -2295,6 +2301,8 @@ snapshots:
   vue-demi@0.14.10(vue@3.4.38):
     dependencies:
       vue: 3.4.38
+
+  vue-disable-autocomplete@0.0.4: {}
 
   vue-hooks-form@0.3.1(vue@3.4.38):
     dependencies:

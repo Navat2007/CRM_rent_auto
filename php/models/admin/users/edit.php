@@ -6,48 +6,52 @@ require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
 $ID = htmlspecialchars($_POST["id"]);
-$login = htmlspecialchars($_POST["login"]);
-$email = htmlspecialchars($_POST["email"]);
-$password = htmlspecialchars($_POST["password"]);
-$fio = htmlspecialchars($_POST["fio"]);
+$user = $authorization[1];
 $active = htmlspecialchars($_POST["active"]) === "true" ? 1 : 0;
+$actsOnBasis = htmlspecialchars($_POST["actsOnBasis"]);
+$birthday = htmlspecialchars($_POST["birthday"]);
+$companyId = htmlspecialchars($_POST["companyId"]);
+$email = htmlspecialchars($_POST["email"]);
+$firstName = htmlspecialchars($_POST["firstName"]);
+$gender = htmlspecialchars($_POST["gender"]);
+$hireDate = htmlspecialchars($_POST["hireDate"]);
+$inn = htmlspecialchars($_POST["inn"]);
+$lastName = htmlspecialchars($_POST["lastName"]);
+$password = htmlspecialchars($_POST["password"]);
+$patronym = htmlspecialchars($_POST["patronym"]);
+$phone = htmlspecialchars($_POST["phone"]);
+$position = htmlspecialchars($_POST["position"]);
+$rate = htmlspecialchars($_POST["rate"]);
+$snils = htmlspecialchars($_POST["snils"]);
+$fullName = $lastName . ' ' . $firstName;
+
+if(!empty($patronym))
+{
+    $fullName .= ' '. $patronym;
+}
+
+$companies = $_POST["companies"] ?? array();
 
 $error = 0;
 $error_text = "";
 $sqls = array();
 $params = null;
 
-$sql = "SELECT * FROM admins WHERE ID = '$ID'";
+$sql = "SELECT * FROM users WHERE id = '$ID'";
 $sqls[] = $sql;
-$result = mysqli_query($conn, $sql);
-$admin_row = mysqli_fetch_object($result);
-
-if($admin_row->login != $login){
-
-    $sql = "SELECT * FROM admins WHERE login = '$login' AND archive = 0";
-    $sqls[] = $sql;
-    $result = mysqli_query($conn, $sql);
-
-    if(mysqli_num_rows($result) > 0)
-    {
-        $error = 1;
-        $error_text = "Такой логин уже существует";
-    }
-
-}
+$result = pg_query($conn, $sql);
+$admin_row =pg_fetch_object($result);
 
 if($admin_row->email != $email){
-
-    $sql = "SELECT * FROM admins WHERE email = '$email' AND archive = 0";
+    $sql = "SELECT * FROM users WHERE email = '$email' AND archive = 0";
     $sqls[] = $sql;
-    $result = mysqli_query($conn, $sql);
+    $result = pg_query($conn, $sql);
 
-    if(mysqli_num_rows($result) > 0)
+    if(pg_num_rows($result) > 0)
     {
         $error = 1;
         $error_text = "Такой email уже существует";
     }
-
 }
 
 if((int)$authorization[1] !== (int)$ID && (int)$ID === 1){
@@ -56,54 +60,97 @@ if((int)$authorization[1] !== (int)$ID && (int)$ID === 1){
 }
 
 if($error === 0){
-
-    $sql = "UPDATE admins SET email = '$email', login = '$login', fio = '$fio', active = '$active' WHERE ID = '$ID'";
+    $sql = "UPDATE users SET email = '$email', status = '$active', last_user_id = '$user' WHERE id = '$ID'";
     $sqls[] = $sql;
-    mysqli_query($conn, $sql);
-    $lastID = mysqli_insert_id($conn);
+    pg_query($conn, $sql);
 
     if(isset($_POST["password"]) && trim($_POST["password"]) != "")
     {
         $pwd = trim(htmlspecialchars($_POST["password"]));
         $new_password = password_hash($pwd, PASSWORD_DEFAULT);
-        $current_password = $admin_row->pwd;
-        $old_password = $admin_row->last_pwd;
+        $current_password = $admin_row->password;
 
         if(password_verify($pwd, $current_password))
         {
             $error = "1";
             $error_text = "Пароль совпадает с текущим";
         }
-        elseif (password_verify($pwd, $old_password))
-        {
-            $error = "1";
-            $error_text = "Пароль совпадает с предыдущим";
-        }
         else
         {
-            $update_query = "UPDATE admins SET password = '$new_password', last_pwd = '$current_password', pwd_change_date = NOW() WHERE ID = '$ID'";
+            $update_query = "UPDATE users SET password = '$new_password', password_change_date = NOW() WHERE id = '$ID'";
             $sqls[] = $update_query;
-            mysqli_query($conn, $update_query);
-
-            $helper->sendEmailWithPassword($conn, $email, $pwd, false);
-
+            pg_query($conn, $update_query);
         }
 
     }
 
-    $log->add($conn, $authorization[1], 'Администратор отредактирован #' . $ID);
+    $sql = "SELECT * FROM users_info WHERE user_id = '$ID'";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
 
+    if(pg_num_rows($result) > 0)
+    {
+        $sql = "
+            UPDATE 
+                users_info 
+            SET
+                user_id = '$ID', 
+                user_type = '$position', 
+                full_name = '$fullName',
+                birth_date = '$birthday',
+                gender = '$gender',
+                first_name = '$firstName',
+                second_name = '$lastName',
+                middle_name = '$patronym',
+                phone = '$phone',
+                hire_date = '$hireDate',
+                acts_on_basis = '$actsOnBasis',
+                rate = '$rate',
+                inn = '$inn',
+                snils = '$snils'
+            WHERE 
+                user_id = '$ID'";
+        $sqls[] = $sql;
+        $result = pg_query($conn, $sql);
+    }
+    else{
+        $sql = "INSERT INTO users_info (
+                user_id, 
+                user_type, 
+                full_name,
+                birth_date,
+                gender,
+                first_name,
+                second_name,
+                middle_name,
+                phone,
+                hire_date,
+                acts_on_basis,
+                rate,
+                inn,
+                snils
+            ) 
+            VALUES (
+                '$ID', 
+                '$position', 
+                '$fullName',
+                '$birthday',
+                '$gender',
+                '$firstName',
+                '$lastName',
+                '$patronym',
+                '$phone',
+                '$hireDate',
+                '$actsOnBasis',
+                '$rate',
+                '$inn',
+                '$snils'
+            )";
+        $sqls[] = $sql;
+        $result = pg_query($conn, $sql);
+    }
 }
 
-$content = (object)[
+pg_free_result($result);
 
-    'input_params' => (object)[
-        'POST' => $_POST
-    ],
-    'error' => $error,
-    'error_text' => $error_text,
-    'sql' => $sqls,
-    'params' => $params,
-
-];
-echo json_encode($content);
+require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

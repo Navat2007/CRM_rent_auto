@@ -30,7 +30,8 @@ if(!empty($patronym))
 }
 
 $companies = $_POST["companies"] ?? array();
-;$error = 0;
+
+$error = 0;
 $error_text = "";
 $sqls = array();
 $params = null;
@@ -105,6 +106,8 @@ if($error === 0){
     $params = (object)[
         'id' => $lastID,
     ];
+
+    pg_free_result($result);
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

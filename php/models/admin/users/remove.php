@@ -18,23 +18,8 @@ if((int)$ID === 1){
 }
 
 if($error === 0){
-
-    $sql = "UPDATE admins SET archive = '1' WHERE ID = '$ID'";
-    mysqli_query($conn, $sql);
-
-    $log->add($conn, $authorization[1], 'Администратор отправлен в архив #' . $ID);
-
+    $sql = "UPDATE users SET archive = '1' WHERE id = '$ID'";
+    pg_query($conn, $sql);
 }
 
-$content = (object)[
-
-    'input_params' => (object)[
-        'POST' => $_POST
-    ],
-    'error' => $error,
-    'error_text' => $error_text,
-    'sql' => $sqls,
-    'params' => $params,
-
-];
-echo json_encode($content);
+require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

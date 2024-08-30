@@ -9,6 +9,20 @@ class UserService {
         let result = [];
         const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/load.php`, form);
 
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    static async getUserById(id) {
+        let form = new FormData();
+        form.append('id', id);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/load_by_id.php`, form);
+
         console.log(response.data);
 
         if (response.data.params) {
