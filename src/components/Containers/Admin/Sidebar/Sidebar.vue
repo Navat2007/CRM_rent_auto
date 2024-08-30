@@ -116,7 +116,7 @@ onClickOutside(target, () => {
   >
     <!-- SIDEBAR HEADER -->
     <div class="flex items-center justify-center gap-2 px-6 py-5.5 lg:py-6.5">
-      <router-link :to="{name: 'Index'}" class="flex flex-col items-center justify-center">
+      <div class="flex flex-col items-center justify-center">
         <img
             :src="Logo"
             class="mr-3 h-12"
@@ -126,7 +126,7 @@ onClickOutside(target, () => {
           <span class="block self-center text-2xl font-semibold whitespace-normal text-white">{{ authStore.user.company_name }}</span>
           <!--              <span class="block self-center text-sm font-semibold whitespace-nowrap text-gray-300 dark:text-gray-500">АВТОПРОКАТ</span>-->
         </div>
-      </router-link>
+      </div>
     </div>
     <!-- SIDEBAR HEADER -->
 

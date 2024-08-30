@@ -65,6 +65,8 @@ const zodiac = computed(() => {
     else if (month == 12 && day >= 22 || month == 1 && day <= 19) return "Козерог";
   }
 
+  console.log(state.birthday);
+
   const birthDate = moment(state.birthday, 'DD.MM.YYYY').toDate();
   return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
 });
@@ -80,13 +82,13 @@ const state = reactive({
   patronym: props.item.middle_name,
   password: '',
   confirmPassword: '',
-  birthday: moment(props.item.birth_date).format('DD.MM.YYYY'),
+  birthday: props.item.birth_date ? moment(props.item.birth_date).format('DD.MM.YYYY'): null,
   gender: props.item.gender ? parseInt(props.item.gender) : 0,
   phone: props.item.phone,
   position: parseInt(props.item.user_type),
   snils: props.item.snils,
   inn: props.item.inn,
-  hireDate: moment(props.item.hire_date).format('DD.MM.YYYY'),
+  hireDate: props.item.hire_date ? moment(props.item.hire_date).format('DD.MM.YYYY') : null,
   actsOnBasis: props.item.acts_on_basis,
   rate: props.item.rate,
   active: parseInt(props.item.status) === 1,

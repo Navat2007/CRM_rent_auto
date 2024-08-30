@@ -52,7 +52,7 @@ const { toggleSidebar } = useSidebarStore();
           </span>
         </button>
         <!-- Hamburger Toggle BTN -->
-        <router-link :to="{name: 'Index'}" class="flex items-center gap-2 lg:hidden">
+        <div class="flex items-center gap-2 lg:hidden">
           <img
               :src="Logo"
               class="h-12 min-h-12 min-w-12"
@@ -62,7 +62,7 @@ const { toggleSidebar } = useSidebarStore();
             <span class="hidden sm:block self-center text-2xl font-semibold whitespace-nowrap text-gray-800 dark:text-white">{{ authStore.user.company_name }}</span>
             <!--              <span class="block self-center text-sm font-semibold whitespace-nowrap text-gray-300 dark:text-gray-500">АВТОПРОКАТ</span>-->
           </div>
-        </router-link>
+        </div>
       </div>
 
       <div class="hidden sm:block"></div>
