@@ -17,6 +17,7 @@ const loading = ref(true);
 const sending = ref(false);
 const isAlertModalOpen = ref(false);
 const isSuccessModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
 
 const breadcrumbs = ref([
   {
@@ -33,29 +34,44 @@ const handleEdit = (data) => {
   sending.value = true;
 
   let sendingData = {...data};
+  sendingData.id = route.params.id;
 
-  sendingData.birthday = sendingData.birthday ? moment(sendingData.birthday, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
-  sendingData.hireDate = sendingData.hireDate ? moment(sendingData.hireDate, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
+  sendingData.birthday = sendingData.birthday && sendingData.birthday !== "Invalid date" ? moment(sendingData.birthday, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
+  sendingData.hireDate = sendingData.hireDate && sendingData.hireDate !== "Invalid date" ? moment(sendingData.hireDate, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
 
   console.log(sendingData);
-
-  return;
 
   UserService.editUser(sendingData).then((response) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
       } else {
+        console.log(response.data);
         error.value = response.data.error_text
-        isAlertModalOpen.value = true
+        isAlertModalOpen.value = true;
+        sending.value = false;
       }
     }
   });
 }
 
 const handleArchive = () => {
-  console.log("send to archive...");
   sending.value = true;
+  isDeleteModalOpen.value = false;
+
+  let sendingData = {id: route.params.id};
+
+  UserService.archivateUser(sendingData).then((response) => {
+    if (response.data) {
+      if (parseInt(response.data.error) === 0) {
+        isSuccessModalOpen.value = true
+      } else {
+        error.value = response.data.error_text
+        isAlertModalOpen.value = true
+        sending.value = false;
+      }
+    }
+  });
 }
 
 const onSuccess = () => {
@@ -74,9 +90,16 @@ onMounted(fetchData);
 
 <template>
   <PageContainer :loading="loading" :breadcrumbs="breadcrumbs">
-    <EmployerEditForm @onSubmit="handleEdit" @onDelete="handleArchive" :item="item" :sending="sending" />
+    <EmployerEditForm @onSubmit="handleEdit" @onDelete="isDeleteModalOpen = true" :item="item" :sending="sending" />
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
+    <AlertModal
+        target="#modal2"
+        :isOpen="isDeleteModalOpen"
+        @close="isDeleteModalOpen = false"
+        @accept="handleArchive"
+        title="Вы действительно хотите удалить?"
+        withButtons info/>
   </PageContainer>
 </template>

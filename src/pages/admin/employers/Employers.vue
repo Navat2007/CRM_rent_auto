@@ -45,7 +45,7 @@ const columns = ref([
     field: 'status',
   }
 ]);
-const statuses = ref(['Активен', 'В архиве']);
+const statuses = ref(['Активен', 'Отключен', 'В архиве']);
 const filters = ref({
   id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
   full_name: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},

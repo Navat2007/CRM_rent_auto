@@ -25,7 +25,7 @@ $sql = "
     LEFT JOIN 
         directory_position as dp on dp.id = ui.user_type
     WHERE 
-        users.archive = 0 AND users.is_employee = true AND users.email LIKE '%{$search}%'";
+        users.is_employee = true AND users.email LIKE '%{$search}%'";
 
 if($company_id != 0){
     $sql .= " AND uc.company_id = '{$company_id}'";
@@ -44,7 +44,7 @@ if(pg_num_rows($result) > 0)
             'position' => (int)$row->id == 1 ? 'Разработчик' : ($row->position_name == null ? "Не найдена" : htmlspecialchars_decode($row->position_name)),
             'firing_date' => $row->firing_date,
             'email' => htmlspecialchars_decode($row->email),
-            'status' => (int)$row->archive == 1 ? "В архиве" : "Активен",
+            'status' => (int)$row->archive == 1 ? "В архиве" : ((int)$row->status == 1 ? "Активен" : "Отключен"),
         ];
     }
 

@@ -97,13 +97,13 @@ if($error === 0){
                 user_id = '$ID', 
                 user_type = '$position', 
                 full_name = '$fullName',
-                birth_date = '$birthday',
+                birth_date = " . (empty($birthday) ? 'NULL' : "'" . $birthday . "'") . ",
                 gender = '$gender',
                 first_name = '$firstName',
                 second_name = '$lastName',
                 middle_name = '$patronym',
                 phone = '$phone',
-                hire_date = '$hireDate',
+                hire_date = " . (empty($hireDate) ? 'NULL' : "'" . $hireDate . "'") . ",
                 acts_on_basis = '$actsOnBasis',
                 rate = '$rate',
                 inn = '$inn',
@@ -150,7 +150,5 @@ if($error === 0){
         $result = pg_query($conn, $sql);
     }
 }
-
-pg_free_result($result);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';
