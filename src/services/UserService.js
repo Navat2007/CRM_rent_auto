@@ -20,7 +20,7 @@ class UserService {
         let form = new FormData();
         form.append('id', id);
 
-        let result = [];
+        let result = {};
         const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/load_by_id.php`, form);
 
         if (response.data.params) {
@@ -41,7 +41,11 @@ class UserService {
         let form = new FormData();
         buildFormData(form, data);
 
-        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/edit.php`, form);
+        const response =  await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/edit.php`, form);
+
+        console.log(response.data);
+
+        return response;
     }
 
     static async archivateUser(data) {

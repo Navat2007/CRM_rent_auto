@@ -8,6 +8,7 @@ import Divider from "primevue/divider";
 import FormError from "@components/Inputs/FormError.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import DatePickerWithMask from "@components/Inputs/DatePickerWithMask.vue";
+import AvatarSelect from "@components/Inputs/AvatarSelect.vue";
 
 const {user} = useAuthStore();
 
@@ -80,7 +81,7 @@ const state = reactive({
   patronym: props.item.middle_name,
   password: '',
   confirmPassword: '',
-  birthday: props.item.birth_date ? moment(props.item.birth_date).format('DD.MM.YYYY'): null,
+  birthday: props.item.birth_date ? moment(props.item.birth_date).format('DD.MM.YYYY') : null,
   gender: props.item.gender ? parseInt(props.item.gender) : 0,
   phone: props.item.phone,
   position: parseInt(props.item.user_type),
@@ -90,26 +91,40 @@ const state = reactive({
   actsOnBasis: props.item.acts_on_basis,
   rate: props.item.rate,
   active: parseInt(props.item.status) === 1,
+  avatar: props.item.user_photo_avatar,
+  contacts: props.item.contacts || [],
+  note1: props.item.note1,
+  note2: props.item.note2,
+  note3: props.item.note3,
+  firingDate: props.item.firing_date ? moment(props.item.firing_date) : null,
+  passport_series_number: props.item.passport_series_number,
+  passport_department_code: props.item.passport_department_code,
+  passport_issued_by: props.item.passport_issued_by,
+  passport_date_of_issue: props.item.passport_date_of_issue ? moment(props.item.passport_date_of_issue).format('DD.MM.YYYY') : null,
+  passport_born_place: props.item.passport_born_place,
+  passport_registration_address: props.item.passport_registration_address,
+  passport_fact_address: props.item.passport_fact_address,
+  passport_files: props.item.passport_files || [],
 });
 const rules = computed(() => {
   return {
     email: {
-      required: helpers.withMessage("Поле должно быть заполнено", required),
+      required: helpers.withMessage("Email должен быть заполнен", required),
       email: helpers.withMessage("Введите корректный email", email),
       $lazy: true
     },
     firstName: {
-      required: helpers.withMessage("Поле должно быть заполнено", required),
-      lettersAndDash: helpers.withMessage("Только буквы и тире", lettersAndDash),
+      required: helpers.withMessage("Имя должно быть заполнено", required),
+      lettersAndDash: helpers.withMessage("Имя должно содержать только буквы и тире", lettersAndDash),
       $lazy: true
     },
     lastName: {
-      required: helpers.withMessage("Поле должно быть заполнено", required),
-      lettersAndDash: helpers.withMessage("Только буквы и тире", lettersAndDash),
+      required: helpers.withMessage("Фамилия должна быть заполнена", required),
+      lettersAndDash: helpers.withMessage("Фамилия должна содержать только буквы и тире", lettersAndDash),
       $lazy: true
     },
     patronym: {
-      lettersAndDash: helpers.withMessage("Только буквы и тире", lettersAndDash),
+      lettersAndDash: helpers.withMessage("Отчество должно содержать только буквы и тире", lettersAndDash),
     },
     password: {
       minLength: helpers.withMessage("Минимальная длина пароля - 6 символов", minLength(6)),
@@ -149,18 +164,25 @@ onMounted(() => {
   <Card class="w-full lg:w-2/3">
     <template #title>Редактирование сотрудника</template>
     <template #content>
-      <form @submit.prevent="onFormSubmit" autocomplete="off">
-        <Tabs value="0" scrollable>
-          <TabList>
-            <Tab value="0" class="flex gap-2">Основная информация<Badge severity="danger" value="2" /></Tab>
-            <Tab value="1" class="flex gap-2">Паспорт<Badge severity="danger" value="1" /></Tab>
-            <Tab value="2" class="flex gap-2">Водительское удостоверение</Tab>
-            <Tab value="3" class="flex gap-2">Прочие документы</Tab>
-            <Tab value="4" class="flex gap-2">Права доступа</Tab>
-          </TabList>
+      <Tabs value="0" scrollable>
+        <TabList>
+          <Tab value="0" class="flex gap-2">Основная информация
+          </Tab>
+          <Tab value="1" class="flex gap-2">Паспорт
+          </Tab>
+          <Tab value="2" class="flex gap-2">Водительское удостоверение</Tab>
+          <Tab value="3" class="flex gap-2">Прочие документы</Tab>
+          <Tab value="4" class="flex gap-2">Права доступа</Tab>
+        </TabList>
+        <form @submit.prevent="onFormSubmit" autocomplete="off">
           <TabPanels>
             <TabPanel value="0">
               <div class="grid gap-4 my-4 sm:grid-cols-1">
+                <!-- Avatar -->
+                <div>
+                  <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Аватарка</label>
+                  <AvatarSelect :value="state.avatar" @onSelect="e => state.avatar = e.files[0]" @onDelete="state.avatar = null" />
+                </div>
                 <!-- Email -->
                 <div>
                   <label for="email"
@@ -215,7 +237,7 @@ onMounted(() => {
                   <label for="birthday"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
                   <div>
-                    <DatePickerWithMask :value="state.birthday" @onChange="e => state.birthday = e" />
+                    <DatePickerWithMask :value="state.birthday" @onChange="e => state.birthday = e"/>
                     <p class="mt-2">{{ age }}{{ zodiac }}</p>
                   </div>
                   <FormError :errors="v$.birthday.$errors"/>
@@ -258,13 +280,14 @@ onMounted(() => {
                 <div>
                   <label for="hireDate"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата найма</label>
-                  <DatePickerWithMask :value="state.hireDate" @onChange="e => state.hireDate = e" />
+                  <DatePickerWithMask :value="state.hireDate" @onChange="e => state.hireDate = e"/>
                   <FormError :errors="v$.hireDate.$errors"/>
                 </div>
                 <!-- Действует на основании -->
                 <div>
                   <label for="actsOnBasis"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действует на основании</label>
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действует на
+                    основании</label>
                   <input
                       v-model="state.actsOnBasis"
                       type="text" id="actsOnBasis"
@@ -287,7 +310,8 @@ onMounted(() => {
                 </div>
                 <Divider type="dashed"/>
                 <div v-if="passwordDisabled">
-                  <Button icon="pi pi-lock" label="Изменить пароль" severity="danger" @click="passwordDisabled = false"/>
+                  <Button icon="pi pi-lock" label="Изменить пароль" severity="danger"
+                          @click="passwordDisabled = false"/>
                 </div>
                 <!-- Пароль -->
                 <div>
@@ -330,13 +354,15 @@ onMounted(() => {
 
             </TabPanel>
           </TabPanels>
-        </Tabs>
-
-        <Divider type="dashed"/>
-        <Button type="submit" icon="pi pi-plus" label="Сохранить" :loading="sending" outlined/>
-        <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
-                @click="emit('onDelete');" outlined/>
-      </form>
+          <Divider type="dashed"/>
+          <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
+            {{ error.$message }}
+          </p>
+          <Button type="submit" icon="pi pi-plus" label="Сохранить" :loading="sending" outlined/>
+          <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
+                  @click="emit('onDelete');" outlined/>
+        </form>
+      </Tabs>
     </template>
   </Card>
 </template>

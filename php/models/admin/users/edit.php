@@ -25,12 +25,12 @@ $rate = htmlspecialchars($_POST["rate"]);
 $snils = htmlspecialchars($_POST["snils"]);
 $fullName = $lastName . ' ' . $firstName;
 
-if(!empty($patronym))
-{
-    $fullName .= ' '. $patronym;
+if (!empty($patronym)) {
+    $fullName .= ' ' . $patronym;
 }
 
 $companies = $_POST["companies"] ?? array();
+$avatar = isset($_POST["avatar"]) ? htmlspecialchars($_POST["avatar"]) : null;
 
 $error = 0;
 $error_text = "";
@@ -40,43 +40,38 @@ $params = null;
 $sql = "SELECT * FROM users WHERE id = '$ID'";
 $sqls[] = $sql;
 $result = pg_query($conn, $sql);
-$admin_row =pg_fetch_object($result);
+$admin_row = pg_fetch_object($result);
 
-if($admin_row->email != $email){
+if ($admin_row->email != $email) {
     $sql = "SELECT * FROM users WHERE email = '$email' AND archive = 0";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
 
-    if(pg_num_rows($result) > 0)
-    {
+    if (pg_num_rows($result) > 0) {
         $error = 1;
         $error_text = "Такой email уже существует";
     }
 }
 
-if((int)$authorization[1] !== (int)$ID && (int)$ID === 1){
+if ((int)$authorization[1] !== (int)$ID && (int)$ID === 1) {
     $error = 1;
     $error_text = "Данного администратора нельзя редактировать!";
 }
 
-if($error === 0){
+if ($error === 0) {
     $sql = "UPDATE users SET email = '$email', status = '$active', last_user_id = '$user' WHERE id = '$ID'";
     $sqls[] = $sql;
     pg_query($conn, $sql);
 
-    if(isset($_POST["password"]) && trim($_POST["password"]) != "")
-    {
+    if (isset($_POST["password"]) && trim($_POST["password"]) != "") {
         $pwd = trim(htmlspecialchars($_POST["password"]));
         $new_password = password_hash($pwd, PASSWORD_DEFAULT);
         $current_password = $admin_row->password;
 
-        if(password_verify($pwd, $current_password))
-        {
+        if (password_verify($pwd, $current_password)) {
             $error = "1";
             $error_text = "Пароль совпадает с текущим";
-        }
-        else
-        {
+        } else {
             $update_query = "UPDATE users SET password = '$new_password', password_change_date = NOW() WHERE id = '$ID'";
             $sqls[] = $update_query;
             pg_query($conn, $update_query);
@@ -88,8 +83,7 @@ if($error === 0){
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
 
-    if(pg_num_rows($result) > 0)
-    {
+    if (pg_num_rows($result) > 0) {
         $sql = "
             UPDATE 
                 users_info 
@@ -112,8 +106,7 @@ if($error === 0){
                 user_id = '$ID'";
         $sqls[] = $sql;
         $result = pg_query($conn, $sql);
-    }
-    else{
+    } else {
         $sql = "INSERT INTO users_info (
                 user_id, 
                 user_type, 
@@ -148,6 +141,68 @@ if($error === 0){
             )";
         $sqls[] = $sql;
         $result = pg_query($conn, $sql);
+    }
+
+    if (isset($_FILES['avatar'])) {
+        $baseDirName = $_SERVER['DOCUMENT_ROOT'] . "/files/users/" . $ID . "/avatar";
+
+        if (!file_exists($baseDirName)) {
+            $oldmask = umask(0);
+            $mkdir_result = mkdir($baseDirName, 0777, true);
+            umask($oldmask);
+        }
+
+        if($_FILES['avatar']['error'] != UPLOAD_ERR_OK) {
+            $error = 1;
+            $error_text = "Ошибка загрузки файла";
+        }
+        else {
+            $temp_name = $_FILES['avatar']['tmp_name'];
+            $name = $_FILES['avatar']['name'];
+            $file_token = time();
+            $path = $baseDirName . "/" . $file_token . "_" . $name;
+
+            @unlink($path);
+
+            $sql = "SELECT * FROM users_info WHERE user_id = '$ID'";
+            $sqls[] = $sql;
+            $result = pg_query($conn, $sql);
+            $row = pg_fetch_object($result);
+
+            $oldpath = $_SERVER['DOCUMENT_ROOT'] . $row->user_photo_avatar;
+            @unlink($oldpath);
+
+            if (copy($temp_name, $path)) {
+
+                $file_to_DB = "/files/users/" . $ID . "/avatar/" . $file_token . "_" . $name;
+
+                $add_sql = "UPDATE 
+                                users_info
+                            SET
+                                user_photo_avatar = '$file_to_DB'
+                            WHERE 
+                                user_id = '$ID'";
+                pg_query($conn, $add_sql);
+                $params = $file_to_DB;
+            }
+        }
+    }
+    else if(isset($avatar) && empty($avatar)) {
+        $sql = "SELECT * FROM users_info WHERE user_id = '$ID'";
+        $sqls[] = $sql;
+        $result = pg_query($conn, $sql);
+        $row = pg_fetch_object($result);
+
+        $oldpath = $_SERVER['DOCUMENT_ROOT'] . $row->user_photo_avatar;
+        @unlink($oldpath);
+
+        $add_sql = "UPDATE 
+                        users_info
+                    SET
+                        user_photo_avatar = ''
+                    WHERE 
+                        user_id = '$ID'";
+        pg_query($conn, $add_sql);
     }
 }
 

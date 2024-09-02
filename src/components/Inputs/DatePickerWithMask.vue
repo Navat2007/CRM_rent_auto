@@ -49,10 +49,10 @@ const handleBlur = () => {
     <InputMask v-model="state.date" :modelValue="state.date"
                @complete="handleMaskComplete" @blur="handleBlur"
                mask="99.99.9999" placeholder="дд.мм.гггг" fluid/>
-    <InputGroupAddon v-if="state.date" @click="handleClear">
+    <InputGroupAddon v-if="state.date" @click="handleClear" class="input-group-addon">
       <i class="pi pi-times"></i>
     </InputGroupAddon>
-    <InputGroupAddon @click="toggleModal">
+    <InputGroupAddon @click="toggleModal" class="input-group-addon">
       <i class="pi pi-calendar"></i>
     </InputGroupAddon>
   </InputGroup>
@@ -62,5 +62,7 @@ const handleBlur = () => {
 </template>
 
 <style scoped>
-
+.input-group-addon {
+  @apply cursor-pointer hover:text-gray-900 dark:hover:text-gray-200 transition-all duration-200;
+}
 </style>
