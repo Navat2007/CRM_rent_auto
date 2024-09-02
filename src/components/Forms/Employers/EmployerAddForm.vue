@@ -7,6 +7,7 @@ import {computed, reactive, ref, unref, onMounted} from "vue";
 import Divider from "primevue/divider";
 import FormError from "@components/Inputs/FormError.vue";
 import DirectoryService from "@services/DirectoryService.js";
+import DatePickerWithMask from "@components/Inputs/DatePickerWithMask.vue";
 
 const {user} = useAuthStore();
 
@@ -201,8 +202,7 @@ onMounted(() => {
             <label for="birthday"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
             <div>
-              <DatePicker v-model="state.birthday" id="birthday" dateFormat="dd.mm.yy" mask="99/99/9999"
-                          slotChar="dd.mm.yy" showIcon showButtonBar iconDisplay="input"/>
+              <DatePickerWithMask :value="state.birthday" @onChange="e => state.birthday = e" />
               <span class="ml-6">{{ age }}{{ zodiac }}</span>
             </div>
             <FormError :errors="v$.birthday.$errors"/>
@@ -243,8 +243,7 @@ onMounted(() => {
           <div>
             <label for="hireDate"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата найма</label>
-            <DatePicker v-model="state.hireDate" id="hireDate" dateFormat="dd.mm.yy" mask="99/99/9999"
-                        slotChar="dd.mm.yy" showIcon showButtonBar iconDisplay="input"/>
+            <DatePickerWithMask :value="state.hireDate" @onChange="e => state.hireDate = e" />
             <FormError :errors="v$.hireDate.$errors"/>
           </div>
           <!-- Действует на основании -->
@@ -300,7 +299,7 @@ onMounted(() => {
           </div>
         </div>
         <Divider type="dashed"/>
-        <Button type="submit" icon="pi pi-plus" label="Добавить" class="main-button"/>
+        <Button type="submit" icon="pi pi-plus" label="Добавить" outlined/>
       </form>
     </template>
   </Card>

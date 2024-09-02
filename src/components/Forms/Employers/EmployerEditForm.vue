@@ -65,8 +65,6 @@ const zodiac = computed(() => {
     else if (month == 12 && day >= 22 || month == 1 && day <= 19) return "Козерог";
   }
 
-  console.log(state.birthday);
-
   const birthDate = moment(state.birthday, 'DD.MM.YYYY').toDate();
   return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
 });
@@ -152,166 +150,192 @@ onMounted(() => {
     <template #title>Редактирование сотрудника</template>
     <template #content>
       <form @submit.prevent="onFormSubmit" autocomplete="off">
-        <div class="grid gap-4 my-4 sm:grid-cols-1">
-          <!-- Email -->
-          <div>
-            <label for="email"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email*</label>
-            <input
-                v-model="state.email"
-                type="email" id="email"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="..."
-            >
-            <FormError :errors="v$.email.$errors"/>
-          </div>
-          <!-- Фамилия -->
-          <div>
-            <label for="firstName"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Фамилия*</label>
-            <input
-                v-model="state.lastName"
-                type="text" id="lastName"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="..."
-            >
-            <FormError :errors="v$.lastName.$errors"/>
-          </div>
-          <!-- Имя -->
-          <div>
-            <label for="firstName"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Имя*</label>
-            <input
-                v-model="state.firstName"
-                type="text" id="firstName"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="..."
-            >
-            <FormError :errors="v$.firstName.$errors"/>
-          </div>
-          <!-- Отчество -->
-          <div>
-            <label for="patronym"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Отчество</label>
-            <input
-                v-model="state.patronym"
-                type="text" id="patronym"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="..."
-            >
-            <FormError :errors="v$.patronym.$errors"/>
-          </div>
-          <Divider type="dashed"/>
-          <!-- Дата рождения -->
-          <div>
-            <label for="birthday"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
-            <div>
-              <DatePickerWithMask :value="state.birthday" @onChange="e => state.birthday = e" />
-              <p class="mt-2">{{ age }}{{ zodiac }}</p>
-            </div>
-            <FormError :errors="v$.birthday.$errors"/>
-          </div>
-          <!-- Пол -->
-          <div>
-            <label for="gender"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Пол</label>
-            <Select v-model="state.gender" :options="genders" :modelValue="state.gender" optionLabel="label"
-                    optionValue="value" placeholder="Выберите пол" class="w-full"/>
-          </div>
-          <!-- Телефон -->
-          <div>
-            <label for="phone"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Телефон</label>
-            <InputMask id="phone" v-model="state.phone" mask="(999) 999-9999" placeholder="(999) 999-9999" fluid/>
-          </div>
-          <!-- Должность -->
-          <div>
-            <label for="position"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Должность</label>
-            <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name"
-                    optionValue="id" placeholder="Выберите должность" showClear class="w-full"/>
-          </div>
-          <!-- СНИЛС -->
-          <div>
-            <label for="snils"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">СНИЛС</label>
-            <InputMask id="snils" v-model="state.snils" :modelValue="state.snils" mask="999-999-999 99"
-                       placeholder="999-999-999 99" fluid/>
-          </div>
-          <!-- ИНН -->
-          <div>
-            <label for="inn"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ИНН</label>
-            <InputMask id="inn" v-model="state.inn" :modelValue="state.inn" mask="999999999999"
-                       placeholder="999999999999" fluid/>
-          </div>
-          <!-- Дата найма -->
-          <div>
-            <label for="hireDate"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата найма</label>
-            <DatePickerWithMask :value="state.hireDate" @onChange="e => state.hireDate = e" />
-            <FormError :errors="v$.hireDate.$errors"/>
-          </div>
-          <!-- Действует на основании -->
-          <div>
-            <label for="actsOnBasis"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действует на основании</label>
-            <input
-                v-model="state.actsOnBasis"
-                type="text" id="actsOnBasis"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="..."
-            >
-            <FormError :errors="v$.actsOnBasis.$errors"/>
-          </div>
-          <!-- Ставка -->
-          <div>
-            <label for="rate"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ставка</label>
-            <input
-                v-model="state.rate"
-                type="text" id="rate"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="..."
-            >
-            <FormError :errors="v$.rate.$errors"/>
-          </div>
-          <Divider type="dashed"/>
-          <div v-if="passwordDisabled">
-            <Button icon="pi pi-lock" label="Изменить пароль" severity="danger" @click="passwordDisabled = false"/>
-          </div>
-          <!-- Пароль -->
-          <div>
-            <label for="password"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Новый пароль</label>
-            <Password inputId="password" v-model="state.password" placeholder="Введите пароль" :toggleMask="true"
-                      :feedback="false" class="w-full mb-3" inputClass="w-full" :disabled="passwordDisabled"/>
-            <FormError :errors="v$.password.$errors"/>
-          </div>
-          <!-- Подтвердить пароль -->
-          <div>
-            <label for="confirmPassword"
-                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить пароль</label>
-            <Password inputId="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
-                      :toggleMask="true"
-                      :feedback="false" class="w-full mb-3" inputClass="w-full" :disabled="passwordDisabled"/>
-            <FormError :errors="v$.confirmPassword.$errors"/>
-          </div>
-          <Divider type="dashed"/>
-          <div class="flex items-center">
-            <input id="active" type="checkbox"
-                   v-model="state.active"
-                   class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-            <label for="active" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-              Активен?
-            </label>
-          </div>
-        </div>
+        <Tabs value="0" scrollable>
+          <TabList>
+            <Tab value="0" class="flex gap-2">Основная информация<Badge severity="danger" value="2" /></Tab>
+            <Tab value="1" class="flex gap-2">Паспорт<Badge severity="danger" value="1" /></Tab>
+            <Tab value="2" class="flex gap-2">Водительское удостоверение</Tab>
+            <Tab value="3" class="flex gap-2">Прочие документы</Tab>
+            <Tab value="4" class="flex gap-2">Права доступа</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel value="0">
+              <div class="grid gap-4 my-4 sm:grid-cols-1">
+                <!-- Email -->
+                <div>
+                  <label for="email"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email*</label>
+                  <input
+                      v-model="state.email"
+                      type="email" id="email"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                  <FormError :errors="v$.email.$errors"/>
+                </div>
+                <!-- Фамилия -->
+                <div>
+                  <label for="firstName"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Фамилия*</label>
+                  <input
+                      v-model="state.lastName"
+                      type="text" id="lastName"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                  <FormError :errors="v$.lastName.$errors"/>
+                </div>
+                <!-- Имя -->
+                <div>
+                  <label for="firstName"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Имя*</label>
+                  <input
+                      v-model="state.firstName"
+                      type="text" id="firstName"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                  <FormError :errors="v$.firstName.$errors"/>
+                </div>
+                <!-- Отчество -->
+                <div>
+                  <label for="patronym"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Отчество</label>
+                  <input
+                      v-model="state.patronym"
+                      type="text" id="patronym"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                  <FormError :errors="v$.patronym.$errors"/>
+                </div>
+                <Divider type="dashed"/>
+                <!-- Дата рождения -->
+                <div>
+                  <label for="birthday"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
+                  <div>
+                    <DatePickerWithMask :value="state.birthday" @onChange="e => state.birthday = e" />
+                    <p class="mt-2">{{ age }}{{ zodiac }}</p>
+                  </div>
+                  <FormError :errors="v$.birthday.$errors"/>
+                </div>
+                <!-- Пол -->
+                <div>
+                  <label for="gender"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Пол</label>
+                  <Select v-model="state.gender" :options="genders" :modelValue="state.gender" optionLabel="label"
+                          optionValue="value" placeholder="Выберите пол" class="w-full"/>
+                </div>
+                <!-- Телефон -->
+                <div>
+                  <label for="phone"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Телефон</label>
+                  <InputMask id="phone" v-model="state.phone" mask="(999) 999-9999" placeholder="(999) 999-9999" fluid/>
+                </div>
+                <!-- Должность -->
+                <div>
+                  <label for="position"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Должность</label>
+                  <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name"
+                          optionValue="id" placeholder="Выберите должность" showClear class="w-full"/>
+                </div>
+                <!-- СНИЛС -->
+                <div>
+                  <label for="snils"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">СНИЛС</label>
+                  <InputMask id="snils" v-model="state.snils" :modelValue="state.snils" mask="999-999-999 99"
+                             placeholder="999-999-999 99" fluid/>
+                </div>
+                <!-- ИНН -->
+                <div>
+                  <label for="inn"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ИНН</label>
+                  <InputMask id="inn" v-model="state.inn" :modelValue="state.inn" mask="999999999999"
+                             placeholder="999999999999" fluid/>
+                </div>
+                <!-- Дата найма -->
+                <div>
+                  <label for="hireDate"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата найма</label>
+                  <DatePickerWithMask :value="state.hireDate" @onChange="e => state.hireDate = e" />
+                  <FormError :errors="v$.hireDate.$errors"/>
+                </div>
+                <!-- Действует на основании -->
+                <div>
+                  <label for="actsOnBasis"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действует на основании</label>
+                  <input
+                      v-model="state.actsOnBasis"
+                      type="text" id="actsOnBasis"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                  <FormError :errors="v$.actsOnBasis.$errors"/>
+                </div>
+                <!-- Ставка -->
+                <div>
+                  <label for="rate"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ставка</label>
+                  <input
+                      v-model="state.rate"
+                      type="text" id="rate"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                  <FormError :errors="v$.rate.$errors"/>
+                </div>
+                <Divider type="dashed"/>
+                <div v-if="passwordDisabled">
+                  <Button icon="pi pi-lock" label="Изменить пароль" severity="danger" @click="passwordDisabled = false"/>
+                </div>
+                <!-- Пароль -->
+                <div>
+                  <label for="password"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Новый пароль</label>
+                  <Password inputId="password" v-model="state.password" placeholder="Введите пароль" :toggleMask="true"
+                            :feedback="false" class="w-full mb-3" inputClass="w-full" :disabled="passwordDisabled"/>
+                  <FormError :errors="v$.password.$errors"/>
+                </div>
+                <!-- Подтвердить пароль -->
+                <div>
+                  <label for="confirmPassword"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить пароль</label>
+                  <Password inputId="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
+                            :toggleMask="true"
+                            :feedback="false" class="w-full mb-3" inputClass="w-full" :disabled="passwordDisabled"/>
+                  <FormError :errors="v$.confirmPassword.$errors"/>
+                </div>
+                <Divider type="dashed"/>
+                <div class="flex items-center">
+                  <input id="active" type="checkbox"
+                         v-model="state.active"
+                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                  <label for="active" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                    Активен?
+                  </label>
+                </div>
+              </div>
+            </TabPanel>
+            <TabPanel value="1">
+
+            </TabPanel>
+            <TabPanel value="2">
+
+            </TabPanel>
+            <TabPanel value="3">
+
+            </TabPanel>
+            <TabPanel value="4">
+
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+
         <Divider type="dashed"/>
-        <Button type="submit" icon="pi pi-plus" label="Сохранить" :loading="sending"/>
+        <Button type="submit" icon="pi pi-plus" label="Сохранить" :loading="sending" outlined/>
         <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
-                @click="emit('onDelete');"/>
+                @click="emit('onDelete');" outlined/>
       </form>
     </template>
   </Card>

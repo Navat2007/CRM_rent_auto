@@ -88,7 +88,7 @@ onMounted(() => {
           </div>
         </div>
         <Divider type="dashed"/>
-        <Button type="submit" icon="pi pi-save" label="Сохранить" class="main-button" />
+        <Button type="submit" icon="pi pi-save" label="Сохранить" outlined />
       </form>
     </template>
   </Card>

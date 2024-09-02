@@ -11,7 +11,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['onChange']);
 
-const date = ref(moment(props.value, 'DD.MM.YYYY').toDate());
+const date = ref(props.value ? moment(props.value, 'DD.MM.YYYY').toDate() : moment().toDate());
 const state = reactive({
   date: props.value || null,
   showHireDateCalendar: false,

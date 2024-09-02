@@ -79,7 +79,7 @@ const onSubmit = async (e) => {
           </div>
         </div>
         <Divider type="dashed"/>
-        <Button type="submit" icon="pi pi-plus" label="Добавить" class="main-button"/>
+        <Button type="submit" icon="pi pi-plus" label="Добавить" outlined/>
       </form>
     </template>
   </Card>

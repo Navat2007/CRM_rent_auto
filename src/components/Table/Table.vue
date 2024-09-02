@@ -71,7 +71,7 @@ initFilters();
 
       <template #end>
         <!--              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />-->
-        <Button type="button" icon="pi pi-filter-slash" class="main-button" label="Очистить"
+        <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
                 @click="clearFilter()"/>
       </template>
     </Toolbar>
