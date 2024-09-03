@@ -30,6 +30,7 @@ if (!empty($patronym)) {
 }
 
 $companies = $_POST["companies"] ?? array();
+$contacts = $_POST['contacts'] ?? array();
 $avatar = isset($_POST["avatar"]) ? htmlspecialchars($_POST["avatar"]) : null;
 
 $error = 0;
@@ -203,6 +204,33 @@ if ($error === 0) {
                     WHERE 
                         user_id = '$ID'";
         pg_query($conn, $add_sql);
+    }
+
+    $sql = "DELETE FROM users_additional_contacts WHERE user_id = '$ID'";
+    $sqls[] = $sql;
+    pg_query($conn, $sql);
+
+    if (count($contacts) > 0){
+        for ($i = 0; $i < count($contacts); $i++) {
+            $contact = $contacts[$i]['contact'];
+            $name = $contacts[$i]['name'];
+            $who = $contacts[$i]['who'];
+
+            $sql = "INSERT INTO users_additional_contacts (
+                user_id,
+                contact,
+                name,
+                who
+            ) 
+            VALUES (
+                '$ID',
+                '$contact',
+                '$name',
+                '$who'                 
+            )";
+            $sqls[] = $sql;
+            pg_query($conn, $sql);
+        }
     }
 }
 

@@ -9,6 +9,7 @@ import FormError from "@components/Inputs/FormError.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import DatePickerWithMask from "@components/Inputs/DatePickerWithMask.vue";
 import AvatarSelect from "@components/Inputs/AvatarSelect.vue";
+import TableWithRowEditing from "@components/Table/TableWithRowEditing.vue";
 
 const {user} = useAuthStore();
 
@@ -181,7 +182,8 @@ onMounted(() => {
                 <!-- Avatar -->
                 <div>
                   <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Аватарка</label>
-                  <AvatarSelect :value="state.avatar" @onSelect="e => state.avatar = e.files[0]" @onDelete="state.avatar = null" />
+                  <AvatarSelect :value="state.avatar" @onSelect="e => state.avatar = e.files[0]"
+                                @onDelete="state.avatar = null"/>
                 </div>
                 <!-- Email -->
                 <div>
@@ -249,11 +251,24 @@ onMounted(() => {
                   <Select v-model="state.gender" :options="genders" :modelValue="state.gender" optionLabel="label"
                           optionValue="value" placeholder="Выберите пол" class="w-full"/>
                 </div>
-                <!-- Телефон -->
+                <!-- Основной телефон -->
                 <div>
                   <label for="phone"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Телефон</label>
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Основной телефон</label>
                   <InputMask id="phone" v-model="state.phone" mask="(999) 999-9999" placeholder="(999) 999-9999" fluid/>
+                </div>
+                <!-- Дополнительные контакты -->
+                <div>
+                  <TableWithRowEditing
+                      title="Дополнительные контакты"
+                      :columns="[
+                        { title: 'Контакт', value: 'contact', required: true },
+                        { title: 'Имя', value: 'name' },
+                        { title: 'Кем приходится', value: 'who' }
+                      ]"
+                      :items="state.contacts"
+                      @onChange="e => state.contacts = e"
+                  />
                 </div>
                 <!-- Должность -->
                 <div>
@@ -358,7 +373,7 @@ onMounted(() => {
           <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
             {{ error.$message }}
           </p>
-          <Button type="submit" icon="pi pi-plus" label="Сохранить" :loading="sending" outlined/>
+          <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
           <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
                   @click="emit('onDelete');" outlined/>
         </form>

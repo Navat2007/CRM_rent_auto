@@ -16,7 +16,7 @@ const props = defineProps({
 const emit = defineEmits(['onSelect', 'onDelete']);
 
 const state = reactive({
-  image: import.meta.env.VITE_FILE_URL + props.value || null,
+  image: props.value && props.value !== "" ? import.meta.env.VITE_FILE_URL + props.value : null,
   modal: false
 });
 
@@ -39,8 +39,6 @@ const onDelete = () => {
   state.modal = false;
   emit('onDelete');
 }
-
-console.log(import.meta.env.VITE_FILE_URL + props.value);
 </script>
 
 <template>

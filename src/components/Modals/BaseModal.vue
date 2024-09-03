@@ -91,6 +91,6 @@ onClickOutside(target, () => {
 }
 
 .modal {
-  @apply overflow-y-auto overflow-x-hidden min-w-72 min-h-72 lg:w-6/12;
+  @apply overflow-y-auto overflow-x-hidden min-w-72 min-h-72 lg:w-4/12;
 }
 </style>

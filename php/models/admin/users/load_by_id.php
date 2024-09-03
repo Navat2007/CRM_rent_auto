@@ -41,9 +41,29 @@ $result = pg_query($conn, $sql);
 if(pg_num_rows($result) > 0)
 {
     $row = pg_fetch_object($result);
-    $params = $row;
-
     pg_free_result($result);
+
+    $sql = "
+    SELECT 
+        *
+    FROM 
+        users_additional_contacts
+    WHERE 
+        user_id = '$id'";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
+
+    if(pg_num_rows($result) > 0)
+    {
+        while($contact_row = pg_fetch_object($result))
+        {
+            $row->contacts[] = $contact_row;
+        }
+
+        pg_free_result($result);
+    }
+
+    $params = $row;
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

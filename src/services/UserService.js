@@ -23,6 +23,8 @@ class UserService {
         let result = {};
         const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/load_by_id.php`, form);
 
+        console.log(response.data);
+
         if (response.data.params) {
             result = response.data.params;
         }
