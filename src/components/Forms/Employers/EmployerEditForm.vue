@@ -97,7 +97,7 @@ const state = reactive({
   note1: props.item.user_note_1,
   note2: props.item.user_note_2,
   note3: props.item.user_note_3,
-  firingDate: props.item.firing_date ? moment(props.item.firing_date) : null,
+  firingDate: props.item.firing_date ? moment(props.item.firing_date).format('DD.MM.YYYY') : null,
   passport_series_number: props.item.passport_series_number,
   passport_department_code: props.item.passport_department_code,
   passport_issued_by: props.item.passport_issued_by,
@@ -394,7 +394,80 @@ onMounted(() => {
               </div>
             </TabPanel>
             <TabPanel value="1">
-
+              <div class="grid gap-4 my-4 sm:grid-cols-1">
+                <!-- Паспорт. Серия и номер -->
+                <div>
+                  <label for="passport_series_number"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Серия и номер</label>
+                  <input
+                      v-model="state.passport_series_number"
+                      type="text" id="passport_series_number"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Паспорт. Код подразделения -->
+                <div>
+                  <label for="passport_department_code"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Код подразделения</label>
+                  <input
+                      v-model="state.passport_department_code"
+                      type="text" id="passport_department_code"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Паспорт. Кем выдан -->
+                <div>
+                  <label for="passport_issued_by"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Кем выдан</label>
+                  <input
+                      v-model="state.passport_issued_by"
+                      type="text" id="passport_issued_by"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Паспорт. Дата выдачи -->
+                <div>
+                  <label for="passport_date_of_issue"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
+                  <DatePickerWithMask :value="state.passport_date_of_issue" @onChange="e => state.passport_date_of_issue = e"/>
+                </div>
+                <!-- Паспорт. Кем выдан -->
+                <div>
+                  <label for="passport_born_place"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Место рождения</label>
+                  <input
+                      v-model="state.passport_born_place"
+                      type="text" id="passport_born_place"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Паспорт. Адрес регистрации -->
+                <div>
+                  <label for="passport_registration_address"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес регистрации</label>
+                  <input
+                      v-model="state.passport_registration_address"
+                      type="text" id="passport_registration_address"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Паспорт. Адрес фактический -->
+                <div>
+                  <label for="passport_fact_address"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес фактический</label>
+                  <input
+                      v-model="state.passport_fact_address"
+                      type="text" id="passport_fact_address"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+              </div>
             </TabPanel>
             <TabPanel value="2">
 

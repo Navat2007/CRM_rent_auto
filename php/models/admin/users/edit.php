@@ -5,6 +5,7 @@ header('Access-Control-Allow-Headers: Origin, Authorization, Content-Type, X-Aut
 require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
+#region Variables
 $ID = htmlspecialchars($_POST["id"]);
 $user = $authorization[1];
 $active = htmlspecialchars($_POST["active"]) === "true" ? 1 : 0;
@@ -37,11 +38,21 @@ $note2 = htmlspecialchars($_POST["note2"]);
 $note3 = htmlspecialchars($_POST["note3"]);
 $firingDate = htmlspecialchars($_POST["firingDate"]);
 
+$passport_series_number = htmlspecialchars($_POST["passport_series_number"]);
+$passport_department_code = htmlspecialchars($_POST["passport_department_code"]);
+$passport_issued_by = htmlspecialchars($_POST["passport_issued_by"]);
+$passport_date_of_issue = htmlspecialchars($_POST["passport_date_of_issue"]);
+$passport_born_place = htmlspecialchars($_POST["passport_born_place"]);
+$passport_registration_address = htmlspecialchars($_POST["passport_registration_address"]);
+$passport_fact_address = htmlspecialchars($_POST["passport_fact_address"]);
+
 $error = 0;
 $error_text = "";
 $sqls = array();
 $params = null;
+#endregion
 
+#region User valid check
 $sql = "SELECT * FROM users WHERE id = '$ID'";
 $sqls[] = $sql;
 $result = pg_query($conn, $sql);
@@ -62,12 +73,16 @@ if ((int)$authorization[1] !== (int)$ID && (int)$ID === 1) {
     $error = 1;
     $error_text = "Данного администратора нельзя редактировать!";
 }
+#endregion
 
 if ($error === 0) {
+    #region User
     $sql = "UPDATE users SET email = '$email', status = '$active', last_user_id = '$user' WHERE id = '$ID'";
     $sqls[] = $sql;
     pg_query($conn, $sql);
+    #endregion
 
+    #region Password
     if (isset($_POST["password"]) && trim($_POST["password"]) != "") {
         $pwd = trim(htmlspecialchars($_POST["password"]));
         $new_password = password_hash($pwd, PASSWORD_DEFAULT);
@@ -83,7 +98,9 @@ if ($error === 0) {
         }
 
     }
+    #endregion
 
+    #region User info
     $sql = "SELECT * FROM users_info WHERE user_id = '$ID'";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
@@ -151,7 +168,9 @@ if ($error === 0) {
         $sqls[] = $sql;
         $result = pg_query($conn, $sql);
     }
+    #endregion
 
+    #region Avatar
     if (isset($_FILES['avatar'])) {
         $baseDirName = $_SERVER['DOCUMENT_ROOT'] . "/files/users/" . $ID . "/avatar";
 
@@ -213,7 +232,9 @@ if ($error === 0) {
                         user_id = '$ID'";
         pg_query($conn, $add_sql);
     }
+    #endregion
 
+    #region Additional contacts
     $sql = "DELETE FROM users_additional_contacts WHERE user_id = '$ID'";
     $sqls[] = $sql;
     pg_query($conn, $sql);
@@ -240,6 +261,36 @@ if ($error === 0) {
             pg_query($conn, $sql);
         }
     }
+    #endregion
+
+    #region Passport
+    $sql = "DELETE FROM users_passport WHERE user_id = '$ID'";
+    $sqls[] = $sql;
+    pg_query($conn, $sql);
+
+    $sql = "INSERT INTO users_passport (
+                user_id,
+                series_number,
+                department_code,
+                issued_by_who,
+                issued_date,
+                born_place,
+                registration_address,
+                fact_address            
+            ) 
+            VALUES (
+                '$ID',
+                '$passport_series_number',
+                '$passport_department_code',
+                '$passport_issued_by',                 
+                '$passport_date_of_issue',                 
+                '$passport_born_place',                 
+                '$passport_registration_address',                 
+                '$passport_fact_address'              
+            )";
+    $sqls[] = $sql;
+    pg_query($conn, $sql);
+    #endregion
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

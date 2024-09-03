@@ -19,8 +19,9 @@ $sql = "
         ui.rate, ui.acts_on_basis, ui.birth_date, ui.hire_date, ui.phone,
         ui.gender, ui.user_type, ui.inn, ui.snils, ui.user_note_1, ui.user_note_2, ui.user_note_3,
         ui.user_photo_avatar, ui.firing_date,
-        up.born_place, up.fact_address, up.department_code, up.series_number, up.issued_by_who,
-        up.issued_date, up.registration_address,
+        up.born_place as passport_born_place, up.fact_address as passport_fact_address, up.department_code as passport_department_code, 
+        up.series_number as passport_series_number, up.issued_by_who as passport_issued_by,
+        up.issued_date as passport_date_of_issue, up.registration_address as passport_registration_address,
         udl.series_number as dl_series_number, udl.issued_date as dl_issued_date,
         udl.issued_by_who as dl_issued_by_who, udl.expite_date as dl_expite_date
     FROM 
@@ -43,6 +44,7 @@ if(pg_num_rows($result) > 0)
     $row = pg_fetch_object($result);
     pg_free_result($result);
 
+    #region Additional contacts
     $sql = "
     SELECT 
         *
@@ -62,6 +64,19 @@ if(pg_num_rows($result) > 0)
 
         pg_free_result($result);
     }
+    #endregion
+
+    #region Passport files
+
+    #endregion
+
+    #region Driver license files
+
+    #endregion
+
+    #region Other files
+
+    #endregion
 
     $params = $row;
 }
