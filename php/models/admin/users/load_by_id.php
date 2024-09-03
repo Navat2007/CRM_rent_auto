@@ -18,7 +18,7 @@ $sql = "
         uc.company_id, ui.full_name, ui.first_name, ui.second_name, ui.middle_name,
         ui.rate, ui.acts_on_basis, ui.birth_date, ui.hire_date, ui.phone,
         ui.gender, ui.user_type, ui.inn, ui.snils, ui.user_note_1, ui.user_note_2, ui.user_note_3,
-        ui.user_photo_avatar,
+        ui.user_photo_avatar, ui.firing_date,
         up.born_place, up.fact_address, up.department_code, up.series_number, up.issued_by_who,
         up.issued_date, up.registration_address,
         udl.series_number as dl_series_number, udl.issued_date as dl_issued_date,

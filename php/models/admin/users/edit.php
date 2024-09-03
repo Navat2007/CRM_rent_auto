@@ -32,6 +32,10 @@ if (!empty($patronym)) {
 $companies = $_POST["companies"] ?? array();
 $contacts = $_POST['contacts'] ?? array();
 $avatar = isset($_POST["avatar"]) ? htmlspecialchars($_POST["avatar"]) : null;
+$note1 = htmlspecialchars($_POST["note1"]);
+$note2 = htmlspecialchars($_POST["note2"]);
+$note3 = htmlspecialchars($_POST["note3"]);
+$firingDate = htmlspecialchars($_POST["firingDate"]);
 
 $error = 0;
 $error_text = "";
@@ -99,10 +103,14 @@ if ($error === 0) {
                 middle_name = '$patronym',
                 phone = '$phone',
                 hire_date = " . (empty($hireDate) ? 'NULL' : "'" . $hireDate . "'") . ",
+                firing_date = " . (empty($firingDate) ? 'NULL' : "'" . $firingDate . "'") . ",
                 acts_on_basis = '$actsOnBasis',
                 rate = '$rate',
                 inn = '$inn',
-                snils = '$snils'
+                snils = '$snils',
+                user_note_1 = '$note1',
+                user_note_2 = '$note2',
+                user_note_3 = '$note3'
             WHERE 
                 user_id = '$ID'";
         $sqls[] = $sql;

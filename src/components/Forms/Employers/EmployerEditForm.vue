@@ -94,9 +94,9 @@ const state = reactive({
   active: parseInt(props.item.status) === 1,
   avatar: props.item.user_photo_avatar,
   contacts: props.item.contacts || [],
-  note1: props.item.note1,
-  note2: props.item.note2,
-  note3: props.item.note3,
+  note1: props.item.user_note_1,
+  note2: props.item.user_note_2,
+  note3: props.item.user_note_3,
   firingDate: props.item.firing_date ? moment(props.item.firing_date) : null,
   passport_series_number: props.item.passport_series_number,
   passport_department_code: props.item.passport_department_code,
@@ -242,7 +242,6 @@ onMounted(() => {
                     <DatePickerWithMask :value="state.birthday" @onChange="e => state.birthday = e"/>
                     <p class="mt-2">{{ age }}{{ zodiac }}</p>
                   </div>
-                  <FormError :errors="v$.birthday.$errors"/>
                 </div>
                 <!-- Пол -->
                 <div>
@@ -296,7 +295,6 @@ onMounted(() => {
                   <label for="hireDate"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата найма</label>
                   <DatePickerWithMask :value="state.hireDate" @onChange="e => state.hireDate = e"/>
-                  <FormError :errors="v$.hireDate.$errors"/>
                 </div>
                 <!-- Действует на основании -->
                 <div>
@@ -322,6 +320,45 @@ onMounted(() => {
                       placeholder="..."
                   >
                   <FormError :errors="v$.rate.$errors"/>
+                </div>
+                <!-- Примечание 1 -->
+                <div>
+                  <label for="note1"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Примечание 1</label>
+                  <input
+                      v-model="state.note1"
+                      type="text" id="note1"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Примечание 2 -->
+                <div>
+                  <label for="note2"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Примечание 2</label>
+                  <input
+                      v-model="state.note2"
+                      type="text" id="note2"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Примечание 3 -->
+                <div>
+                  <label for="note3"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Примечание 3</label>
+                  <input
+                      v-model="state.note3"
+                      type="text" id="note3"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Дата увольнения -->
+                <div>
+                  <label for="firingDate"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата увольнения</label>
+                  <DatePickerWithMask :value="state.firingDate" @onChange="e => state.firingDate = e"/>
                 </div>
                 <Divider type="dashed"/>
                 <div v-if="passwordDisabled">

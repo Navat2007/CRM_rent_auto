@@ -38,6 +38,7 @@ const handleEdit = (data) => {
 
   sendingData.birthday = sendingData.birthday && sendingData.birthday !== "Invalid date" ? moment(sendingData.birthday, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
   sendingData.hireDate = sendingData.hireDate && sendingData.hireDate !== "Invalid date" ? moment(sendingData.hireDate, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
+  sendingData.firingDate = sendingData.firingDate && sendingData.firingDate !== "Invalid date" ? moment(sendingData.firingDate, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
 
   console.log(sendingData);
 

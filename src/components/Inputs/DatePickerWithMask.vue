@@ -57,7 +57,7 @@ const handleBlur = () => {
     </InputGroupAddon>
   </InputGroup>
   <BaseModal :is-open="state.showHireDateCalendar" @close="toggleModal" title="Выберите дату">
-    <DatePicker v-model="date" @date-select="handleDateSelect" inline fluid/>
+    <DatePicker v-model="date" @date-select="handleDateSelect" inline show-button-bar fluid/>
   </BaseModal>
 </template>
 
