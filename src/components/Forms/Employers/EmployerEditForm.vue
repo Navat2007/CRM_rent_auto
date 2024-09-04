@@ -10,6 +10,7 @@ import DirectoryService from "@services/DirectoryService.js";
 import DatePickerWithMask from "@components/Inputs/DatePickerWithMask.vue";
 import AvatarSelect from "@components/Inputs/AvatarSelect.vue";
 import TableWithRowEditing from "@components/Table/TableWithRowEditing.vue";
+import FileGallery from "@components/Inputs/FileGallery.vue";
 
 const {user} = useAuthStore();
 
@@ -106,11 +107,15 @@ const state = reactive({
   passport_registration_address: props.item.passport_registration_address,
   passport_fact_address: props.item.passport_fact_address,
   passport_files: props.item.passport_files || [],
+  passport_upload_files: [],
   dl_series_number: props.item.dl_series_number,
   dl_issued_by_who: props.item.dl_issued_by_who,
   dl_issued_date: props.item.dl_issued_date ? moment(props.item.dl_issued_date).format('DD.MM.YYYY') : null,
   dl_expire_date: props.item.dl_expire_date ? moment(props.item.dl_expire_date).format('DD.MM.YYYY') : null,
   dl_files: props.item.dl_files || [],
+  dl_upload_files: [],
+  other_files: props.item.other_files || [],
+  other_upload_files: [],
 });
 const rules = computed(() => {
   return {
@@ -470,6 +475,11 @@ onMounted(() => {
                       placeholder="..."
                   >
                 </div>
+                <Divider type="dashed"/>
+                <!-- Паспорт. Файлы -->
+                <FileGallery :items="state.passport_files"
+                             @onSelect="e => state.passport_upload_files = e.files"
+                />
               </div>
             </TabPanel>
             <TabPanel value="2">
@@ -508,10 +518,14 @@ onMounted(() => {
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действуют до</label>
                   <DatePickerWithMask :value="state.dl_expire_date" @onChange="e => state.dl_expire_date = e"/>
                 </div>
+                <Divider type="dashed"/>
+                <!-- Водительское удостоверение. Файлы -->
+                <FileGallery :items="state.dl_files" @onSelect="e => state.dl_upload_files = e.files"/>
               </div>
             </TabPanel>
             <TabPanel value="3">
-
+              <!-- Прочие файлы -->
+              <FileGallery :items="state.other_files" @onSelect="e => state.other_upload_files = e.files"/>
             </TabPanel>
             <TabPanel value="4">
 

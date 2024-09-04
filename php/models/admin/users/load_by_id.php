@@ -67,15 +67,69 @@ if(pg_num_rows($result) > 0)
     #endregion
 
     #region Passport files
+    $sql = "
+    SELECT 
+        *
+    FROM 
+        users_passport_files
+    WHERE 
+        user_id = '$id'";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
 
+    if(pg_num_rows($result) > 0)
+    {
+        while($passport_files_row = pg_fetch_object($result))
+        {
+            $row->passport_files[] = $passport_files_row;
+        }
+
+        pg_free_result($result);
+    }
     #endregion
 
     #region Driver license files
+    $sql = "
+    SELECT 
+        *
+    FROM 
+        users_driving_license_files
+    WHERE 
+        user_id = '$id'";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
 
+    if(pg_num_rows($result) > 0)
+    {
+        while($driving_license_files_row = pg_fetch_object($result))
+        {
+            $row->dl_files[] = $driving_license_files_row;
+        }
+
+        pg_free_result($result);
+    }
     #endregion
 
     #region Other files
+    $sql = "
+    SELECT 
+        *
+    FROM 
+        users_other_files
+    WHERE 
+        user_id = '$id'";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
 
+    if(pg_num_rows($result) > 0)
+    {
+        while($other_files_row = pg_fetch_object($result))
+        {
+            $row->other_files[] = $other_files_row;
+        }
+
+        pg_free_result($result);
+    }
     #endregion
 
     $params = $row;

@@ -29,8 +29,6 @@ async function readFileAsDataURL(file) {
 }
 
 const onFileSelect = async (data) => {
-  console.log("On file select");
-  console.log(data);
   state.image = await readFileAsDataURL(data.files[0]);
   emit('onSelect', data);
 }

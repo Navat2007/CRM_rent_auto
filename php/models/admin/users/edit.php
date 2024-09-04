@@ -5,6 +5,80 @@ header('Access-Control-Allow-Headers: Origin, Authorization, Content-Type, X-Aut
 require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
+#region Functions
+function SaveFiles($folder_title, $files_title, $db_title): void
+{
+    global $conn, $ID, $user, $error, $error_text;
+
+    if (isset($_FILES[$files_title])) {
+        $baseDirName =  "/files/users/" . $ID . "/" . $folder_title;
+
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $baseDirName)) {
+            $oldmask = umask(0);
+            $mkdir_result = mkdir($_SERVER['DOCUMENT_ROOT'] . $baseDirName, 0777, true);
+            umask($oldmask);
+        }
+
+        foreach($_FILES[$files_title]['error'] as $key => $error)
+        {
+            if ($error == UPLOAD_ERR_OK)
+            {
+                $temp_name = $_FILES[$files_title]['tmp_name'][$key];
+                $name = $_FILES[$files_title]['name'][$key];
+                $file_name = explode('.', $name)[0];
+                $file_extension = explode('.', $name)[1];
+                $size = $_FILES[$files_title]['size'][$key];
+                $file_token = time();
+                $path = $_SERVER['DOCUMENT_ROOT'] . $baseDirName . "/" . $file_token . "_" . $name;
+
+                @unlink($path);
+
+                if(copy($temp_name, $path))
+                {
+                    $file_to_DB = $baseDirName . "/" . $file_token . "_" . $name;
+
+                    $sql = "
+                    INSERT INTO $db_title (user_id, file_path, file_name, file_extension, file_size, last_user_id) 
+                    VALUES ('$ID', '$file_to_DB', '$file_name', '$file_extension', '$size', '$user')";
+                    pg_query($conn, $sql);
+                }
+            }
+            else
+            {
+                $error = 1;
+                $error_text = $error;
+            }
+        }
+    }
+}
+
+function CheckFilesToDelete($files, $table): void {
+    global $conn, $ID, $user, $error, $error_text;
+
+    foreach ($files as $file) {
+        if(isset($file["deleted"]) && (int)$file["deleted"] === 1) {
+            $fileID = $file['id'];
+
+            $sql = "
+            SELECT 
+                *
+            FROM 
+                $table
+            WHERE 
+                id = '$fileID'";
+            $result = pg_query($conn, $sql);
+            $row = pg_fetch_object($result);
+
+            $path = $_SERVER['DOCUMENT_ROOT'] . $row->file_path;
+            @unlink($path);
+
+            $sql = "DELETE FROM $table WHERE id = '$fileID' AND user_id = '$ID'";
+            pg_query($conn, $sql);
+        }
+    }
+}
+#endregion
+
 #region Variables
 $ID = htmlspecialchars($_POST["id"]);
 $user = $authorization[1];
@@ -297,6 +371,19 @@ if ($error === 0) {
     pg_query($conn, $sql);
     #endregion
 
+    #region Passport files
+    $folder_title = 'passport';
+    $files_title = 'passport_files';
+    $files_upload_title = 'passport_upload_files';
+    $db_title = 'users_passport_files';
+
+    if(isset($_POST[$files_title]) && count($_POST[$files_title]) > 0) {
+        CheckFilesToDelete($_POST[$files_title], $db_title);
+    }
+
+    SaveFiles($folder_title, $files_upload_title, $db_title);
+    #endregion
+
     #region Driver license
     $sql = "DELETE FROM users_driving_license WHERE user_id = '$ID'";
     $sqls[] = $sql;
@@ -318,6 +405,32 @@ if ($error === 0) {
             )";
     $sqls[] = $sql;
     pg_query($conn, $sql);
+    #endregion
+
+    #region Driver license files
+    $folder_title = 'dl';
+    $files_title = 'dl_files';
+    $files_upload_title = 'dl_upload_files';
+    $db_title = 'users_driving_license_files';
+
+    if(isset($_POST[$files_title]) && count($_POST[$files_title]) > 0) {
+        CheckFilesToDelete($_POST[$files_title], $db_title);
+    }
+
+    SaveFiles($folder_title, $files_upload_title, $db_title);
+    #endregion
+
+    #region Other files
+    $folder_title = 'other';
+    $files_title = 'other_files';
+    $files_upload_title = 'other_upload_files';
+    $db_title = 'users_other_files';
+
+    if(isset($_POST[$files_title]) && count($_POST[$files_title]) > 0) {
+        CheckFilesToDelete($_POST[$files_title], $db_title);
+    }
+
+    SaveFiles($folder_title, $files_upload_title, $db_title);
     #endregion
 }
 
