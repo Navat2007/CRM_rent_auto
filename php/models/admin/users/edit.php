@@ -125,6 +125,9 @@ $dl_issued_by_who = htmlspecialchars($_POST["dl_issued_by_who"]);
 $dl_issued_date = htmlspecialchars($_POST["dl_issued_date"]);
 $dl_expire_date = htmlspecialchars($_POST["dl_expire_date"]);
 
+$access_directory = htmlspecialchars($_POST["access_directory"]);
+$access_employers = htmlspecialchars($_POST["access_employers"]);
+
 $error = 0;
 $error_text = "";
 $sqls = array();
@@ -189,7 +192,6 @@ if ($error === 0) {
             UPDATE 
                 users_info 
             SET
-                user_id = '$ID', 
                 user_type = '$position', 
                 full_name = '$fullName',
                 birth_date = " . (empty($birthday) ? 'NULL' : "'" . $birthday . "'") . ",
@@ -347,7 +349,8 @@ if ($error === 0) {
     $sqls[] = $sql;
     pg_query($conn, $sql);
 
-    $sql = "INSERT INTO users_passport (
+    if(!empty($passport_series_number)){
+        $sql = "INSERT INTO users_passport (
                 user_id,
                 series_number,
                 department_code,
@@ -367,8 +370,9 @@ if ($error === 0) {
                 '$passport_registration_address',                 
                 '$passport_fact_address'              
             )";
-    $sqls[] = $sql;
-    pg_query($conn, $sql);
+        $sqls[] = $sql;
+        pg_query($conn, $sql);
+    }
     #endregion
 
     #region Passport files
@@ -389,7 +393,8 @@ if ($error === 0) {
     $sqls[] = $sql;
     pg_query($conn, $sql);
 
-    $sql = "INSERT INTO users_driving_license (
+    if(!empty($dl_series_number)) {
+        $sql = "INSERT INTO users_driving_license (
                 user_id,
                 series_number,
                 issued_by_who,
@@ -403,8 +408,9 @@ if ($error === 0) {
                 '$dl_issued_date',                 
                 '$dl_expire_date'             
             )";
-    $sqls[] = $sql;
-    pg_query($conn, $sql);
+        $sqls[] = $sql;
+        pg_query($conn, $sql);
+    }
     #endregion
 
     #region Driver license files
@@ -431,6 +437,41 @@ if ($error === 0) {
     }
 
     SaveFiles($folder_title, $files_upload_title, $db_title);
+    #endregion
+
+    #region Access
+    $sql = "SELECT * FROM users_access WHERE user_id = '$ID'";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
+
+    if (pg_num_rows($result) > 0) {
+        $sql = "
+            UPDATE 
+                users_access 
+            SET
+                access_directory = '$access_directory', 
+                access_employers = '$access_employers', 
+                last_user_id = '$user'
+            WHERE 
+                user_id = '$ID'";
+        $sqls[] = $sql;
+        $result = pg_query($conn, $sql);
+    } else {
+        $sql = "INSERT INTO users_access (
+                user_id,
+                access_directory,
+                access_employers,
+                last_user_id
+            ) 
+            VALUES (
+                '$ID', 
+                '$access_directory', 
+                '$access_employers',
+                '$user'
+            )";
+        $sqls[] = $sql;
+        $result = pg_query($conn, $sql);
+    }
     #endregion
 }
 

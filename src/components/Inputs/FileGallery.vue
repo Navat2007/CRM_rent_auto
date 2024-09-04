@@ -76,6 +76,7 @@ const getIconByExtension = (extension) => {
     case 'xls':
       return XlsIconFile;
     case 'zip':
+    case 'rar':
       return ZipIconFile;
     default:
       return DefaultIconFile;

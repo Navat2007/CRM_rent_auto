@@ -72,6 +72,11 @@ const zodiac = computed(() => {
   return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
 });
 const passwordDisabled = ref(true);
+const access = ref([
+  { name: 'Нет доступа', key: 0 },
+  { name: 'Просмотр', key: 1 },
+  { name: 'Редактирование', key: 2 },
+]);
 
 const lettersAndDash = helpers.regex(/^[a-zA-Zа-яА-Я-]*$/);
 
@@ -116,6 +121,8 @@ const state = reactive({
   dl_upload_files: [],
   other_files: props.item.other_files || [],
   other_upload_files: [],
+  access_directory: parseInt(props.item.access_directory) || 0,
+  access_employers: parseInt(props.item.access_employers) || 0,
 });
 const rules = computed(() => {
   return {
@@ -528,7 +535,18 @@ onMounted(() => {
               <FileGallery :items="state.other_files" @onSelect="e => state.other_upload_files = e.files"/>
             </TabPanel>
             <TabPanel value="4">
-
+              <Fieldset legend="Управление справочниками">
+                <div v-for="item in access" :key="'access_directory' + item.key" class="flex items-center">
+                  <RadioButton v-model="state.access_directory" :inputId="'access_directory' + item.key" name="dynamic" :value="item.key" />
+                  <label :for="item.key" class="ml-2">{{ item.name }}</label>
+                </div>
+              </Fieldset>
+              <Fieldset legend="Управление сотрудниками">
+                <div v-for="item in access" :key="'access_employers' + item.key" class="flex items-center">
+                  <RadioButton v-model="state.access_employers" :inputId="'access_employers' + item.key" name="dynamic" :value="item.key" />
+                  <label :for="item.key" class="ml-2">{{ item.name }}</label>
+                </div>
+              </Fieldset>
             </TabPanel>
           </TabPanels>
           <Divider type="dashed"/>
