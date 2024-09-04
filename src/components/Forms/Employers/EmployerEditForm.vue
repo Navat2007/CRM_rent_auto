@@ -1,9 +1,9 @@
 <script setup>
+import {computed, reactive, ref, unref, onMounted} from "vue";
 import {useAuthStore} from "@stores";
 import {useVuelidate} from '@vuelidate/core';
 import moment from "moment";
 import {email, helpers, required, minLength, sameAs} from '@vuelidate/validators';
-import {computed, reactive, ref, unref, onMounted} from "vue";
 import Divider from "primevue/divider";
 import FormError from "@components/Inputs/FormError.vue";
 import DirectoryService from "@services/DirectoryService.js";
@@ -106,6 +106,11 @@ const state = reactive({
   passport_registration_address: props.item.passport_registration_address,
   passport_fact_address: props.item.passport_fact_address,
   passport_files: props.item.passport_files || [],
+  dl_series_number: props.item.dl_series_number,
+  dl_issued_by_who: props.item.dl_issued_by_who,
+  dl_issued_date: props.item.dl_issued_date ? moment(props.item.dl_issued_date).format('DD.MM.YYYY') : null,
+  dl_expire_date: props.item.dl_expire_date ? moment(props.item.dl_expire_date).format('DD.MM.YYYY') : null,
+  dl_files: props.item.dl_files || [],
 });
 const rules = computed(() => {
   return {
@@ -167,10 +172,8 @@ onMounted(() => {
     <template #content>
       <Tabs value="0" scrollable>
         <TabList>
-          <Tab value="0" class="flex gap-2">Основная информация
-          </Tab>
-          <Tab value="1" class="flex gap-2">Паспорт
-          </Tab>
+          <Tab value="0" class="flex gap-2">Основная информация</Tab>
+          <Tab value="1" class="flex gap-2">Паспорт</Tab>
           <Tab value="2" class="flex gap-2">Водительское удостоверение</Tab>
           <Tab value="3" class="flex gap-2">Прочие документы</Tab>
           <Tab value="4" class="flex gap-2">Права доступа</Tab>
@@ -470,7 +473,42 @@ onMounted(() => {
               </div>
             </TabPanel>
             <TabPanel value="2">
-
+              <div class="grid gap-4 my-4 sm:grid-cols-1">
+                <!-- Водительское удостоверение. Серия и номер -->
+                <div>
+                  <label for="dl_series_number"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Серия и номер</label>
+                  <input
+                      v-model="state.dl_series_number"
+                      type="text" id="dl_series_number"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Водительское удостоверение. Кем выдан -->
+                <div>
+                  <label for="dl_issued_by_who"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Кем выдан</label>
+                  <input
+                      v-model="state.dl_issued_by_who"
+                      type="text" id="dl_issued_by_who"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Водительское удостоверение. Дата выдачи -->
+                <div>
+                  <label for="dl_issued_date"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
+                  <DatePickerWithMask :value="state.dl_issued_date" @onChange="e => state.dl_issued_date = e"/>
+                </div>
+                <!-- Водительское удостоверение. Действуют до -->
+                <div>
+                  <label for="dl_expire_date"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действуют до</label>
+                  <DatePickerWithMask :value="state.dl_expire_date" @onChange="e => state.dl_expire_date = e"/>
+                </div>
+              </div>
             </TabPanel>
             <TabPanel value="3">
 

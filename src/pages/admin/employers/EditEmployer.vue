@@ -40,6 +40,8 @@ const handleEdit = (data) => {
   sendingData.hireDate = sendingData.hireDate && sendingData.hireDate !== "Invalid date" ? moment(sendingData.hireDate, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
   sendingData.firingDate = sendingData.firingDate && sendingData.firingDate !== "Invalid date" ? moment(sendingData.firingDate, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
   sendingData.passport_date_of_issue = sendingData.passport_date_of_issue && sendingData.passport_date_of_issue !== "Invalid date" ? moment(sendingData.passport_date_of_issue, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
+  sendingData.dl_issued_date = sendingData.dl_issued_date && sendingData.dl_issued_date !== "Invalid date" ? moment(sendingData.dl_issued_date, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
+  sendingData.dl_expire_date = sendingData.dl_expire_date && sendingData.dl_expire_date !== "Invalid date" ? moment(sendingData.dl_expire_date, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
 
   console.log(sendingData);
 

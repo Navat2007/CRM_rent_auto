@@ -46,6 +46,11 @@ $passport_born_place = htmlspecialchars($_POST["passport_born_place"]);
 $passport_registration_address = htmlspecialchars($_POST["passport_registration_address"]);
 $passport_fact_address = htmlspecialchars($_POST["passport_fact_address"]);
 
+$dl_series_number = htmlspecialchars($_POST["dl_series_number"]);
+$dl_issued_by_who = htmlspecialchars($_POST["dl_issued_by_who"]);
+$dl_issued_date = htmlspecialchars($_POST["dl_issued_date"]);
+$dl_expire_date = htmlspecialchars($_POST["dl_expire_date"]);
+
 $error = 0;
 $error_text = "";
 $sqls = array();
@@ -287,6 +292,29 @@ if ($error === 0) {
                 '$passport_born_place',                 
                 '$passport_registration_address',                 
                 '$passport_fact_address'              
+            )";
+    $sqls[] = $sql;
+    pg_query($conn, $sql);
+    #endregion
+
+    #region Driver license
+    $sql = "DELETE FROM users_driving_license WHERE user_id = '$ID'";
+    $sqls[] = $sql;
+    pg_query($conn, $sql);
+
+    $sql = "INSERT INTO users_driving_license (
+                user_id,
+                series_number,
+                issued_by_who,
+                issued_date,
+                expire_date          
+            ) 
+            VALUES (
+                '$ID',
+                '$dl_series_number',
+                '$dl_issued_by_who',
+                '$dl_issued_date',                 
+                '$dl_expire_date'             
             )";
     $sqls[] = $sql;
     pg_query($conn, $sql);
