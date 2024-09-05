@@ -79,9 +79,8 @@ const onSubmit = async (e) => {
           </div>
         </div>
         <Divider type="dashed"/>
-        <Button type="submit" icon="pi pi-plus" label="Добавить" outlined />
+        <Button v-if="user.access.directory === 2" type="submit" icon="pi pi-plus" label="Добавить" outlined />
       </form>
     </template>
   </Card>
-
 </template>

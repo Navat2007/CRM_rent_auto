@@ -2,6 +2,9 @@
 import {useForm} from 'vue-hooks-form'
 import {onMounted, ref} from "vue";
 import Divider from "primevue/divider";
+import {useAuthStore} from "@stores";
+
+const {user} = useAuthStore();
 
 const {useField, validateFields} = useForm({
   defaultValues: {
@@ -87,8 +90,8 @@ onMounted(() => {
             </label>
           </div>
         </div>
-        <Divider type="dashed"/>
-        <Button type="submit" icon="pi pi-save" label="Сохранить" outlined />
+        <Divider v-if="user.access.directory === 2" type="dashed"/>
+        <Button v-if="user.access.directory === 2" type="submit" icon="pi pi-save" label="Сохранить" outlined />
       </form>
     </template>
   </Card>

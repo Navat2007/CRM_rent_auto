@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useSidebarStore} from '@stores/sidebar.js'
 import {ref} from 'vue'
+import {c} from "vite/dist/node/types.d-aGj9QkWt";
 
 const sidebarStore = useSidebarStore()
 
@@ -15,7 +16,7 @@ const handleItemClick = (index: number) => {
 <template>
   <ul class="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
     <template v-for="(childItem, index) in items" :key="index">
-      <li>
+      <li v-if="childItem.visible">
         <router-link
           :to="childItem.route"
           @click="handleItemClick(index)"

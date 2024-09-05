@@ -4,6 +4,8 @@ import {ref} from "vue";
 import { onClickOutside } from '@vueuse/core'
 import { useAuthStore, useSidebarStore } from '@stores';
 
+const {user} = useAuthStore();
+
 import SidebarItem from "@components/Containers/Admin/Sidebar/SidebarItem.vue";
 import Logo from "@assets/images/logo.png";
 
@@ -40,6 +42,7 @@ const menuGroups = ref([
                 </svg>`,
         label: 'Дашборд',
         route: '/Admin/',
+        visible: true
       },
       {
         icon: `<svg
@@ -62,8 +65,9 @@ const menuGroups = ref([
         label: 'Компания',
         route: '',
         children: [
-          { label: 'Сотрудники', route: '/Admin/employers' },
-        ]
+          { label: 'Сотрудники', route: '/Admin/employers', visible: user.access.employers !== 0 },
+        ],
+        visible: true
       },
       {
         icon: `<svg
@@ -89,9 +93,10 @@ const menuGroups = ref([
         label: 'Справочники',
         route: '',
         children: [
-          { label: 'Виды рекламы', route: '/Admin/directory/advertising_types' },
-          { label: 'Должности', route: '/Admin/directory/positions' }
-        ]
+          { label: 'Виды рекламы', route: '/Admin/directory/advertising_types', visible: true },
+          { label: 'Должности', route: '/Admin/directory/positions', visible: true }
+        ],
+        visible: user.access.directory !== 0
       }
     ]
   },

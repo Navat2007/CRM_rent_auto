@@ -83,7 +83,7 @@ onMounted(() => {
         </Column>
       </template>
       <template #buttons>
-        <Button type="button" icon="pi pi-plus" label="Добавить" outlined @click="handleAddButtonClick" />
+        <Button v-if="user.access.directory === 2" type="button" icon="pi pi-plus" label="Добавить" outlined @click="handleAddButtonClick" />
       </template>
     </Table>
   </PageContainer>

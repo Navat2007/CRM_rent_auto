@@ -30,7 +30,8 @@ if (!empty($login) && !empty($password)) {
             t2.full_name as user_full_name, t2.birth_date as user_birth_date,
             t2.first_name as user_first_name, t2.second_name as user_second_name,
             t2.middle_name as user_middle_name, t2.user_type,
-            t4.id as company_id, t4.name as company_name
+            t4.id as company_id, t4.name as company_name,
+            t5.access_directory, t5.access_employers
         FROM 
             users as t1
         LEFT JOIN 
@@ -39,6 +40,8 @@ if (!empty($login) && !empty($password)) {
             users_company as t3 on t3.user_id = t1.id
         LEFT JOIN 
             company as t4 on t4.id = t3.company_id
+        LEFT JOIN 
+            users_access as t5 on t1.id = t5.user_id
         WHERE 
             t1.email = '$login' AND t1.archive = 0";
     $sqls[] = $sql;
@@ -107,5 +110,9 @@ function get_all_info($row, $conn): object
         'user_birth_date' => $row->user_birth_date,
         'token' => $token,
         'token_created_at' => new DateTime(),
+        'access' => (object)[
+            'directory' => (int)$row->access_directory,
+            'employers' => (int)$row->access_employers
+        ]
     ];
 }

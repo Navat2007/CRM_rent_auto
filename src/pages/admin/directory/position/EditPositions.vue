@@ -66,7 +66,3 @@ onMounted(fetchData);
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
   </PageContainer>
 </template>
-
-<style scoped>
-
-</style>

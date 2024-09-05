@@ -549,12 +549,12 @@ onMounted(() => {
               </Fieldset>
             </TabPanel>
           </TabPanels>
-          <Divider type="dashed"/>
+          <Divider v-if="user.access.employers === 2" type="dashed"/>
           <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
             {{ error.$message }}
           </p>
-          <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
-          <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
+          <Button v-if="user.access.employers === 2" type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
+          <Button v-if="user.access.employers === 2" icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
                   @click="emit('onDelete');" outlined/>
         </form>
       </Tabs>

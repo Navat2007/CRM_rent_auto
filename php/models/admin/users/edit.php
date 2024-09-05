@@ -159,7 +159,7 @@ if ((int)$authorization[1] !== (int)$ID && (int)$ID === 1) {
 
 if ($error === 0) {
     #region User
-    $sql = "UPDATE users SET email = '$email', status = '$active', last_user_id = '$user' WHERE id = '$ID'";
+    $sql = "UPDATE users SET email = '$email', status = '$active', last_user_id = '$user', token = '' WHERE id = '$ID'";
     $sqls[] = $sql;
     pg_query($conn, $sql);
     #endregion
