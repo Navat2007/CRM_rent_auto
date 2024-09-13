@@ -14,7 +14,7 @@ $params = array();
 
 $sql = "
     SELECT 
-        users.email, users.status,
+        users.email, users.status, users.archive,
         uc.company_id, ui.full_name, ui.first_name, ui.second_name, ui.middle_name,
         ui.rate, ui.acts_on_basis, ui.birth_date, ui.hire_date, ui.phone,
         ui.gender, ui.user_type, ui.inn, ui.snils, ui.user_note_1, ui.user_note_2, ui.user_note_3,

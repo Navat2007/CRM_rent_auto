@@ -234,13 +234,13 @@ if ($error === 0) {
                 '$ID', 
                 '$position', 
                 '$fullName',
-                '$birthday',
+                " . (empty($birthday) ? 'NULL' : "'" . $birthday . "'") . ",
                 '$gender',
                 '$firstName',
                 '$lastName',
                 '$patronym',
                 '$phone',
-                '$hireDate',
+                " . (empty($hireDate) ? 'NULL' : "'" . $hireDate . "'") . ",
                 '$actsOnBasis',
                 '$rate',
                 '$inn',
@@ -302,8 +302,11 @@ if ($error === 0) {
         $result = pg_query($conn, $sql);
         $row = pg_fetch_object($result);
 
-        $oldpath = $_SERVER['DOCUMENT_ROOT'] . $row->user_photo_avatar;
-        @unlink($oldpath);
+        if($row)
+        {
+            $oldpath = $_SERVER['DOCUMENT_ROOT'] . $row->user_photo_avatar;
+            @unlink($oldpath);
+        }
 
         $add_sql = "UPDATE 
                         users_info

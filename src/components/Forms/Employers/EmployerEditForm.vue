@@ -73,14 +73,15 @@ const zodiac = computed(() => {
 });
 const passwordDisabled = ref(true);
 const access = ref([
-  { name: 'Нет доступа', key: 0 },
-  { name: 'Просмотр', key: 1 },
-  { name: 'Редактирование', key: 2 },
+  {name: 'Нет доступа', key: 0},
+  {name: 'Просмотр', key: 1},
+  {name: 'Редактирование', key: 2},
 ]);
 
 const lettersAndDash = helpers.regex(/^[a-zA-Zа-яА-Я-]*$/);
 
 const state = reactive({
+  archive: parseInt(props.item.archive),
   companyId: user.company_id,
   email: props.item.email,
   firstName: props.item.first_name,
@@ -91,7 +92,7 @@ const state = reactive({
   birthday: props.item.birth_date ? moment(props.item.birth_date).format('DD.MM.YYYY') : null,
   gender: props.item.gender ? parseInt(props.item.gender) : 0,
   phone: props.item.phone,
-  position: parseInt(props.item.user_type),
+  position: props.item.user_type ? parseInt(props.item.user_type) : 0,
   snils: props.item.snils,
   inn: props.item.inn,
   hireDate: props.item.hire_date ? moment(props.item.hire_date).format('DD.MM.YYYY') : null,
@@ -180,7 +181,7 @@ onMounted(() => {
 
 <template>
   <Card class="w-full lg:w-2/3">
-    <template #title>Редактирование сотрудника</template>
+    <template #title>Редактирование сотрудника <Badge v-if="state.archive === 1" value="Архив"></Badge></template>
     <template #content>
       <Tabs value="0" scrollable>
         <TabList>
@@ -193,7 +194,7 @@ onMounted(() => {
         <form @submit.prevent="onFormSubmit" autocomplete="off">
           <TabPanels>
             <TabPanel value="0">
-              <div class="grid gap-4 my-4 sm:grid-cols-1">
+              <div class="grid gap-4 sm:grid-cols-1">
                 <!-- Avatar -->
                 <div>
                   <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Аватарка</label>
@@ -375,41 +376,45 @@ onMounted(() => {
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата увольнения</label>
                   <DatePickerWithMask :value="state.firingDate" @onChange="e => state.firingDate = e"/>
                 </div>
-                <Divider type="dashed"/>
-                <div v-if="passwordDisabled">
-                  <Button icon="pi pi-lock" label="Изменить пароль" severity="danger"
-                          @click="passwordDisabled = false"/>
-                </div>
-                <!-- Пароль -->
-                <div>
-                  <label for="password"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Новый пароль</label>
-                  <Password inputId="password" v-model="state.password" placeholder="Введите пароль" :toggleMask="true"
-                            :feedback="false" class="w-full mb-3" inputClass="w-full" :disabled="passwordDisabled"/>
-                  <FormError :errors="v$.password.$errors"/>
-                </div>
-                <!-- Подтвердить пароль -->
-                <div>
-                  <label for="confirmPassword"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить пароль</label>
-                  <Password inputId="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
-                            :toggleMask="true"
-                            :feedback="false" class="w-full mb-3" inputClass="w-full" :disabled="passwordDisabled"/>
-                  <FormError :errors="v$.confirmPassword.$errors"/>
-                </div>
-                <Divider type="dashed"/>
-                <div class="flex items-center">
-                  <input id="active" type="checkbox"
-                         v-model="state.active"
-                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                  <label for="active" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                    Активен?
-                  </label>
+                <div v-if="state.archive === 0" class="grid gap-4 my-4 sm:grid-cols-1">
+                  <Divider type="dashed"/>
+                  <div v-if="passwordDisabled">
+                    <Button icon="pi pi-lock" label="Изменить пароль" severity="danger"
+                            @click="passwordDisabled = false"/>
+                  </div>
+                  <!-- Пароль -->
+                  <div>
+                    <label for="password"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Новый пароль</label>
+                    <Password inputId="password" v-model="state.password" placeholder="Введите пароль"
+                              :toggleMask="true"
+                              :feedback="false" class="w-full mb-3" inputClass="w-full" :disabled="passwordDisabled"/>
+                    <FormError :errors="v$.password.$errors"/>
+                  </div>
+                  <!-- Подтвердить пароль -->
+                  <div>
+                    <label for="confirmPassword"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить
+                      пароль</label>
+                    <Password inputId="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
+                              :toggleMask="true"
+                              :feedback="false" class="w-full mb-3" inputClass="w-full" :disabled="passwordDisabled"/>
+                    <FormError :errors="v$.confirmPassword.$errors"/>
+                  </div>
+                  <Divider type="dashed"/>
+                  <div class="flex items-center">
+                    <input id="active" type="checkbox"
+                           v-model="state.active"
+                           class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                    <label for="active" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                      Активен?
+                    </label>
+                  </div>
                 </div>
               </div>
             </TabPanel>
             <TabPanel value="1">
-              <div class="grid gap-4 my-4 sm:grid-cols-1">
+              <div class="grid gap-4 sm:grid-cols-1">
                 <!-- Паспорт. Серия и номер -->
                 <div>
                   <label for="passport_series_number"
@@ -447,7 +452,8 @@ onMounted(() => {
                 <div>
                   <label for="passport_date_of_issue"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
-                  <DatePickerWithMask :value="state.passport_date_of_issue" @onChange="e => state.passport_date_of_issue = e"/>
+                  <DatePickerWithMask :value="state.passport_date_of_issue"
+                                      @onChange="e => state.passport_date_of_issue = e"/>
                 </div>
                 <!-- Паспорт. Кем выдан -->
                 <div>
@@ -490,7 +496,7 @@ onMounted(() => {
               </div>
             </TabPanel>
             <TabPanel value="2">
-              <div class="grid gap-4 my-4 sm:grid-cols-1">
+              <div class="grid gap-4 sm:grid-cols-1">
                 <!-- Водительское удостоверение. Серия и номер -->
                 <div>
                   <label for="dl_series_number"
@@ -537,13 +543,15 @@ onMounted(() => {
             <TabPanel value="4">
               <Fieldset legend="Управление справочниками">
                 <div v-for="item in access" :key="'access_directory' + item.key" class="flex items-center">
-                  <RadioButton v-model="state.access_directory" :inputId="'access_directory' + item.key" name="dynamic" :value="item.key" />
+                  <RadioButton v-model="state.access_directory" :inputId="'access_directory' + item.key" name="dynamic"
+                               :value="item.key"/>
                   <label :for="item.key" class="ml-2">{{ item.name }}</label>
                 </div>
               </Fieldset>
               <Fieldset legend="Управление сотрудниками">
                 <div v-for="item in access" :key="'access_employers' + item.key" class="flex items-center">
-                  <RadioButton v-model="state.access_employers" :inputId="'access_employers' + item.key" name="dynamic" :value="item.key" />
+                  <RadioButton v-model="state.access_employers" :inputId="'access_employers' + item.key" name="dynamic"
+                               :value="item.key"/>
                   <label :for="item.key" class="ml-2">{{ item.name }}</label>
                 </div>
               </Fieldset>
@@ -553,9 +561,14 @@ onMounted(() => {
           <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
             {{ error.$message }}
           </p>
-          <Button v-if="user.access.employers === 2" type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
-          <Button v-if="user.access.employers === 2" icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
-                  @click="emit('onDelete');" outlined/>
+          <div v-if="user.access.employers === 2 && state.archive === 0">
+            <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
+            <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
+                    @click="emit('onDelete');" outlined/>
+          </div>
+          <div v-if="state.archive === 1">
+            <Tag severity="warn" value="Сотрудник находится в архиве."/>
+          </div>
         </form>
       </Tabs>
     </template>

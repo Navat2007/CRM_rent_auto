@@ -81,12 +81,14 @@ const handleArchive = () => {
 const onSuccess = () => {
   sending.value = false;
   isSuccessModalOpen.value = false;
-  router.push('/Admin/employers/');
+  // router.push('/Admin/employers/');
 }
 
 async function fetchData() {
   item.value = await UserService.getUserById(route.params.id);
   loading.value = false;
+
+  console.log(item.value);
 }
 
 onMounted(fetchData);

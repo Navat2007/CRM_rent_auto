@@ -1,16 +1,18 @@
 <script setup>
 import {onMounted, ref, computed} from "vue";
+import router from "@router";
+import {FilterMatchMode, FilterOperator} from "@primevue/core/api";
 import {useAuthStore} from "@stores";
 
 import Table from "@components/Table/Table.vue";
 import UserService from "@services/UserService.js";
+import DirectoryService from "@services/DirectoryService.js";
 import PageContainer from "@components/Containers/Admin/PageContainer.vue";
-import {FilterMatchMode, FilterOperator} from "@primevue/core/api";
-import router from "@router";
 
 const {user} = useAuthStore();
 
 const items = ref([]);
+const positions = ref([]);
 const loading = ref(true);
 
 const breadcrumbs = ref([
@@ -50,13 +52,10 @@ const filters = ref({
   id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
   full_name: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
   email: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
-  position: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+  position: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
   status: {operator: FilterOperator.OR, constraints: [{value: "Активен", matchMode: FilterMatchMode.EQUALS}]},
 });
 const filterFields = ref(['id', 'full_name', 'email', 'position', 'status']);
-const positions = computed(() => {
-  return new HashMap(items.value.map(item => item.position));
-})
 
 const handleAddButtonClick = (item) => {
   router.push('/Admin/employers/new');
@@ -67,10 +66,10 @@ const handleRowClick = (item) => {
 
 async function fetchData() {
   items.value = await UserService.getUsers(user.company_id);
+  positions.value = await DirectoryService.getPositions(user.company_id);
+  positions.value = positions.value.filter(position => position.archive === "Активен").map(position => position.name);
   loading.value = false;
 }
-
-console.log(positions);
 
 onMounted(() => {
   fetchData();
@@ -103,7 +102,8 @@ onMounted(() => {
         </Column>
         <Column field="position" header="Должность" sortable>
           <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Поиск по должности"/>
+            <Dropdown v-model="filterModel.value" :options="positions" placeholder="Все" class="p-column-filter"
+                      showClear/>
           </template>
         </Column>
         <Column field="status" header="Статус" sortable>
