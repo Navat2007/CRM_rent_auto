@@ -25,7 +25,7 @@ const props = defineProps({
     required: true
   }
 });
-const emit = defineEmits(['onSubmit', 'onDelete']);
+const emit = defineEmits(['onSubmit', 'onArchive', 'onDelete']);
 
 const genders = ref([
   {label: 'Мужской', value: 0,},
@@ -564,6 +564,8 @@ onMounted(() => {
           <div v-if="user.access.employers === 2 && state.archive === 0">
             <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
             <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
+                    @click="emit('onArchive');" outlined/>
+            <Button v-if="user.id === 1" icon="pi pi-trash" label="Удалить" class="ml-4" severity="danger" :loading="sending"
                     @click="emit('onDelete');" outlined/>
           </div>
           <div v-if="state.archive === 1">

@@ -107,7 +107,8 @@ if($error === 0){
         'id' => $lastID,
     ];
 
-    pg_free_result($result);
+    if($result)
+        pg_free_result($result);
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

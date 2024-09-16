@@ -368,7 +368,7 @@ if ($error === 0) {
                 '$passport_series_number',
                 '$passport_department_code',
                 '$passport_issued_by',                 
-                '$passport_date_of_issue',                 
+                " . (empty($passport_date_of_issue) ? 'NULL' : "'" . $passport_date_of_issue . "'") . ",                 
                 '$passport_born_place',                 
                 '$passport_registration_address',                 
                 '$passport_fact_address'              
@@ -408,8 +408,8 @@ if ($error === 0) {
                 '$ID',
                 '$dl_series_number',
                 '$dl_issued_by_who',
-                '$dl_issued_date',                 
-                '$dl_expire_date'             
+                " . (empty($dl_issued_date) ? 'NULL' : "'" . $dl_issued_date . "'") . ",                 
+                " . (empty($dl_expire_date) ? 'NULL' : "'" . $dl_expire_date . "'") . "            
             )";
         $sqls[] = $sql;
         pg_query($conn, $sql);

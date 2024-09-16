@@ -17,6 +17,7 @@ const loading = ref(true);
 const sending = ref(false);
 const isAlertModalOpen = ref(false);
 const isSuccessModalOpen = ref(false);
+const isArchiveModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
 const breadcrumbs = ref([
@@ -58,7 +59,6 @@ const handleEdit = (data) => {
     }
   });
 }
-
 const handleArchive = () => {
   sending.value = true;
   isDeleteModalOpen.value = false;
@@ -69,6 +69,26 @@ const handleArchive = () => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
+        router.push('/Admin/employers/');
+      } else {
+        error.value = response.data.error_text
+        isAlertModalOpen.value = true
+        sending.value = false;
+      }
+    }
+  });
+}
+const handleDelete = () => {
+  sending.value = true;
+  isDeleteModalOpen.value = false;
+
+  let sendingData = {id: route.params.id};
+
+  UserService.deleteUser(sendingData).then((response) => {
+    if (response.data) {
+      if (parseInt(response.data.error) === 0) {
+        isSuccessModalOpen.value = true
+        router.push('/Admin/employers/');
       } else {
         error.value = response.data.error_text
         isAlertModalOpen.value = true
@@ -96,15 +116,22 @@ onMounted(fetchData);
 
 <template>
   <PageContainer :loading="loading" :breadcrumbs="breadcrumbs">
-    <EmployerEditForm @onSubmit="handleEdit" @onDelete="isDeleteModalOpen = true" :item="item" :sending="sending" />
+    <EmployerEditForm @onSubmit="handleEdit" @onArchive="isArchiveModalOpen = true" @onDelete="isDeleteModalOpen = true" :item="item" :sending="sending" />
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
     <AlertModal
         target="#modal2"
+        :isOpen="isArchiveModalOpen"
+        @close="isArchiveModalOpen = false"
+        @accept="handleArchive"
+        title="Вы действительно хотите отправить в архив?"
+        withButtons info/>
+    <AlertModal
+        target="#modal2"
         :isOpen="isDeleteModalOpen"
         @close="isDeleteModalOpen = false"
-        @accept="handleArchive"
+        @accept="handleDelete"
         title="Вы действительно хотите удалить?"
         withButtons info/>
   </PageContainer>

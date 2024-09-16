@@ -27,8 +27,8 @@ const breadcrumbs = ref([
 ]);
 
 const handleAdd = (data) => {
-  data.birthday = moment(data.birthday).format('YYYY-MM-DD');
-  data.hireDate = moment(data.hireDate).format('YYYY-MM-DD');
+  data.birthday = data.birthday && data.birthday !== "Invalid date" ? moment(data.birthday, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
+  data.hireDate = data.hireDate && data.hireDate !== "Invalid date" ? moment(data.hireDate, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
 
   UserService.addUser(data).then((response) => {
     if (response.data) {

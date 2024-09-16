@@ -32,7 +32,7 @@ const age = computed(() => {
   }
 
   const today = new Date();
-  const birthDate = new Date(state.birthday);
+  const birthDate = moment(state.birthday, 'DD.MM.YYYY').toDate();
   let age = today.getFullYear() - birthDate.getFullYear();
 
   if (today.getMonth() < birthDate.getMonth() ||
@@ -61,7 +61,7 @@ const zodiac = computed(() => {
     else if (month == 12 && day >= 22 || month == 1 && day <= 19) return "Козерог";
   }
 
-  const birthDate = new Date(moment(state.birthday).format('YYYY-MM-DD'));
+  const birthDate = moment(state.birthday, 'DD.MM.YYYY').toDate();
   return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
 });
 
@@ -78,7 +78,7 @@ const state = reactive({
   birthday: null,
   gender: 0,
   phone: '',
-  position: '',
+  position: 0,
   snils: '',
   inn: '',
   hireDate: null,
@@ -94,25 +94,25 @@ const rules = computed(() => {
       $lazy: true
     },
     firstName: {
-      required: helpers.withMessage("Поле должно быть заполнено", required),
-      lettersAndDash: helpers.withMessage("Только буквы и тире", lettersAndDash),
+      required: helpers.withMessage("Имя должно быть заполнено", required),
+      lettersAndDash: helpers.withMessage("Имя должно содержать только буквы и тире", lettersAndDash),
       $lazy: true
     },
     lastName: {
-      required: helpers.withMessage("Поле должно быть заполнено", required),
-      lettersAndDash: helpers.withMessage("Только буквы и тире", lettersAndDash),
+      required: helpers.withMessage("Фамилия должна быть заполнена", required),
+      lettersAndDash: helpers.withMessage("Фамилия должна содержать только буквы и тире", lettersAndDash),
       $lazy: true
     },
     patronym: {
-      lettersAndDash: helpers.withMessage("Только буквы и тире", lettersAndDash),
+      lettersAndDash: helpers.withMessage("Отчество должно содержать только буквы и тире", lettersAndDash),
     },
     password: {
-      required: helpers.withMessage("Поле должно быть заполнено", required),
+      required: helpers.withMessage("Пароль должен быть заполнен", required),
       minLength: helpers.withMessage("Минимальная длина пароля - 6 символов", minLength(6)),
       $lazy: true
     },
     confirmPassword: {
-      required: helpers.withMessage("Поле должно быть заполнено", required),
+      required: helpers.withMessage("Подтверждение пароля должно быть заполнено", required),
       sameAsPassword: helpers.withMessage("Пароли не совпадают", sameAs(state.password)),
       $lazy: true
     },
@@ -203,7 +203,7 @@ onMounted(() => {
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
             <div>
               <DatePickerWithMask :value="state.birthday" @onChange="e => state.birthday = e" />
-              <span class="ml-6">{{ age }}{{ zodiac }}</span>
+              <p class="mt-2">{{ age }}{{ zodiac }}</p>
             </div>
             <FormError :errors="v$.birthday.$errors"/>
           </div>
@@ -299,6 +299,9 @@ onMounted(() => {
           </div>
         </div>
         <Divider type="dashed"/>
+        <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
+          {{ error.$message }}
+        </p>
         <Button v-if="user.access.employers === 2" type="submit" icon="pi pi-plus" label="Добавить" outlined/>
       </form>
     </template>

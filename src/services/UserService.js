@@ -56,6 +56,13 @@ class UserService {
 
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/remove.php`, form);
     }
+
+    static async deleteUser(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/delete_by_id.php`, form);
+    }
 }
 
 export default UserService
