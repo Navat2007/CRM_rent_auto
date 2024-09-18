@@ -466,12 +466,14 @@ if ($error === 0) {
                 user_id,
                 access_directory,
                 access_employers,
+                access_clients,
                 last_user_id
             ) 
             VALUES (
                 '$ID', 
                 '$access_directory', 
                 '$access_employers',
+                '$access_clients',
                 '$user'
             )";
         $sqls[] = $sql;

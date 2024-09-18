@@ -24,7 +24,7 @@ $sql = "
         up.issued_date as passport_date_of_issue, up.registration_address as passport_registration_address,
         udl.series_number as dl_series_number, udl.issued_date as dl_issued_date,
         udl.issued_by_who as dl_issued_by_who, udl.expire_date as dl_expire_date,
-        ua.access_directory, ua.access_employers
+        ua.access_directory, ua.access_employers, ua.access_clients
     FROM 
         users as users
     LEFT JOIN 
