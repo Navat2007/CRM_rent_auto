@@ -32,7 +32,7 @@ const handleItemClick = () => {
         'bg-primary-700': sidebarStore.page === item.label || sidebarStore.selected === item.label
       }"
     >
-      <span v-html="item.icon"></span>
+      <span :class="item.icon"></span>
 
       {{ item.label }}
 

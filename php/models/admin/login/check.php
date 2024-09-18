@@ -31,7 +31,7 @@ if (!empty($login) && !empty($password)) {
             t2.first_name as user_first_name, t2.second_name as user_second_name,
             t2.middle_name as user_middle_name, t2.user_type,
             t4.id as company_id, t4.name as company_name,
-            t5.access_directory, t5.access_employers
+            t5.access_directory, t5.access_employers, t5.access_legal_person
         FROM 
             users as t1
         LEFT JOIN 
@@ -112,7 +112,8 @@ function get_all_info($row, $conn): object
         'token_created_at' => new DateTime(),
         'access' => (object)[
             'directory' => (int)$row->access_directory,
-            'employers' => (int)$row->access_employers
+            'employers' => (int)$row->access_employers,
+            'legal_person' => (int)$row->access_legal_person
         ]
     ];
 }
