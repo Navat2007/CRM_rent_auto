@@ -124,6 +124,7 @@ const state = reactive({
   other_upload_files: [],
   access_directory: parseInt(props.item.access_directory) || 0,
   access_employers: parseInt(props.item.access_employers) || 0,
+  access_clients: parseInt(props.item.access_clients) || 0,
 });
 const rules = computed(() => {
   return {
@@ -551,6 +552,13 @@ onMounted(() => {
               <Fieldset legend="Управление сотрудниками">
                 <div v-for="item in access" :key="'access_employers' + item.key" class="flex items-center">
                   <RadioButton v-model="state.access_employers" :inputId="'access_employers' + item.key" name="dynamic"
+                               :value="item.key"/>
+                  <label :for="item.key" class="ml-2">{{ item.name }}</label>
+                </div>
+              </Fieldset>
+              <Fieldset legend="Управление клиентами">
+                <div v-for="item in access" :key="'access_clients' + item.key" class="flex items-center">
+                  <RadioButton v-model="state.access_clients" :inputId="'access_clients' + item.key" name="dynamic"
                                :value="item.key"/>
                   <label :for="item.key" class="ml-2">{{ item.name }}</label>
                 </div>

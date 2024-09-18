@@ -259,7 +259,7 @@ const onFormSubmit = async (e) => {
         <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
           {{ error.$message }}
         </p>
-        <div v-if="user.access.legal_person === 2 && state.archive === 0">
+        <div v-if="user.access.clients === 2 && state.archive === 0">
           <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
           <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
                   @click="emit('onArchive');" outlined/>

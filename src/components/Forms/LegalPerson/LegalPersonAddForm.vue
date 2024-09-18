@@ -255,7 +255,7 @@ const onFormSubmit = async (e) => {
         <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
           {{ error.$message }}
         </p>
-        <Button v-if="user.access.legal_person === 2" type="submit" icon="pi pi-plus" label="Добавить" outlined/>
+        <Button v-if="user.access.clients === 2" type="submit" icon="pi pi-plus" label="Добавить" outlined/>
       </form>
     </template>
   </Card>

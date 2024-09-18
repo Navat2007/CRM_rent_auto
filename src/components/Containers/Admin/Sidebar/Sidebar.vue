@@ -35,9 +35,9 @@ const menuGroups = ref([
         label: 'Клиенты',
         route: '',
         children: [
-          { label: 'Юрлица', route: '/Admin/legalPerson', visible: user.access?.legal_person !== 0 },
+          { label: 'Юрлица', route: '/Admin/legalPerson', visible: user.access?.clients !== 0 },
         ],
-        visible: user.access?.legal_person && user.access?.legal_person !== 0
+        visible: user.access?.clients && user.access?.clients !== 0
       },
       {
         icon: `pi pi-folder-open`,

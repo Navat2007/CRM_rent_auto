@@ -127,6 +127,7 @@ $dl_expire_date = htmlspecialchars($_POST["dl_expire_date"]);
 
 $access_directory = htmlspecialchars($_POST["access_directory"]);
 $access_employers = htmlspecialchars($_POST["access_employers"]);
+$access_clients = htmlspecialchars($_POST["access_clients"]);
 
 $error = 0;
 $error_text = "";
@@ -454,6 +455,7 @@ if ($error === 0) {
             SET
                 access_directory = '$access_directory', 
                 access_employers = '$access_employers', 
+                access_clients = '$access_clients', 
                 last_user_id = '$user'
             WHERE 
                 user_id = '$ID'";
