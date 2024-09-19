@@ -225,7 +225,7 @@ onMounted(() => {
             <label for="position"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Должность</label>
             <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name"
-                    optionValue="id" placeholder="Выберите должность" showClear class="w-full"/>
+                    optionValue="id" placeholder="Выберите должность" filter showClear class="w-full"/>
           </div>
           <!-- СНИЛС -->
           <div>

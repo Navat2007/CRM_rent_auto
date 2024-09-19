@@ -103,7 +103,7 @@ onMounted(() => {
         <Column field="position" header="Должность" sortable>
           <template #filter="{ filterModel }">
             <Dropdown v-model="filterModel.value" :options="positions" placeholder="Все" class="p-column-filter"
-                      showClear/>
+                      showClear filter/>
           </template>
         </Column>
         <Column field="status" header="Статус" sortable>
