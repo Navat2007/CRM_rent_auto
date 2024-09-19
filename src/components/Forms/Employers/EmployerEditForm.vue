@@ -170,6 +170,10 @@ const onFormSubmit = async (e) => {
   }
 };
 
+const handleAddPositionButtonClick = () => {
+
+};
+
 async function fetchPositions() {
   positions.value = (await DirectoryService.getPositions(user.company_id)).filter(position => position.archive === "Активен");
   loadingPositions.value = false;
@@ -291,7 +295,11 @@ onMounted(() => {
                   <label for="position"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Должность</label>
                   <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name"
-                          optionValue="id" placeholder="Выберите должность" showClear filter class="w-full"/>
+                          optionValue="id" placeholder="Выберите должность" showClear filter class="w-full">
+                    <template v-if="user.access.directory === 2" #header>
+                      <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить" outlined @click="handleAddPositionButtonClick" />
+                    </template>
+                  </Select>
                 </div>
                 <!-- СНИЛС -->
                 <div>
