@@ -23,7 +23,6 @@ const handleAdd = (data) => {
   DirectoryService.addPositions(data).then((response) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
-        console.log(response.data);
         id.value = parseInt(response.data.params.id);
         isSuccessModalOpen.value = true
       } else {
