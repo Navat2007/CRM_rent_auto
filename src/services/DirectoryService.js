@@ -44,6 +44,13 @@ class DirectoryService {
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/position/edit.php`, form);
     }
 
+    static async deletePositions(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/position/delete.php`, form);
+    }
+
     static async getAdvertisingTypes(company_id) {
         let form = new FormData();
         form.append('company_id', company_id);

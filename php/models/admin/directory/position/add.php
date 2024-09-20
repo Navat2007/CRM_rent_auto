@@ -26,7 +26,7 @@ if($error === 0){
     $row = pg_fetch_object($result);
     $lastID = $row->id;
 
-    $params[] = (object)[
+    $params = (object)[
         'id' => $lastID,
     ];
 }

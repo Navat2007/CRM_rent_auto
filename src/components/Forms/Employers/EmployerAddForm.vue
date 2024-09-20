@@ -8,6 +8,7 @@ import Divider from "primevue/divider";
 import FormError from "@components/Inputs/FormError.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import DatePickerWithMask from "@components/Inputs/DatePickerWithMask.vue";
+import PopUpAddDirectoryPosition from "@components/Popups/PopUpAddDirectoryPosition.vue";
 
 const {user} = useAuthStore();
 
@@ -20,6 +21,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['onSubmit']);
 
+const isPositionAddModalOpen = ref(false);
 const genders = ref([
   {label: 'Мужской', value: 0,},
   {label: 'Женский', value: 1},
@@ -132,6 +134,12 @@ const onFormSubmit = async (e) => {
   }
 };
 
+const onPositionAdd = async (id) => {
+  loadingPositions.value = true;
+  await fetchPositions();
+  state.position = id;
+}
+
 async function fetchPositions() {
   positions.value = (await DirectoryService.getPositions(user.company_id)).filter(position => position.archive === "Активен");
   loadingPositions.value = false;
@@ -225,7 +233,11 @@ onMounted(() => {
             <label for="position"
                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Должность</label>
             <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name"
-                    optionValue="id" placeholder="Выберите должность" filter showClear class="w-full"/>
+                    optionValue="id" placeholder="Выберите должность" showClear filter class="w-full" >
+              <template v-if="user.access.directory === 2" #header>
+                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить" outlined @click="isPositionAddModalOpen = true" />
+              </template>
+            </Select>
           </div>
           <!-- СНИЛС -->
           <div>
@@ -306,4 +318,5 @@ onMounted(() => {
       </form>
     </template>
   </Card>
+  <PopUpAddDirectoryPosition :visible="isPositionAddModalOpen" @on-add="onPositionAdd" @on-close="isPositionAddModalOpen = false" />
 </template>

@@ -48,7 +48,9 @@ const onSuccess = () => {
 
 <template>
   <PageContainer :breadcrumbs="breadcrumbs">
-    <DirectoryPositionAddForm @onSubmit="handleAdd"/>
+    <div class="w-full lg:w-2/3">
+      <DirectoryPositionAddForm @onSubmit="handleAdd"/>
+    </div>
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>

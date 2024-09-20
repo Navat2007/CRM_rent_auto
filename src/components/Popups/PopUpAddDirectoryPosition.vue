@@ -1,0 +1,50 @@
+<script setup>
+import {ref} from "vue";
+import DirectoryPositionAddForm from "@components/Forms/Directory/DirectoryPositionAddForm.vue";
+import AlertModal from "@components/Modals/AlertModal.vue";
+import DirectoryService from "@services/DirectoryService.js";
+import BaseModal from "@components/Modals/BaseModal.vue";
+
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+});
+const emit = defineEmits(['onAdd', 'onClose']);
+
+const id = ref(-1);
+const error = ref('');
+const isAlertModalOpen = ref(false);
+const isSuccessModalOpen = ref(false);
+
+const handleAdd = (data) => {
+  DirectoryService.addPositions(data).then((response) => {
+    if (response.data) {
+      if (parseInt(response.data.error) === 0) {
+        console.log(response.data);
+        id.value = parseInt(response.data.params.id);
+        isSuccessModalOpen.value = true
+      } else {
+        error.value = response.data.error_text
+        isAlertModalOpen.value = true
+      }
+    }
+  });
+}
+
+const onSuccess = () => {
+  isSuccessModalOpen.value = false;
+  emit('onAdd', id.value);
+}
+</script>
+
+<template>
+  <BaseModal :is-open="visible" @close="emit('onClose')" title="Добавление должности">
+    <DirectoryPositionAddForm @onSubmit="handleAdd" :card="false" />
+  </BaseModal>
+
+  <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
+  <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
+</template>
