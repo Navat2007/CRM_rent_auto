@@ -346,7 +346,7 @@ class helper
         }
     }
 
-    function removeDirectory($dir)
+    function removeDirectory($dir): void
     {
         if (is_file($dir)) {
             @unlink($dir);
@@ -354,6 +354,16 @@ class helper
             array_map('removeDir', glob('/*')) == @rmdir($dir);
         }
         @rmdir($dir);
+    }
+
+    function deleteDir($path): bool
+    {
+        if (empty($path)) {
+            return false;
+        }
+        return is_file($path) ?
+            @unlink($path) :
+            array_map(__FUNCTION__, glob($path.'/*')) == @rmdir($path);
     }
 
     function translit_sef($value)

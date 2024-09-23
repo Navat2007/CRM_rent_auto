@@ -115,6 +115,37 @@ const adminRoutes = [
             title: 'Редактирование юр лица',
         }
     },
+    {
+        path: '/Admin/clients',
+        exact: true,
+        component: AdminLegalPerson,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Юр лица',
+        }
+    },
+    {
+        path: '/Admin/legalPerson/new',
+        component: AdminAddLegalPerson,
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Новое юр лицо',
+        }
+    },
+    {
+        path: '/Admin/legalPerson/:id',
+        component: AdminEditLegalPerson,
+        exact: true,
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Редактирование юр лица',
+        }
+    },
     // Directory
     {
         path: '/Admin/directory/positions',
