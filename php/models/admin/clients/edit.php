@@ -83,20 +83,17 @@ function CheckFilesToDelete($files, $table): void {
 $ID = htmlspecialchars($_POST["id"]);
 $user = $authorization[1];
 $active = htmlspecialchars($_POST["active"]) === "true" ? 1 : 0;
-$actsOnBasis = htmlspecialchars($_POST["actsOnBasis"]);
 $birthday = htmlspecialchars($_POST["birthday"]);
 $companyId = htmlspecialchars($_POST["companyId"]);
 $email = htmlspecialchars($_POST["email"]);
 $firstName = htmlspecialchars($_POST["firstName"]);
 $gender = htmlspecialchars($_POST["gender"]);
-$hireDate = htmlspecialchars($_POST["hireDate"]);
 $inn = htmlspecialchars($_POST["inn"]);
 $lastName = htmlspecialchars($_POST["lastName"]);
-$password = htmlspecialchars($_POST["password"]);
 $patronym = htmlspecialchars($_POST["patronym"]);
 $phone = htmlspecialchars($_POST["phone"]);
-$position = htmlspecialchars($_POST["position"]);
-$rate = htmlspecialchars($_POST["rate"]);
+$advertising = htmlspecialchars($_POST["advertising"]);
+$legalPerson = htmlspecialchars($_POST["legalPerson"]);
 $snils = htmlspecialchars($_POST["snils"]);
 $fullName = $lastName . ' ' . $firstName;
 
@@ -107,10 +104,15 @@ if (!empty($patronym)) {
 $companies = $_POST["companies"] ?? array();
 $contacts = $_POST['contacts'] ?? array();
 $avatar = isset($_POST["avatar"]) ? htmlspecialchars($_POST["avatar"]) : null;
+$bank_card = htmlspecialchars($_POST["bank_card"]);
+$note = htmlspecialchars($_POST["note"]);
 $note1 = htmlspecialchars($_POST["note1"]);
 $note2 = htmlspecialchars($_POST["note2"]);
 $note3 = htmlspecialchars($_POST["note3"]);
-$firingDate = htmlspecialchars($_POST["firingDate"]);
+
+$negative = htmlspecialchars($_POST["negative"]) === "true" ? 1 : 0;
+$debtor = htmlspecialchars($_POST["debtor"]) === "true" ? 1 : 0;
+$verification_failure = htmlspecialchars($_POST["verification_failure"]) === "true" ? 1 : 0;
 
 $passport_series_number = htmlspecialchars($_POST["passport_series_number"]);
 $passport_department_code = htmlspecialchars($_POST["passport_department_code"]);
@@ -124,10 +126,6 @@ $dl_series_number = htmlspecialchars($_POST["dl_series_number"]);
 $dl_issued_by_who = htmlspecialchars($_POST["dl_issued_by_who"]);
 $dl_issued_date = htmlspecialchars($_POST["dl_issued_date"]);
 $dl_expire_date = htmlspecialchars($_POST["dl_expire_date"]);
-
-$access_directory = htmlspecialchars($_POST["access_directory"]);
-$access_employers = htmlspecialchars($_POST["access_employers"]);
-$access_clients = htmlspecialchars($_POST["access_clients"]);
 
 $error = 0;
 $error_text = "";
@@ -165,24 +163,6 @@ if ($error === 0) {
     pg_query($conn, $sql);
     #endregion
 
-    #region Password
-    if (isset($_POST["password"]) && trim($_POST["password"]) != "") {
-        $pwd = trim(htmlspecialchars($_POST["password"]));
-        $new_password = password_hash($pwd, PASSWORD_DEFAULT);
-        $current_password = $admin_row->password;
-
-        if (password_verify($pwd, $current_password)) {
-            $error = "1";
-            $error_text = "Пароль совпадает с текущим";
-        } else {
-            $update_query = "UPDATE users SET password = '$new_password', password_change_date = NOW() WHERE id = '$ID'";
-            $sqls[] = $update_query;
-            pg_query($conn, $update_query);
-        }
-
-    }
-    #endregion
-
     #region User info
     $sql = "SELECT * FROM users_info WHERE user_id = '$ID'";
     $sqls[] = $sql;
@@ -193,23 +173,25 @@ if ($error === 0) {
             UPDATE 
                 users_info 
             SET
-                user_type = '$position', 
                 full_name = '$fullName',
+                bank_card = '$bank_card',
+                negative = '$negative',
+                debtor = '$debtor',
+                verification_failure = '$verification_failure',
                 birth_date = " . (empty($birthday) ? 'NULL' : "'" . $birthday . "'") . ",
                 gender = '$gender',
                 first_name = '$firstName',
                 second_name = '$lastName',
                 middle_name = '$patronym',
                 phone = '$phone',
-                hire_date = " . (empty($hireDate) ? 'NULL' : "'" . $hireDate . "'") . ",
-                firing_date = " . (empty($firingDate) ? 'NULL' : "'" . $firingDate . "'") . ",
-                acts_on_basis = '$actsOnBasis',
-                rate = '$rate',
+                directory_advertising_type_id = '$advertising',
+                legal_person_id = '$legalPerson',
                 inn = '$inn',
                 snils = '$snils',
-                user_note_1 = '$note1',
-                user_note_2 = '$note2',
-                user_note_3 = '$note3'
+                note = '$note',
+                client_note_1 = '$note1',
+                client_note_2 = '$note2',
+                client_note_3 = '$note3'
             WHERE 
                 user_id = '$ID'";
         $sqls[] = $sql;
@@ -217,7 +199,7 @@ if ($error === 0) {
     } else {
         $sql = "INSERT INTO users_info (
                 user_id, 
-                user_type, 
+                bank_card, 
                 full_name,
                 birth_date,
                 gender,
@@ -225,18 +207,21 @@ if ($error === 0) {
                 second_name,
                 middle_name,
                 phone,
-                hire_date,
-                acts_on_basis,
-                rate,
                 inn,
                 snils,
-                user_note_1,
-                user_note_2,
-                user_note_3
+                directory_advertising_type_id,
+                legal_person_id,
+                note,
+                client_note_1,
+                client_note_2,
+                client_note_3,
+                negative,
+                debtor,
+                verification_failure
             ) 
             VALUES (
                 '$ID', 
-                '$position', 
+                '$bank_card', 
                 '$fullName',
                 " . (empty($birthday) ? 'NULL' : "'" . $birthday . "'") . ",
                 '$gender',
@@ -244,14 +229,17 @@ if ($error === 0) {
                 '$lastName',
                 '$patronym',
                 '$phone',
-                " . (empty($hireDate) ? 'NULL' : "'" . $hireDate . "'") . ",
-                '$actsOnBasis',
-                '$rate',
                 '$inn',
                 '$snils',
+                '$advertising',
+                '$legalPerson',
+                '$note',
                 '$note1',
                 '$note2',
-                '$note3'
+                '$note3',
+                '$negative',
+                '$debtor',
+                '$verification_failure'
             )";
         $sqls[] = $sql;
         $result = pg_query($conn, $sql);
@@ -447,44 +435,6 @@ if ($error === 0) {
     }
 
     SaveFiles($folder_title, $files_upload_title, $db_title);
-    #endregion
-
-    #region Access
-    $sql = "SELECT * FROM users_access WHERE user_id = '$ID'";
-    $sqls[] = $sql;
-    $result = pg_query($conn, $sql);
-
-    if (pg_num_rows($result) > 0) {
-        $sql = "
-            UPDATE 
-                users_access 
-            SET
-                access_directory = '$access_directory', 
-                access_employers = '$access_employers', 
-                access_clients = '$access_clients', 
-                last_user_id = '$user'
-            WHERE 
-                user_id = '$ID'";
-        $sqls[] = $sql;
-        $result = pg_query($conn, $sql);
-    } else {
-        $sql = "INSERT INTO users_access (
-                user_id,
-                access_directory,
-                access_employers,
-                access_clients,
-                last_user_id
-            ) 
-            VALUES (
-                '$ID', 
-                '$access_directory', 
-                '$access_employers',
-                '$access_clients',
-                '$user'
-            )";
-        $sqls[] = $sql;
-        $result = pg_query($conn, $sql);
-    }
     #endregion
 }
 

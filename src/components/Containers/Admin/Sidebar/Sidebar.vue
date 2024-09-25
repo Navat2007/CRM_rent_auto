@@ -35,6 +35,7 @@ const menuGroups = ref([
         label: 'Клиенты',
         route: '',
         children: [
+          { label: 'Клиенты', route: '/Admin/clients', visible: user.access?.clients !== 0 },
           { label: 'Юрлица', route: '/Admin/legalPerson', visible: user.access?.clients !== 0 },
         ],
         visible: user.access?.clients && user.access?.clients !== 0

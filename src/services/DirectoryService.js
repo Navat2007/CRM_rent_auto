@@ -92,6 +92,13 @@ class DirectoryService {
 
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/advertising_types/edit.php`, form);
     }
+
+    static async deleteAdvertisingTypes(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/advertising_types/delete.php`, form);
+    }
 }
 
 export default DirectoryService

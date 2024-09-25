@@ -13,8 +13,10 @@ const item = ref(null);
 const route = useRoute();
 const error = ref('');
 const loading = ref(true);
+const sending = ref(false);
 const isAlertModalOpen = ref(false);
 const isSuccessModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
 
 const breadcrumbs = ref([
   {
@@ -44,6 +46,22 @@ const handleEdit = (data) => {
     }
   });
 }
+const handleDelete = () => {
+  let sendingData = {id: route.params.id};
+  isDeleteModalOpen.value = false;
+  sending.value = true;
+
+  DirectoryService.deleteAdvertisingTypes(sendingData).then((response) => {
+    if (response.data) {
+      if (parseInt(response.data.error) === 0) {
+        isSuccessModalOpen.value = true
+      } else {
+        error.value = response.data.error_text
+        isAlertModalOpen.value = true
+      }
+    }
+  });
+}
 
 const onSuccess = () => {
   isSuccessModalOpen.value = false;
@@ -60,10 +78,17 @@ onMounted(fetchData);
 
 <template>
   <PageContainer :loading="loading" :breadcrumbs="breadcrumbs">
-    <DirectoryAdvertisingTypesEditForm @onSubmit="handleEdit" :item="item"/>
+    <DirectoryAdvertisingTypesEditForm @onSubmit="handleEdit" @onDelete="isDeleteModalOpen = true" :item="item"/>
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
+    <AlertModal
+        target="#modal2"
+        :isOpen="isDeleteModalOpen"
+        @close="isDeleteModalOpen = false"
+        @accept="handleDelete"
+        title="Вы действительно хотите удалить?"
+        withButtons info/>
   </PageContainer>
 </template>
 

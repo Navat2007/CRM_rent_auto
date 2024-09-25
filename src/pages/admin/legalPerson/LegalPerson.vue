@@ -75,10 +75,12 @@ async function fetchData() {
   items.value = await LegalPersonsService.getLegalPersons(user.company_id);
 
   items.value.map(item => {
-    item.updated_at = new Date(item.updated_at);
-
-    if(item.archive === 0)
-      item.updated_at = new Date('2000-01-01');
+    if(item.archive === 0) {
+      item.updated_at = new Date('1900-01-01');
+    }
+    else{
+      item.updated_at = new Date(item.updated_at);
+    }
   });
 
   loading.value = false;

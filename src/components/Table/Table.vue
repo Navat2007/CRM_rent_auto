@@ -51,7 +51,7 @@ const clearFilter = () => {
 const initFilters = () => {
   finalFilters.value = {
     ...props.filters,
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    global: {value: null, matchMode: FilterMatchMode.CONTAINS}
   };
 };
 const exportCSV = () => {
@@ -64,18 +64,19 @@ initFilters();
 <template>
   <Card>
     <template #title>
-      <Toolbar class="mb-6">
-      <template #start>
-        <slot name="buttons"/>
-      </template>
-
-      <template #end>
-        <!--              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />-->
-        <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
-                @click="clearFilter()"/>
-      </template>
-    </Toolbar>
+      <Toolbar class="mb-2">
+        <template #start>
+          <slot name="buttons"/>
+        </template>
+        <template #end>
+          <!--              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />-->
+          <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
+                  @click="clearFilter()"/>
+        </template>
+      </Toolbar>
+      <slot name="checkbox"/>
     </template>
+
     <template #content>
       <DataTable v-if="loading" :value="skeletonItems">
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header">
@@ -87,10 +88,11 @@ initFilters();
       <DataTable
           v-else
           ref="table" :value="items" @row-click="handleRowClick"
-          stateStorage="local" :stateKey="tableSaveKey"
-          showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize" :rowsPerPageOptions="[5, 10, 20, 50]"
-          resizableColumns columnResizeMode="fit"
-          sortField="id" :sortOrder="1" removableSort
+          stateStorage="local" :stateKey="tableSaveKey" size="small"
+          showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize"
+          :rowsPerPageOptions="[5, 10, 20, 50]"
+          resizableColumns columnResizeMode="fit" reorderableColumns
+          sortField="id" :sortOrder="1" removableSort rowHover
           filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"
       >
         <template #header>

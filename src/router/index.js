@@ -17,6 +17,9 @@ import AdminEditEmployer from "@pages/admin/employers/EditEmployer.vue";
 import AdminLegalPerson from "@pages/admin/legalPerson/LegalPerson.vue";
 import AdminAddLegalPerson from "@pages/admin/legalPerson/AddLegalPerson.vue";
 import AdminEditLegalPerson from "@pages/admin/legalPerson/EditLegalPerson.vue";
+import AdminClients from "@pages/admin/clients/Clients.vue";
+import AdminAddClient from "@pages/admin/clients/AddClient.vue";
+import AdminEditClient from "@pages/admin/clients/EditClient.vue";
 import AdminPositions from "@pages/admin/directory/position/Positions.vue";
 import AdminAddPositions from "@pages/admin/directory/position/AddPositions.vue";
 import AdminEditPositions from "@pages/admin/directory/position/EditPositions.vue";
@@ -118,32 +121,32 @@ const adminRoutes = [
     {
         path: '/Admin/clients',
         exact: true,
-        component: AdminLegalPerson,
+        component: AdminClients,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Юр лица',
+            title: 'Клиенты',
         }
     },
     {
-        path: '/Admin/legalPerson/new',
-        component: AdminAddLegalPerson,
+        path: '/Admin/clients/new',
+        component: AdminAddClient,
         exact: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Новое юр лицо',
+            title: 'Новый клиент',
         }
     },
     {
-        path: '/Admin/legalPerson/:id',
-        component: AdminEditLegalPerson,
+        path: '/Admin/clients/:id',
+        component: AdminEditClient,
         exact: true,
         props: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Редактирование юр лица',
+            title: 'Редактирование клиента',
         }
     },
     // Directory

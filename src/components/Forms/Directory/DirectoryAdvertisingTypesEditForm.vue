@@ -92,6 +92,7 @@ onMounted(() => {
         </div>
         <Divider v-if="user.access.directory === 2" type="dashed"/>
         <Button v-if="user.access.directory === 2" type="submit" icon="pi pi-save" label="Сохранить" outlined />
+        <Button class="ml-4" v-if="user.id === 1" @click="emit('onDelete')" icon="pi pi-trash" label="Удалить" outlined severity="danger" />
       </form>
     </template>
   </Card>

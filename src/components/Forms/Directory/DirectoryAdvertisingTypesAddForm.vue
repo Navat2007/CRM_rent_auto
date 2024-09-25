@@ -21,6 +21,11 @@ const props = defineProps({
     required: false,
     default: false
   },
+  card: {
+    type: Boolean,
+    required: false,
+    default: true
+  }
 })
 const emit = defineEmits(['onSubmit']);
 
@@ -54,7 +59,7 @@ const onSubmit = async (e) => {
 </script>
 
 <template>
-  <Card class="w-full lg:w-2/3">
+  <Card v-if="card" class="w-full lg:w-2/3">
     <template #title>Добавление должности</template>
     <template #content>
       <form @submit.prevent="onSubmit">
@@ -85,4 +90,32 @@ const onSubmit = async (e) => {
       </form>
     </template>
   </Card>
+  <div v-else>
+    <form @submit.prevent="onSubmit">
+      <div class="grid gap-4 mb-4 sm:grid-cols-1">
+        <div>
+          <label for="name"
+                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Название</label>
+          <input
+              v-model="name.value" :ref="name.ref"
+              type="text" id="name"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              placeholder="..." required=""
+          >
+          <span v-if="name.error" class="text-red-500">{{ name.error.message }}</span>
+        </div>
+        <div class="flex items-center">
+          <input id="active" type="checkbox"
+                 v-model="active.value" :ref="active.ref"
+                 class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+
+          <label for="active" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+            Активен?
+          </label>
+        </div>
+      </div>
+      <Divider type="dashed"/>
+      <Button v-if="user.access.directory === 2" type="submit" icon="pi pi-plus" label="Добавить" outlined/>
+    </form>
+  </div>
 </template>
