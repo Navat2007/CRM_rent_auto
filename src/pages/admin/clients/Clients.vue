@@ -103,6 +103,8 @@ async function fetchData() {
   advertising_type.value = await DirectoryService.getAdvertisingTypes(user.company_id);
   advertising_type.value = advertising_type.value.filter(advertising => advertising.archive === "Активен").map(advertising => advertising.name);
   loading.value = false;
+
+  console.log(items.value);
 }
 
 onMounted(() => {
@@ -118,34 +120,28 @@ onMounted(() => {
         :filters="filters" :filterFields="filterFields"
         :loading="loading" @onRowClick="handleRowClick"
     >
-      <template #test>
-        <div style="text-align:left">
-          <MultiSelect :modelValue="selectedColumns" :options="columns" optionLabel="header" @update:modelValue="onToggle"
-                       display="chip" fluid placeholder="Выберите столбцы" />
-        </div>
-      </template>
       <template #columns>
-        <Column v-if="selectedColumns.findIndex(column => column.field === 'id') !== -1" field="id" header="ID" dataType="numeric" headerStyle="width: 3rem; min-width: 3rem;" sortable>
+        <Column field="id" header="ID" dataType="numeric" headerStyle="width: 3rem; min-width: 3rem;" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="number" placeholder="Поиск по ID"/>
           </template>
         </Column>
-        <Column v-if="selectedColumns.findIndex(column => column.field === 'full_name') !== -1" field="full_name" header="ФИО" sortable>
+        <Column field="full_name" header="ФИО" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="text" placeholder="Поиск по ФИО"/>
           </template>
         </Column>
-        <Column v-if="selectedColumns.findIndex(column => column.field === 'email') !== -1" field="email" header="Email" sortable>
+        <Column field="email" header="Email" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="text" placeholder="Поиск по Email"/>
           </template>
         </Column>
-        <Column v-if="selectedColumns.findIndex(column => column.field === 'phone') !== -1" field="phone" header="Телефон" sortable>
+        <Column field="phone" header="Телефон" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="text" placeholder="Поиск по телефону"/>
           </template>
         </Column>
-        <Column v-if="selectedColumns.findIndex(column => column.field === 'birth_date') !== -1" field="birth_date" dataType="date" header="Дата рождения" sortable>
+        <Column field="birth_date" dataType="date" header="Дата рождения" sortable>
           <template #body="{ data }">
             {{ formatDate(data) }}
           </template>
@@ -156,18 +152,18 @@ onMounted(() => {
             />
           </template>
         </Column>
-        <Column v-if="selectedColumns.findIndex(column => column.field === 'inn') !== -1" field="inn" header="ИНН" sortable>
+        <Column field="inn" header="ИНН" sortable>
           <template #filter="{ filterModel }">
             <InputNumber v-model="filterModel.value" type="text" placeholder="Поиск по ИНН"/>
           </template>
         </Column>
-        <Column v-if="selectedColumns.findIndex(column => column.field === 'advertising_type') !== -1" field="advertising_type" header="Вид рекламы" sortable>
+        <Column field="advertising_type" header="Вид рекламы" sortable>
           <template #filter="{ filterModel }">
             <Dropdown v-model="filterModel.value" :options="advertising_type" placeholder="Все" class="p-column-filter"
                       showClear filter/>
           </template>
         </Column>
-        <Column v-if="selectedColumns.findIndex(column => column.field === 'status') !== -1" field="status" header="Статус" sortable>
+        <Column field="status" header="Статус" sortable>
           <template #filter="{ filterModel }">
             <Dropdown v-model="filterModel.value" :options="statuses" placeholder="Все" class="p-column-filter"
                       showClear/>

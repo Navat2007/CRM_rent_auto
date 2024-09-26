@@ -10,7 +10,7 @@ import DatePickerWithMask from "@components/Inputs/DatePickerWithMask.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import LegalPersonsService from "@services/LegalPersonsService.js";
 import PopUpAddAdvertisingType from "@components/Popups/PopUpAddAdvertisingType.vue";
-import PopUpAddDirectoryPosition from "@components/Popups/PopUpAddDirectoryPosition.vue";
+import {lettersAndDash} from "@utils/formCheck.js";
 
 const {user} = useAuthStore();
 
@@ -70,8 +70,6 @@ const zodiac = computed(() => {
   const birthDate = moment(state.birthday, 'DD.MM.YYYY').toDate();
   return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
 });
-
-const lettersAndDash = helpers.regex(/^[a-zA-Zа-яА-Я-]*$/);
 
 const state = reactive({
   companyId: user.company_id,

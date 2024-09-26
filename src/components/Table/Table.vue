@@ -59,6 +59,8 @@ const exportCSV = () => {
 };
 
 initFilters();
+
+console.log(finalFilters);
 </script>
 
 <template>
@@ -90,7 +92,7 @@ initFilters();
           ref="table" :value="items" @row-click="handleRowClick"
           stateStorage="local" :stateKey="tableSaveKey" size="small"
           showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize"
-          :rowsPerPageOptions="[5, 10, 20, 50]"
+          :rowsPerPageOptions="[10, 20, 50]"
           resizableColumns columnResizeMode="fit" reorderableColumns
           sortField="id" :sortOrder="1" removableSort rowHover
           filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"

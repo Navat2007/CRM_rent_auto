@@ -13,6 +13,7 @@ import TableWithRowEditing from "@components/Table/TableWithRowEditing.vue";
 import FileGallery from "@components/Inputs/FileGallery.vue";
 import LegalPersonsService from "@services/LegalPersonsService.js";
 import PopUpAddAdvertisingType from "@components/Popups/PopUpAddAdvertisingType.vue";
+import {lettersAndDash} from "@utils/formCheck.js";
 
 const {user} = useAuthStore();
 
@@ -75,8 +76,6 @@ const zodiac = computed(() => {
   const birthDate = moment(state.birthday, 'DD.MM.YYYY').toDate();
   return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
 });
-
-const lettersAndDash = helpers.regex(/^[a-zA-Zа-яА-Я-]*$/);
 
 const state = reactive({
   archive: parseInt(props.item.archive),

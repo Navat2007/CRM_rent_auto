@@ -111,7 +111,12 @@ onMounted(fetchData);
 
 <template>
   <PageContainer :loading="loading" :breadcrumbs="breadcrumbs">
-    <ClientEditForm @onSubmit="handleEdit" @onArchive="isArchiveModalOpen = true" @onDelete="isDeleteModalOpen = true" :item="item" :sending="sending" />
+    <ClientEditForm
+        @onSubmit="handleEdit"
+        @onArchive="isArchiveModalOpen = true"
+        @onDelete="isDeleteModalOpen = true"
+        :item="item" :sending="sending"
+    />
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>

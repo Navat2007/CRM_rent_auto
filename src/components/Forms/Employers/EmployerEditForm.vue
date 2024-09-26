@@ -12,6 +12,7 @@ import AvatarSelect from "@components/Inputs/AvatarSelect.vue";
 import TableWithRowEditing from "@components/Table/TableWithRowEditing.vue";
 import FileGallery from "@components/Inputs/FileGallery.vue";
 import PopUpAddDirectoryPosition from "@components/Popups/PopUpAddDirectoryPosition.vue";
+import {lettersAndDash} from "@utils/formCheck.js";
 
 const {user} = useAuthStore();
 
@@ -79,8 +80,6 @@ const access = ref([
   {name: 'Просмотр', key: 1},
   {name: 'Редактирование', key: 2},
 ]);
-
-const lettersAndDash = helpers.regex(/^[a-zA-Zа-яА-Я-]*$/);
 
 const state = reactive({
   archive: parseInt(props.item.archive),
