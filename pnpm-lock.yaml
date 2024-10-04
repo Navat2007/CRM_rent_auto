@@ -62,6 +62,9 @@ importers:
       vue:
         specifier: ^3.4.38
         version: 3.4.38
+      vue-cookies:
+        specifier: ^1.8.4
+        version: 1.8.4
       vue-disable-autocomplete:
         specifier: ^0.0.4
         version: 0.0.4
@@ -1204,6 +1207,9 @@ packages:
       terser:
         optional: true
 
+  vue-cookies@1.8.4:
+    resolution: {integrity: sha512-9zjvACKE4W0kEb8OQtXzpizKhf6zfFOG/Z1TEUjSJn4Z4rintuAHo8y/FpCUhTWHMmPe8E+Fko+/tiXVM+5jOw==}
+
   vue-demi@0.13.11:
     resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}
     engines: {node: '>=12'}
@@ -2293,6 +2299,8 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
       sass: 1.77.8
+
+  vue-cookies@1.8.4: {}
 
   vue-demi@0.13.11(vue@3.4.38):
     dependencies:

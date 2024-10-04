@@ -1,9 +1,9 @@
 <script setup>
-import {computed, reactive, ref, unref, onMounted} from "vue";
+import {computed, onMounted, reactive, ref, unref} from "vue";
 import {useAuthStore} from "@stores";
 import {useVuelidate} from '@vuelidate/core';
 import moment from "moment";
-import {email, helpers, required, minLength, sameAs} from '@vuelidate/validators';
+import {email, helpers, required} from '@vuelidate/validators';
 import Divider from "primevue/divider";
 import FormError from "@components/Inputs/FormError.vue";
 import DirectoryService from "@services/DirectoryService.js";
@@ -14,6 +14,7 @@ import FileGallery from "@components/Inputs/FileGallery.vue";
 import LegalPersonsService from "@services/LegalPersonsService.js";
 import PopUpAddAdvertisingType from "@components/Popups/PopUpAddAdvertisingType.vue";
 import {lettersAndDash} from "@utils/formCheck.js";
+import YandexOCR from "@components/Inputs/YandexOCR.vue";
 
 const {user} = useAuthStore();
 
@@ -34,6 +35,7 @@ const loadingAdvertising = ref(true);
 const loadingLegalPersons = ref(true);
 const advertising_type = ref([]);
 const legalPersons = ref([]);
+const isAdvertisingAddModalOpen = ref(false);
 const genders = ref([
   {label: 'Мужской', value: 0,},
   {label: 'Женский', value: 1},
@@ -176,7 +178,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <Card class="w-full lg:w-2/3">
+  <YandexOCR />
+  <Card class="w-full lg:w-2/3 mt-4">
     <template #title>Редактирование клиента <Badge v-if="state.archive === 1" value="Архив"></Badge></template>
     <template #content>
       <Tabs value="0" scrollable>
