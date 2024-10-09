@@ -15,11 +15,13 @@ const props = defineProps({
     default: "image/*"
   }
 });
+const emit = defineEmits(['onPassportResult', 'onDriverLicenseResult']);
 
 const sending = ref(false);
 const inputPassport = ref();
 const inputDL = ref();
 const error = ref('');
+const imageInputKey = ref('');
 const isAlertModalOpen = ref(false);
 
 const getBase64 = async (e) => {
@@ -58,35 +60,63 @@ const getOCRPassport = async (e) => {
   if(base64){
     sending.value = true;
     const iam = await YandexService.getIAM();
-    // TODO: Send image to OCR API
-    sending.value = false;
 
-    console.log(iam);
+    if(!iam){
+      error.value = "Не удалось получить IAM-ключ от Яндекс";
+      isAlertModalOpen.value = true;
+      return;
+    }
+
+    const result = await YandexService.recognizePassport(base64);
+
+    if(result && result.error?.message){
+      error.value = result.error.message;
+      isAlertModalOpen.value = true;
+    }
+    else {
+      result.files = e;
+      emit('onPassportResult', result);
+    }
+
+    sending.value = false;
   }
 
-  return;
-
-  await fetch("", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      "mimeType": "",
-      "languageCodes": ["*"],
-      "model": "passport",
-      "content": base64
-    })
-  })
+  imageInputKey.value = Math.random().toString(36).slice(2);
 }
 const getOCRDL = async (e) => {
   const base64 = await getBase64(e);
+
+  if(base64){
+    sending.value = true;
+    const iam = await YandexService.getIAM();
+
+    if(!iam){
+      error.value = "Не удалось получить IAM-ключ от Яндекс";
+      isAlertModalOpen.value = true;
+      return;
+    }
+
+    const result = await YandexService.recognizeDriverLicense(base64);
+
+    if(result && result.error?.message){
+      error.value = result.error.message;
+      isAlertModalOpen.value = true;
+    }
+    else {
+      result.files = e;
+      emit('onDriverLicenseResult', result);
+    }
+
+    sending.value = false;
+  }
+
+  imageInputKey.value = Math.random().toString(36).slice(2);
 }
 </script>
 
 <template>
-  <input type="file" class="hidden" ref="inputPassport" @change="getOCRPassport" :accept="accept"/>
-  <input type="file" class="hidden" ref="inputDL" @change="getOCRDL" :accept="accept"/>
+  <input type="file" class="hidden" ref="inputPassport" :key={imageInputKey} @change="getOCRPassport" :accept="accept"/>
+  <input type="file" class="hidden" ref="inputDL" :key={imageInputKey} @change="getOCRDL" :accept="accept"/>
   <div>
     <Button icon="pi pi-upload" label="Заполнить по Паспорту" :loading="sending" outlined
             @click="inputPassport.click()"/>

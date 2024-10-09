@@ -377,6 +377,7 @@ if ($error === 0) {
     $folder_title = 'passport';
     $files_title = 'passport_files';
     $files_upload_title = 'passport_upload_files';
+    $files_ocr_upload_title = 'passport_ocr_upload_files';
     $db_title = 'users_passport_files';
 
     if(isset($_POST[$files_title]) && count($_POST[$files_title]) > 0) {
@@ -384,6 +385,7 @@ if ($error === 0) {
     }
 
     SaveFiles($folder_title, $files_upload_title, $db_title);
+    SaveFiles($folder_title, $files_ocr_upload_title, $db_title);
     #endregion
 
     #region Driver license
@@ -415,6 +417,7 @@ if ($error === 0) {
     $folder_title = 'dl';
     $files_title = 'dl_files';
     $files_upload_title = 'dl_upload_files';
+    $files_ocr_upload_title = 'dl_ocr_upload_files';
     $db_title = 'users_driving_license_files';
 
     if(isset($_POST[$files_title]) && count($_POST[$files_title]) > 0) {
@@ -422,6 +425,7 @@ if ($error === 0) {
     }
 
     SaveFiles($folder_title, $files_upload_title, $db_title);
+    SaveFiles($folder_title, $files_ocr_upload_title, $db_title);
     #endregion
 
     #region Other files

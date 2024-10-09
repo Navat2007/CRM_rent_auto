@@ -47,6 +47,7 @@ const handleEdit = (data) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
+        sending.value = false;
       } else {
         console.log(response.data);
         error.value = response.data.error_text

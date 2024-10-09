@@ -60,7 +60,7 @@ const exportCSV = () => {
 
 initFilters();
 
-console.log(finalFilters);
+//console.log(finalFilters);
 </script>
 
 <template>

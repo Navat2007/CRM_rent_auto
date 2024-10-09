@@ -34,6 +34,7 @@ const handleDateSelect = (date) => {
 const handleClear = () => {
   state.date = null;
   state.showHireDateCalendar = false;
+  state.isComplete = false;
   emit('onChange', state.date);
 }
 const handleBlur = () => {

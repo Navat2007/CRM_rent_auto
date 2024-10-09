@@ -5,7 +5,7 @@ header('Access-Control-Allow-Headers: Origin, Authorization, Content-Type, X-Aut
 require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
-$oauth = "y0_AgAEA7qiSGqNAATuwQAAAAESPjx5AACyvlrQh1tCJZNW5OE8MKRN69PLIA";
+$oauth = "y0_AgAAAAAt2zBlAATuwQAAAAETYQ7dAADHbUZLOvhFU4a729COg6PJMM7DOg";
 $url = "https://iam.api.cloud.yandex.net/iam/v1/tokens";
 
 $message = [
