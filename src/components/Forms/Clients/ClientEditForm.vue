@@ -187,6 +187,9 @@ const onYandexPassportOCR = async (data) => {
         case "birth_date":
           state.birthday = moment(entity.text, 'DD.MM.YYYY').format('DD.MM.YYYY');
           break;
+        case "birth_place":
+          state.passport_born_place = entity.text;
+          break;
         case "surname":
           state.lastName = entity.text.charAt(0).toUpperCase() + entity.text.slice(1);
           break;
