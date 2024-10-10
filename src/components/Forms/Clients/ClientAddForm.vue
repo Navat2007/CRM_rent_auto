@@ -283,7 +283,7 @@ onMounted(() => {
                 <!-- Email -->
                 <div>
                   <label for="email"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email*</label>
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
                   <input
                       v-model="state.email"
                       type="email" id="email"

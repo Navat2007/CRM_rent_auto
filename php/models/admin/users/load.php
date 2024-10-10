@@ -5,7 +5,6 @@ header('Access-Control-Allow-Headers: Origin, Authorization, Content-Type, X-Aut
 require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
-$search = isset($_POST["search"]) ? htmlspecialchars($_POST["search"]) : '';
 $company_id = isset($_POST["company_id"]) ? (int)htmlspecialchars($_POST["company_id"]) : 0;
 
 $error = 0;
@@ -25,7 +24,7 @@ $sql = "
     LEFT JOIN 
         directory_position as dp on dp.id = ui.user_type
     WHERE 
-        users.is_employee = true AND users.email LIKE '%{$search}%'";
+        users.is_employee = true";
 
 if($company_id != 0){
     $sql .= " AND uc.company_id = '{$company_id}'";
