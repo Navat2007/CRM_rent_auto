@@ -44,12 +44,11 @@ const handleEdit = (data) => {
   sendingData.dl_issued_date = sendingData.dl_issued_date && sendingData.dl_issued_date !== "Invalid date" ? moment(sendingData.dl_issued_date, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
   sendingData.dl_expire_date = sendingData.dl_expire_date && sendingData.dl_expire_date !== "Invalid date" ? moment(sendingData.dl_expire_date, 'DD.MM.YYYY').format('YYYY-MM-DD') : null;
 
-  console.log(sendingData);
-
   UserService.editUser(sendingData).then((response) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
+        sending.value = false;
       } else {
         console.log(response.data);
         error.value = response.data.error_text

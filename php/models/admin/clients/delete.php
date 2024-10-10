@@ -5,6 +5,16 @@ header('Access-Control-Allow-Headers: Origin, Authorization, Content-Type, X-Aut
 require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
+function deleteDir($path): bool
+{
+    if (empty($path)) {
+        return false;
+    }
+    return is_file($path) ?
+        @unlink($path) :
+        array_map(__FUNCTION__, glob($path.'/*')) == @rmdir($path);
+}
+
 $ID = htmlspecialchars($_POST["id"]);
 $user = $authorization[1];
 
@@ -54,6 +64,6 @@ $sql = "DELETE FROM users_passport_files WHERE user_id = '$ID'";
 pg_query($conn, $sql);
 
 $baseDirName = $_SERVER['DOCUMENT_ROOT'] . "/files/users/" . $ID;
-@unlink($baseDirName);
+deleteDir($baseDirName);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

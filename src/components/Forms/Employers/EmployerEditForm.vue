@@ -13,6 +13,7 @@ import TableWithRowEditing from "@components/Table/TableWithRowEditing.vue";
 import FileGallery from "@components/Inputs/FileGallery.vue";
 import PopUpAddDirectoryPosition from "@components/Popups/PopUpAddDirectoryPosition.vue";
 import {lettersAndDash} from "@utils/formCheck.js";
+import YandexOCR from "@components/Inputs/YandexOCR.vue";
 
 const {user} = useAuthStore();
 
@@ -115,12 +116,14 @@ const state = reactive({
   passport_fact_address: props.item.passport_fact_address,
   passport_files: props.item.passport_files || [],
   passport_upload_files: [],
+  passport_ocr_upload_files: [],
   dl_series_number: props.item.dl_series_number,
   dl_issued_by_who: props.item.dl_issued_by_who,
   dl_issued_date: props.item.dl_issued_date ? moment(props.item.dl_issued_date).format('DD.MM.YYYY') : null,
   dl_expire_date: props.item.dl_expire_date ? moment(props.item.dl_expire_date).format('DD.MM.YYYY') : null,
   dl_files: props.item.dl_files || [],
   dl_upload_files: [],
+  dl_ocr_upload_files: [],
   other_files: props.item.other_files || [],
   other_upload_files: [],
   access_directory: parseInt(props.item.access_directory) || 0,
@@ -177,6 +180,83 @@ const onPositionAdd = async (id) => {
   state.position = id;
 }
 
+const onYandexPassportOCR = async (data) => {
+  // console.log("Yandex OCR Passport", data);
+
+  if (data.entities && data.entities.length > 0) {
+    data.entities.forEach(entity => {
+      switch (entity.name) {
+        case "gender":
+          state.gender = entity.text === "муж" ? 0 : 1;
+          break;
+        case "number":
+          state.passport_series_number = entity.text.slice(0, 4) + " " + entity.text.slice(4);
+          break;
+        case "issued_by":
+          state.passport_issued_by = entity.text;
+          break;
+        case "subdivision":
+          state.passport_department_code = entity.text;
+          break;
+        case "issue_date":
+          state.passport_date_of_issue = moment(entity.text, 'DD.MM.YYYY').format('DD.MM.YYYY');
+          break;
+        case "birth_date":
+          state.birthday = moment(entity.text, 'DD.MM.YYYY').format('DD.MM.YYYY');
+          break;
+        case "birth_place":
+          state.passport_born_place = entity.text;
+          break;
+        case "surname":
+          state.lastName = entity.text.charAt(0).toUpperCase() + entity.text.slice(1);
+          break;
+        case "name":
+          state.firstName = entity.text.charAt(0).toUpperCase() + entity.text.slice(1);
+          break;
+        case "middle_name":
+          state.patronym = entity.text.charAt(0).toUpperCase() + entity.text.slice(1);
+          break;
+      }
+    })
+
+    state.passport_ocr_upload_files = data.files.target.files;
+  }
+}
+
+const onYandexDriverLicenseOCR = async (data) => {
+  // console.log("Yandex OCR DriverLicense", data);
+
+  if (data.entities && data.entities.length > 0) {
+    data.entities.forEach(entity => {
+      switch (entity.name) {
+        case "number":
+          state.dl_series_number = entity.text;
+          break;
+        case "issue_date":
+          state.dl_issued_date = moment(entity.text, 'DD.MM.YYYY').format('DD.MM.YYYY');
+          break;
+        case "expiration_date":
+          state.dl_expire_date = moment(entity.text, 'DD.MM.YYYY').format('DD.MM.YYYY');
+          break;
+        case "birth_date":
+          state.birthday = moment(entity.text, 'DD.MM.YYYY').format('DD.MM.YYYY');
+          break;
+        case "surname":
+          state.lastName = entity.text.charAt(0).toUpperCase() + entity.text.slice(1);
+          break;
+        case "name":
+          state.firstName = entity.text.charAt(0).toUpperCase() + entity.text.slice(1);
+          break;
+        case "middle_name":
+          state.patronym = entity.text.charAt(0).toUpperCase() + entity.text.slice(1);
+          break;
+      }
+    })
+
+    state.dl_ocr_upload_files = data.files.target.files;
+  }
+}
+
 async function fetchPositions() {
   positions.value = (await DirectoryService.getPositions(user.company_id)).filter(position => position.archive === "Активен");
   loadingPositions.value = false;
@@ -188,6 +268,11 @@ onMounted(() => {
 </script>
 
 <template>
+  <YandexOCR
+      v-if="state.archive === 0"
+      @onPassportResult="onYandexPassportOCR"
+      @onDriverLicenseResult="onYandexDriverLicenseOCR"
+  />
   <Card class="w-full lg:w-2/3">
     <template #title>Редактирование сотрудника <Badge v-if="state.archive === 1" value="Архив"></Badge></template>
     <template #content>
@@ -223,7 +308,7 @@ onMounted(() => {
                 </div>
                 <!-- Фамилия -->
                 <div>
-                  <label for="firstName"
+                  <label for="lastName"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Фамилия*</label>
                   <input
                       v-model="state.lastName"
@@ -263,7 +348,7 @@ onMounted(() => {
                   <label for="birthday"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
                   <div>
-                    <DatePickerWithMask :value="state.birthday" @onChange="e => state.birthday = e"/>
+                    <DatePickerWithMask :value="state.birthday" :key="state.birthday" @onChange="e => state.birthday = e"/>
                     <p class="mt-2">{{ age }}{{ zodiac }}</p>
                   </div>
                 </div>
@@ -388,6 +473,24 @@ onMounted(() => {
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата увольнения</label>
                   <DatePickerWithMask :value="state.firingDate" @onChange="e => state.firingDate = e"/>
                 </div>
+                <Divider type="dashed"/>
+                <!-- Пароль -->
+                <div>
+                  <label for="password"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Пароль*</label>
+                  <Password id="password" v-model="state.password" placeholder="Введите пароль" :toggleMask="true"
+                            :feedback="false" class="w-full mb-3" inputClass="w-full"/>
+                  <FormError :errors="v$.password.$errors"/>
+                </div>
+                <!-- Подтвердить пароль -->
+                <div>
+                  <label for="confirmPassword"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить пароль*</label>
+                  <Password id="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
+                            :toggleMask="true"
+                            :feedback="false" class="w-full mb-3" inputClass="w-full"/>
+                  <FormError :errors="v$.confirmPassword.$errors"/>
+                </div>
                 <div v-if="state.archive === 0" class="grid gap-4 my-4 sm:grid-cols-1">
                   <Divider type="dashed"/>
                   <div v-if="passwordDisabled">
@@ -464,7 +567,7 @@ onMounted(() => {
                 <div>
                   <label for="passport_date_of_issue"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
-                  <DatePickerWithMask :value="state.passport_date_of_issue"
+                  <DatePickerWithMask :value="state.passport_date_of_issue" :key="state.passport_date_of_issue"
                                       @onChange="e => state.passport_date_of_issue = e"/>
                 </div>
                 <!-- Паспорт. Кем выдан -->
@@ -500,6 +603,9 @@ onMounted(() => {
                       placeholder="..."
                   >
                 </div>
+                <Divider type="dashed" v-if="state.passport_ocr_upload_files.length > 0"/>
+                <!-- Паспорт. Распознанные файлы -->
+                <FileGallery v-if="state.passport_ocr_upload_files.length > 0" :ocr-items="state.passport_ocr_upload_files" :without-select="true"/>
                 <Divider type="dashed"/>
                 <!-- Паспорт. Файлы -->
                 <FileGallery :items="state.passport_files"
@@ -535,14 +641,17 @@ onMounted(() => {
                 <div>
                   <label for="dl_issued_date"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
-                  <DatePickerWithMask :value="state.dl_issued_date" @onChange="e => state.dl_issued_date = e"/>
+                  <DatePickerWithMask :value="state.dl_issued_date" :key="state.dl_issued_date" @onChange="e => state.dl_issued_date = e"/>
                 </div>
                 <!-- Водительское удостоверение. Действуют до -->
                 <div>
                   <label for="dl_expire_date"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действуют до</label>
-                  <DatePickerWithMask :value="state.dl_expire_date" @onChange="e => state.dl_expire_date = e"/>
+                  <DatePickerWithMask :value="state.dl_expire_date" :key="state.dl_expire_date" @onChange="e => state.dl_expire_date = e"/>
                 </div>
+                <Divider type="dashed" v-if="state.dl_ocr_upload_files.length > 0"/>
+                <!-- Водительское удостоверение. Распознанные файлы -->
+                <FileGallery v-if="state.dl_ocr_upload_files.length > 0" :ocr-items="state.dl_ocr_upload_files" :without-select="true"/>
                 <Divider type="dashed"/>
                 <!-- Водительское удостоверение. Файлы -->
                 <FileGallery :items="state.dl_files" @onSelect="e => state.dl_upload_files = e.files"/>

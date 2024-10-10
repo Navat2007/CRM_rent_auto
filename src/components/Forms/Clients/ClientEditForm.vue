@@ -127,7 +127,6 @@ const state = reactive({
 const rules = computed(() => {
   return {
     email: {
-      required: helpers.withMessage("Email должен быть заполнен", required),
       email: helpers.withMessage("Введите корректный email", email),
       $lazy: true
     },
@@ -262,7 +261,7 @@ onMounted(() => {
       @onPassportResult="onYandexPassportOCR"
       @onDriverLicenseResult="onYandexDriverLicenseOCR"
   />
-  <Card class="w-full lg:w-2/3 mt-4">
+  <Card class="w-full lg:w-2/3">
     <template #title>Редактирование клиента
       <Badge v-if="state.archive === 1" value="Архив"></Badge>
     </template>
