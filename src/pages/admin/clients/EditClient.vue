@@ -104,6 +104,7 @@ const onSuccess = () => {
 
 async function fetchData() {
   item.value = await ClientsService.getClientById(route.params.id);
+  item.value.id = parseInt(route.params.id);
   loading.value = false;
 }
 

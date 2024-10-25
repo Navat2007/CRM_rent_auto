@@ -11,7 +11,7 @@ const props = defineProps({
   pageSize: {
     type: Number,
     required: false,
-    default: 10
+    default: 20
   },
   items: {
     type: Array,
@@ -24,16 +24,23 @@ const props = defineProps({
   filters: {
     type: Object,
     required: false,
+    default: ref({})
   },
   filterFields: {
     type: Array,
     required: false,
+    default: ref([])
   },
   loading: {
     type: Boolean,
     required: false,
     default: false
   },
+  withFilters: {
+    type: Boolean,
+    required: false,
+    default: true
+  }
 })
 const emit = defineEmits(['onRowClick']);
 
@@ -60,12 +67,13 @@ const exportCSV = () => {
 
 initFilters();
 
-//console.log(finalFilters);
+// console.log(props.items);
+// console.log(finalFilters);
 </script>
 
 <template>
   <Card>
-    <template #title>
+    <template v-if="withFilters" #title>
       <Toolbar class="mb-2">
         <template #start>
           <slot name="buttons"/>

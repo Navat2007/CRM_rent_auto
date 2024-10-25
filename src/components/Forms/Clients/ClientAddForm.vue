@@ -256,10 +256,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <YandexOCR
-      @onPassportResult="onYandexPassportOCR"
-      @onDriverLicenseResult="onYandexDriverLicenseOCR"
-  />
+  <div class="flex flex-wrap gap-4 mb-4">
+    <YandexOCR
+        @onPassportResult="onYandexPassportOCR"
+        @onDriverLicenseResult="onYandexDriverLicenseOCR"
+    />
+  </div>
   <Card class="w-full lg:w-2/3">
     <template #title>Добавить клиента</template>
     <template #content>

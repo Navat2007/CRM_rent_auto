@@ -27,6 +27,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: '#modal'
+  },
+  invertButtons: {
+    type: Boolean,
+    required: false,
   }
 });
 const emit = defineEmits(['close', 'accept'])
@@ -77,20 +81,43 @@ onClickOutside(target, () => {
                         d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
                 <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">{{ title }}</h3>
-                <button
-                    v-if="withButtons" @click="$emit('accept')"
-                    data-modal-hide="popup-modal" type="button"
-                    class="text-white bg-primary-600 hover:bg-primary-500 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:focus:ring-primary-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
-                >
-                  Да
-                </button>
-                <button
-                    v-if="withButtons" @click="$emit('close')"
-                    data-modal-hide="popup-modal" type="button"
-                    class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                >
-                  Нет
-                </button>
+                <!-- Your modal content here -->
+                <slot name="body"/>
+                <div v-if="$slots.buttons" class="flex flex-col gap-4 mt-4">
+                  <slot name="buttons"/>
+                </div>
+                <div v-if="withButtons && !invertButtons">
+                  <button
+                      @click="$emit('accept')"
+                      data-modal-hide="popup-modal" type="button"
+                      class="text-white bg-primary-600 hover:bg-primary-500 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:focus:ring-primary-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
+                  >
+                    Да
+                  </button>
+                  <button
+                      @click="$emit('close')"
+                      data-modal-hide="popup-modal" type="button"
+                      class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                  >
+                    Нет
+                  </button>
+                </div>
+                <div v-if="withButtons && invertButtons">
+                  <button
+                      @click="$emit('close')"
+                      data-modal-hide="popup-modal" type="button"
+                      class="py-2.5 px-5  text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                  >
+                    Нет
+                  </button>
+                  <button
+                      @click="$emit('accept')"
+                      data-modal-hide="popup-modal" type="button"
+                      class="ms-3 text-white bg-primary-600 hover:bg-primary-500 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:focus:ring-primary-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
+                  >
+                    Да
+                  </button>
+                </div>
               </div>
             </div>
           </div>

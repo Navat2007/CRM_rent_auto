@@ -103,8 +103,6 @@ async function fetchData() {
   advertising_type.value = await DirectoryService.getAdvertisingTypes(user.company_id);
   advertising_type.value = advertising_type.value.filter(advertising => advertising.archive === "Активен").map(advertising => advertising.name);
   loading.value = false;
-
-  console.log(items.value);
 }
 
 onMounted(() => {

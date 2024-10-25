@@ -115,13 +115,13 @@ const getOCRDL = async (e) => {
 </script>
 
 <template>
-  <div class="mb-4">
+  <div>
     <input type="file" class="hidden" ref="inputPassport" :key={imageInputKey} @change="getOCRPassport" :accept="accept"/>
     <input type="file" class="hidden" ref="inputDL" :key={imageInputKey} @change="getOCRDL" :accept="accept"/>
-    <div>
+    <div class="flex flex-wrap gap-4">
       <Button icon="pi pi-upload" label="Заполнить по Паспорту" :loading="sending" outlined
               @click="inputPassport.click()"/>
-      <Button icon="pi pi-upload" label="Заполнить по ВУ" class="ml-4" :loading="sending" outlined
+      <Button icon="pi pi-upload" label="Заполнить по ВУ" :loading="sending" outlined
               @click="inputDL.click()"/>
     </div>
   </div>
