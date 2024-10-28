@@ -266,7 +266,7 @@ onMounted(() => {
       @onPassportResult="onYandexPassportOCR"
       @onDriverLicenseResult="onYandexDriverLicenseOCR"
   />
-  <Card class="w-full lg:w-2/3">
+  <Card class="w-full">
     <template #title>Редактирование сотрудника</template>
     <template #content>
       <Tabs value="0" scrollable>

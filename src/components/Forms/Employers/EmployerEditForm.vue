@@ -14,6 +14,11 @@ import FileGallery from "@components/Inputs/FileGallery.vue";
 import PopUpAddDirectoryPosition from "@components/Popups/PopUpAddDirectoryPosition.vue";
 import {lettersAndDash} from "@utils/formCheck.js";
 import YandexOCR from "@components/Inputs/YandexOCR.vue";
+import {FilterMatchMode, FilterOperator} from "@primevue/core/api";
+import OdysseyService from "@services/OdysseyService.js";
+import Odyssey from "@components/Inputs/Odyssey.vue";
+import Table from "@components/Table/Table.vue";
+import AlertModal from "@components/Modals/AlertModal.vue";
 
 const {user} = useAuthStore();
 
@@ -29,6 +34,58 @@ const props = defineProps({
   }
 });
 const emit = defineEmits(['onSubmit', 'onArchive', 'onDelete']);
+
+const loadingOdysseyResults = ref(true);
+const isOdysseyResultModalOpen = ref(false);
+const odysseyResult = ref({});
+const odysseyResults = ref([]);
+const odysseyColumns = ref([
+  {
+    header: 'ID',
+    field: 'id',
+  },
+  {
+    header: 'Дата',
+    field: 'created_at',
+  },
+  {
+    header: 'Показатель скоринга',
+    field: 'scoring_overall_indicator',
+  },
+  {
+    header: 'Фамилия',
+    field: 'lastname',
+  },
+  {
+    header: 'Имя',
+    field: 'firstname',
+  },
+  {
+    header: 'Отчество',
+    field: 'middlename',
+  },
+  {
+    header: 'Дата рождения',
+    field: 'birthday',
+  },
+  {
+    header: 'Полный отчет',
+    field: 'url',
+  },
+]);
+const odysseyFilters = ref({
+  id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+  scoring_overall_indicator: {
+    operator: FilterOperator.OR,
+    constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]
+  },
+  birthday: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
+  created_at: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
+  lastname: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+  firstname: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+  middlename: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+});
+const odysseyFilterFields = ref(['id', 'created_at', 'lastname', 'firstname', 'middlename', 'birthday']);
 
 const isPositionAddModalOpen = ref(false);
 const genders = ref([
@@ -166,6 +223,8 @@ const rules = computed(() => {
 });
 const v$ = useVuelidate(rules, state);
 
+const tabValue = ref("0");
+
 const onFormSubmit = async (e) => {
   const isFormCorrect = await unref(v$).$validate();
 
@@ -257,32 +316,79 @@ const onYandexDriverLicenseOCR = async (data) => {
   }
 }
 
+const onOdysseyResult = async (data) => {
+  odysseyResult.value = data;
+  isOdysseyResultModalOpen.value = true;
+  await fetchOdysseyResults();
+}
+
+const openOdysseyUrl = (url) => {
+  window.open(url, '_blank');
+}
+
 async function fetchPositions() {
   positions.value = (await DirectoryService.getPositions(user.company_id)).filter(position => position.archive === "Активен");
   loadingPositions.value = false;
 }
 
+async function fetchOdysseyResults() {
+  odysseyResults.value = await OdysseyService.getResults(props.item.id);
+
+  if(odysseyResults.value){
+    odysseyResults.value.map(item => {
+      item.created_at = new Date(item.created_at);
+      item.birthday = new Date(item.birthday);
+    });
+  }
+
+  loadingOdysseyResults.value = false;
+}
+
+const formatDate = (value, field) => {
+  return moment(value[field]).format('DD.MM.YYYY');
+};
+const formatDateTime = (value, field) => {
+  return moment(value[field]).format('DD.MM.YYYY HH:mm');
+};
+
 onMounted(() => {
   fetchPositions();
+  fetchOdysseyResults();
 });
 </script>
 
 <template>
-  <YandexOCR
-      v-if="state.archive === 0"
-      @onPassportResult="onYandexPassportOCR"
-      @onDriverLicenseResult="onYandexDriverLicenseOCR"
-  />
-  <Card class="w-full lg:w-2/3">
-    <template #title>Редактирование сотрудника <Badge v-if="state.archive === 1" value="Архив"></Badge></template>
+  <div class="flex flex-wrap gap-4 mb-4">
+    <YandexOCR
+        v-if="state.archive === 0"
+        @onPassportResult="onYandexPassportOCR"
+        @onDriverLicenseResult="onYandexDriverLicenseOCR"
+    />
+    <Odyssey
+        :id="props.item.id"
+        :lastname="state.lastName"
+        :firstname="state.firstName"
+        :middlename="state.patronym"
+        :birthday="state.birthday"
+        :results="odysseyResults"
+        :loading-results="loadingOdysseyResults"
+        @onResult="onOdysseyResult"
+    />
+  </div>
+
+  <Card class="w-full">
+    <template #title>Редактирование сотрудника
+      <Badge v-if="state.archive === 1" value="Архив"></Badge>
+    </template>
     <template #content>
-      <Tabs value="0" scrollable>
+      <Tabs :value="tabValue" scrollable>
         <TabList>
           <Tab value="0" class="flex gap-2">Основная информация</Tab>
           <Tab value="1" class="flex gap-2">Паспорт</Tab>
           <Tab value="2" class="flex gap-2">Водительское удостоверение</Tab>
           <Tab value="3" class="flex gap-2">Прочие документы</Tab>
           <Tab value="4" class="flex gap-2">Права доступа</Tab>
+          <Tab value="5" class="flex gap-2">Проверки в odyssey</Tab>
         </TabList>
         <form @submit.prevent="onFormSubmit" autocomplete="off">
           <TabPanels>
@@ -348,7 +454,8 @@ onMounted(() => {
                   <label for="birthday"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
                   <div>
-                    <DatePickerWithMask :value="state.birthday" :key="state.birthday" @onChange="e => state.birthday = e"/>
+                    <DatePickerWithMask :value="state.birthday" :key="state.birthday"
+                                        @onChange="e => state.birthday = e"/>
                     <p class="mt-2">{{ age }}{{ zodiac }}</p>
                   </div>
                 </div>
@@ -383,9 +490,10 @@ onMounted(() => {
                   <label for="position"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Должность</label>
                   <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name"
-                          optionValue="id" placeholder="Выберите должность" showClear filter class="w-full" >
+                          optionValue="id" placeholder="Выберите должность" showClear filter class="w-full">
                     <template v-if="user.access.directory === 2" #header>
-                      <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить" outlined @click="isPositionAddModalOpen = true" />
+                      <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить" outlined
+                              @click="isPositionAddModalOpen = true"/>
                     </template>
                   </Select>
                 </div>
@@ -485,7 +593,8 @@ onMounted(() => {
                 <!-- Подтвердить пароль -->
                 <div>
                   <label for="confirmPassword"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить пароль*</label>
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить
+                    пароль*</label>
                   <Password id="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
                             :toggleMask="true"
                             :feedback="false" class="w-full mb-3" inputClass="w-full"/>
@@ -605,7 +714,8 @@ onMounted(() => {
                 </div>
                 <Divider type="dashed" v-if="state.passport_ocr_upload_files.length > 0"/>
                 <!-- Паспорт. Распознанные файлы -->
-                <FileGallery v-if="state.passport_ocr_upload_files.length > 0" :ocr-items="state.passport_ocr_upload_files" :without-select="true"/>
+                <FileGallery v-if="state.passport_ocr_upload_files.length > 0"
+                             :ocr-items="state.passport_ocr_upload_files" :without-select="true"/>
                 <Divider type="dashed"/>
                 <!-- Паспорт. Файлы -->
                 <FileGallery :items="state.passport_files"
@@ -641,17 +751,20 @@ onMounted(() => {
                 <div>
                   <label for="dl_issued_date"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
-                  <DatePickerWithMask :value="state.dl_issued_date" :key="state.dl_issued_date" @onChange="e => state.dl_issued_date = e"/>
+                  <DatePickerWithMask :value="state.dl_issued_date" :key="state.dl_issued_date"
+                                      @onChange="e => state.dl_issued_date = e"/>
                 </div>
                 <!-- Водительское удостоверение. Действуют до -->
                 <div>
                   <label for="dl_expire_date"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действуют до</label>
-                  <DatePickerWithMask :value="state.dl_expire_date" :key="state.dl_expire_date" @onChange="e => state.dl_expire_date = e"/>
+                  <DatePickerWithMask :value="state.dl_expire_date" :key="state.dl_expire_date"
+                                      @onChange="e => state.dl_expire_date = e"/>
                 </div>
                 <Divider type="dashed" v-if="state.dl_ocr_upload_files.length > 0"/>
                 <!-- Водительское удостоверение. Распознанные файлы -->
-                <FileGallery v-if="state.dl_ocr_upload_files.length > 0" :ocr-items="state.dl_ocr_upload_files" :without-select="true"/>
+                <FileGallery v-if="state.dl_ocr_upload_files.length > 0" :ocr-items="state.dl_ocr_upload_files"
+                             :without-select="true"/>
                 <Divider type="dashed"/>
                 <!-- Водительское удостоверение. Файлы -->
                 <FileGallery :items="state.dl_files" @onSelect="e => state.dl_upload_files = e.files"/>
@@ -684,6 +797,73 @@ onMounted(() => {
                 </div>
               </Fieldset>
             </TabPanel>
+            <TabPanel value="5">
+              <!-- Проверки Odyssey -->
+              <Table
+                  title="Проверки Odyssey"
+                  :items="odysseyResults" :columns="odysseyColumns"
+                  :loading="loadingOdysseyResults" :filters="odysseyFilters"
+                  :filter-fields="odysseyFilterFields"
+              >
+                <template #columns>
+                  <Column field="created_at" dataType="date" header="Дата" headerStyle="width: 10rem; min-width: 10rem;"
+                          sortable>
+                    <template #body="{ data }">
+                      {{ formatDateTime(data, 'created_at') }}
+                    </template>
+                    <template #filter="{ filterModel }">
+                      <DatePicker
+                          v-model="filterModel.value"
+                          dateFormat="dd.mm.yy" placeholder="дд.мм.гг"
+                      />
+                    </template>
+                  </Column>
+                  <Column field="scoring_overall_indicator" header="Cкоринг" dataType="numeric"
+                          headerStyle="width: 10rem; min-width: 10rem;" sortable>
+                    <template #filter="{ filterModel }">
+                      <InputText v-model="filterModel.value" type="number" placeholder="Поиск по скорингу"/>
+                    </template>
+                  </Column>
+                  <Column field="lastname" header="Фамилия" headerStyle="width: 10rem; min-width: 10rem;" sortable>
+                    <template #filter="{ filterModel }">
+                      <InputText v-model="filterModel.value" type="text" placeholder="Поиск по фамилии"/>
+                    </template>
+                  </Column>
+                  <Column field="firstname" header="Имя" headerStyle="width: 10rem; min-width: 10rem;" sortable>
+                    <template #filter="{ filterModel }">
+                      <InputText v-model="filterModel.value" type="text" placeholder="Поиск по имени"/>
+                    </template>
+                  </Column>
+                  <Column field="middlename" header="Отчество" headerStyle="width: 10rem; min-width: 10rem;" sortable>
+                    <template #filter="{ filterModel }">
+                      <InputText v-model="filterModel.value" type="text" placeholder="Поиск по отчеству"/>
+                    </template>
+                  </Column>
+                  <Column field="birthday" dataType="date" header="Дата рождения"
+                          headerStyle="width: 12rem; min-width: 12rem;" sortable>
+                    <template #body="{ data }">
+                      {{ formatDate(data, 'birthday') }}
+                    </template>
+                    <template #filter="{ filterModel }">
+                      <DatePicker
+                          v-model="filterModel.value"
+                          dateFormat="dd.mm.yy" placeholder="дд.мм.гг"
+                      />
+                    </template>
+                  </Column>
+                  <Column header="Полный отчет" headerStyle="width: 8rem; min-width: 8rem;">
+                    <template #body="slotProps">
+                      <Button type="button" @click="openOdysseyUrl(slotProps.data.url)" icon="pi pi-search" severity="secondary" rounded></Button>
+                    </template>
+                  </Column>
+                  <Column header="Инициатор" headerStyle="min-width: 30rem;">
+                    <template #body="{ data }">
+                      {{ data.init_full_name }} - {{data.init_email}}
+                    </template>
+                  </Column>
+                </template>
+              </Table>
+            </TabPanel>
           </TabPanels>
           <Divider v-if="user.access.employers === 2" type="dashed"/>
           <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
@@ -693,7 +873,8 @@ onMounted(() => {
             <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
             <Button icon="pi pi-trash" label="В архив" class="ml-4" severity="secondary" :loading="sending"
                     @click="emit('onArchive');" outlined/>
-            <Button v-if="user.id === 1" icon="pi pi-trash" label="Удалить" class="ml-4" severity="danger" :loading="sending"
+            <Button v-if="user.id === 1" icon="pi pi-trash" label="Удалить" class="ml-4" severity="danger"
+                    :loading="sending"
                     @click="emit('onDelete');" outlined/>
           </div>
           <div v-if="state.archive === 1">
@@ -703,5 +884,20 @@ onMounted(() => {
       </Tabs>
     </template>
   </Card>
-  <PopUpAddDirectoryPosition :visible="isPositionAddModalOpen" @on-add="onPositionAdd" @on-close="isPositionAddModalOpen = false" />
+  <PopUpAddDirectoryPosition :visible="isPositionAddModalOpen" @on-add="onPositionAdd"
+                             @on-close="isPositionAddModalOpen = false"/>
+  <AlertModal :isOpen="isOdysseyResultModalOpen" @close="isOdysseyResultModalOpen = false"
+              title="" accept
+  >
+    <template #body>
+      <p>Значение общего показателя скоринга: <br/> <b class="text-3xl">{{ odysseyResult.scoring }}</b></p>
+    </template>
+    <template #buttons>
+      <Button label="Смотреть полный отчет" @click="openOdysseyUrl(odysseyResult.url)"/>
+      <Button label="Перейти к списку проверок" @click="() => {
+        isOdysseyResultModalOpen = false;
+        tabValue = '5';
+      }"/>
+    </template>
+  </AlertModal>
 </template>

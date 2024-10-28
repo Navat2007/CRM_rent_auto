@@ -320,10 +320,12 @@ async function fetchLegalPersons() {
 async function fetchOdysseyResults() {
   odysseyResults.value = await OdysseyService.getResults(props.item.id);
 
-  odysseyResults.value.map(item => {
-    item.created_at = new Date(item.created_at);
-    item.birthday = new Date(item.birthday);
-  });
+  if(odysseyResults.value){
+    odysseyResults.value.map(item => {
+      item.created_at = new Date(item.created_at);
+      item.birthday = new Date(item.birthday);
+    });
+  }
 
   loadingOdysseyResults.value = false;
 }
@@ -794,6 +796,11 @@ onMounted(() => {
                   <Column header="Полный отчет" headerStyle="width: 8rem; min-width: 8rem;">
                     <template #body="slotProps">
                       <Button type="button" @click="openOdysseyUrl(slotProps.data.url)" icon="pi pi-search" severity="secondary" rounded></Button>
+                    </template>
+                  </Column>
+                  <Column header="Инициатор" headerStyle="min-width: 30rem;">
+                    <template #body="{ data }">
+                      {{ data.init_full_name }} - {{data.init_email}}
                     </template>
                   </Column>
                 </template>

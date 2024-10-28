@@ -14,11 +14,15 @@ $params = array();
 
 $sql = "
     SELECT 
-        *
+        t1.*, u.email as init_email, ui.full_name as init_full_name
     FROM 
-        odyssey_results 
+        odyssey_results as t1
+    INNER JOIN 
+        users as u ON t1.last_user_id = u.id
+    INNER JOIN 
+        users_info as ui ON ui.user_id = u.id
     WHERE 
-        user_id = '$user_id'";
+        t1.user_id = '$user_id'";
 $sqls[] = $sql;
 $result = pg_query($conn, $sql);
 
