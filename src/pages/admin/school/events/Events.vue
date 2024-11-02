@@ -12,7 +12,7 @@ import EventsService from "@services/admin/school/EventsService";
 const {user} = useAuthStore();
 
 const items = ref([]);
-const advertising_type = ref([]);
+const sports = ref([]);
 const loading = ref(true);
 
 const breadcrumbs = ref([
@@ -27,24 +27,21 @@ const columns = ref([
     field: 'id',
   },
   {
-    header: 'Название мероприятия',
+    header: 'Название',
     field: 'title',
+  },
+  {
+    header: 'Спорт',
+    field: 'sport',
   },
 ]);
 const filters = ref({
   id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
   title: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
-  sport: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+  sport: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
 });
-const filterFields = ref(['id', 'title', 'sport']);
-const selectedColumns = ref(columns.value);
-const onToggle = (val) => {
-  selectedColumns.value = columns.value.filter(col => val.includes(col));
-};
+const filterFields = ref(['id', 'title', 'sport.title']);
 
-const handleAddButtonClick = (item) => {
-  //router.push('/Admin/clients/new');
-}
 const handleRowClick = (item) => {
   //router.push('/Admin/clients/' + item.id);
 }
@@ -58,6 +55,16 @@ const formatDate = (value) => {
 
 async function fetchData() {
   items.value = await EventsService.getAll(loading);
+
+  sports.value = items.value
+      .map(item => item.sport)
+      .filter((item, index, arr) => {
+        return arr.indexOf(item) === index;
+      })
+      .sort();
+
+  console.log(items.value);
+
   loading.value = false;
 }
 
@@ -80,9 +87,15 @@ onMounted(() => {
             <InputText v-model="filterModel.value" type="number" placeholder="Поиск по ID"/>
           </template>
         </Column>
-        <Column field="title" header="Мероприятие" sortable>
+        <Column field="title" header="Название" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="text" placeholder="Поиск по названию"/>
+          </template>
+        </Column>
+        <Column field="sport" header="Спорт" sortable>
+          <template #filter="{ filterModel }">
+            <Dropdown v-model="filterModel.value" :options="sports" placeholder="Все" class="p-column-filter"
+                      showClear filter/>
           </template>
         </Column>
       </template>

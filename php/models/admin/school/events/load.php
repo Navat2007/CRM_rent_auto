@@ -27,10 +27,7 @@ if(mysqli_num_rows($result) > 0)
         $params[] = (object)[
             'id' => (int)$row->ID,
             'title' => htmlspecialchars_decode($row->title),
-            'sport' => (object)[
-                'id' => (int)$row->sport_type,
-                'title' => htmlspecialchars_decode($row->sport_type_title),
-            ],
+            'sport' => htmlspecialchars_decode($row->sport_type_title),
             'event_start_month' => (int)$row->event_start_month,
             'event_end_month' => (int)$row->event_end_month,
             'event_start_year' => (int)$row->event_start_year,
