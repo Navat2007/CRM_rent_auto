@@ -1,13 +1,14 @@
 <script setup>
 import {RouterLink} from "vue-router";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import { onClickOutside } from '@vueuse/core'
 import { useAuthStore, useSidebarStore } from '@stores';
 
-const {user} = useAuthStore();
-
 import SidebarItem from "@components/Containers/Admin/Sidebar/SidebarItem.vue";
 import Logo from "@assets/images/logo.png";
+
+const sidebarStore = useSidebarStore();
+const authStore = useAuthStore();
 
 const target = ref(null);
 const menuGroups = ref([
@@ -23,39 +24,22 @@ const menuGroups = ref([
       },
       {
         icon: `pi pi-sitemap`,
-        label: 'Компания',
-        route: '',
-        children: [
-          { label: 'Сотрудники', route: '/Admin/employers', visible: user.access?.employers && user.access.employers !== 0 },
-        ],
+        label: 'Мероприятия',
+        route: '/Admin/school/events',
         visible: true
       },
-      {
-        icon: `pi pi-users`,
-        label: 'Клиенты',
-        route: '',
-        children: [
-          { label: 'Клиенты', route: '/Admin/clients', visible: user.access?.clients !== 0 },
-          { label: 'Юрлица', route: '/Admin/legalPerson', visible: user.access?.clients !== 0 },
-        ],
-        visible: user.access?.clients && user.access?.clients !== 0
-      },
-      {
-        icon: `pi pi-folder-open`,
-        label: 'Справочники',
-        route: '',
-        children: [
-          { label: 'Виды рекламы', route: '/Admin/directory/advertising_types', visible: true },
-          { label: 'Должности', route: '/Admin/directory/positions', visible: true }
-        ],
-        visible: user.access?.directory && user.access.directory !== 0
-      }
     ]
   },
 ])
+const photo = computed(() => {
+  let tempPhoto = Logo;
 
-const sidebarStore = useSidebarStore();
-const authStore = useAuthStore();
+  if(authStore.user?.school?.photo && authStore.user?.school?.photo !== ""){
+    tempPhoto = import.meta.env.VITE_FILE_URL + "/" + authStore.user?.school?.photo;
+  }
+
+  return tempPhoto;
+});
 
 onClickOutside(target, () => {
   sidebarStore.isSidebarOpen = false
@@ -64,7 +48,7 @@ onClickOutside(target, () => {
 
 <template>
   <aside
-      class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-boxdark duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+      class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-blue-600 duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
       :class="{
       'translate-x-0': sidebarStore.isSidebarOpen,
       '-translate-x-full': !sidebarStore.isSidebarOpen
@@ -75,12 +59,12 @@ onClickOutside(target, () => {
     <div class="flex items-center justify-center gap-2 px-6 py-5.5 lg:py-6.5">
       <div class="flex flex-col items-center justify-center">
         <img
-            :src="Logo"
-            class="mr-3 h-12"
+            :src="photo"
+            class="mr-3 mb-4 h-16"
             alt="Логотип компании"
         />
         <div>
-          <span class="block self-center text-2xl font-semibold whitespace-normal text-white">{{ authStore.user.company_name }}</span>
+          <span class="block self-center text-xl font-semibold whitespace-normal text-white">{{ authStore.user?.school?.org_short_name }}</span>
           <!--              <span class="block self-center text-sm font-semibold whitespace-nowrap text-gray-300 dark:text-gray-500">АВТОПРОКАТ</span>-->
         </div>
       </div>

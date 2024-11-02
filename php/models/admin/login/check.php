@@ -23,57 +23,89 @@ if (strlen($password) > 72) {
     die();
 }
 
-if (!empty($login) && !empty($password)) {
-    $sql = "
-        SELECT 
-            t1.*, t2.firing_date as firing_date, 
-            t2.full_name as user_full_name, t2.birth_date as user_birth_date,
-            t2.first_name as user_first_name, t2.second_name as user_second_name,
-            t2.middle_name as user_middle_name, t2.user_type,
-            t4.id as company_id, t4.name as company_name,
-            t5.access_directory, t5.access_employers, t5.access_clients
-        FROM 
-            users as t1
-        LEFT JOIN 
-            users_info as t2 on t2.user_id = t1.id
-        LEFT JOIN 
-            users_company as t3 on t3.user_id = t1.id
-        LEFT JOIN 
-            company as t4 on t4.id = t3.company_id
-        LEFT JOIN 
-            users_access as t5 on t1.id = t5.user_id
-        WHERE 
-            t1.email = '$login' AND t1.archive = 0";
+if (isset($login) && isset($password)) {
+    $sql = "SELECT * FROM accounts WHERE archive = '0' AND (email = '$login' OR login = '$login')";
     $sqls[] = $sql;
-    $result = pg_query($conn, $sql);
+    $result = mysqli_query($conn, $sql);
     $params->sql = $sql;
 
-    if (pg_num_rows($result) > 0) {
-        $row = pg_fetch_object($result);
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_object($result);
 
-        if ((int)$row->status == 0 || $row->firing_date != null) {
-            $error = 1;
-            $error_text = "Ошибка, данный пользователь не может войти в систему";
-        }
-        else if (password_verify($password, $row->password)) {
+        if (password_verify($password, $row->pwd)) {
             $params = get_all_info($row, $conn);
         } else {
             $error = 1;
             $error_text = "Ошибка, логин или пароль введен неверно";
         }
-    }
-    else {
-        $error = 1;
-        $error_text = "Ошибка, логин или пароль введен неверно";
-    }
+    } else {
+        $key = get_key();
+        $eo_id = check_ekis($login, $password, $key);
 
-    pg_free_result($result);
+        if ($eo_id > 0) {
+            $sql = "SELECT * FROM accounts WHERE ekis = '$eo_id' AND archive = '0'";
+            $result = mysqli_query($conn, $sql);
+
+            if (mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_object($result);
+                $params = get_all_info($row, $conn);
+            } else {
+                $data = get_ekis_data($key, $eo_id);
+
+                $org_name = $data->full_name;
+                $org_short_name = $data->short_name;
+                $fio = $data->director;
+                $email = $data->email;
+                $phone = $data->public_phone;
+                $active = 1;
+                $msrd = (int)$data->mrsd;
+                $address = $data->legal_address;
+
+                $new_password = password_hash($password, PASSWORD_DEFAULT);
+
+                $sql = "SELECT * FROM schools WHERE ekis = '$eo_id' AND org_name = '$org_name'";
+                $result = mysqli_query($conn, $sql);
+                $schoolID = 0;
+
+                if (mysqli_num_rows($result) > 0) {
+                    $schoolID = mysqli_fetch_object($result)->ID;
+                } else {
+                    $sql = "INSERT INTO schools (org_name, org_short_name, fio, phone, dir_phone, dir_email, active, number, msrd, ekis, meshID, sport_school, address, okrug, okrug_short, raion, archive, hsk_score) 
+                VALUES ('$org_name', '$org_short_name', '$fio', '$phone', '', '', '$active', '', '$msrd', '$eo_id', '', '0', '$address', '', '', '', '', '0')";
+                    mysqli_query($conn, $sql);
+                    $schoolID = mysqli_insert_id($conn);
+                }
+
+                $sql = "INSERT INTO accounts (login, email, pwd, org_name, org_short_name, fio, phone, active, ekis, msrd, address, schoolID) VALUES ('$login', '$email', '$new_password', '$org_name', '$org_short_name', '$fio', '$phone', '$active', '$eo_id', '$msrd', '$address', '$schoolID')";
+                mysqli_query($conn, $sql);
+                $lastID = mysqli_insert_id($conn);
+
+                $sql = "SELECT * FROM accounts WHERE ID = '$lastID'";
+                $result = mysqli_query($conn, $sql);
+                $row = mysqli_fetch_object($result);
+
+                $params = get_all_info($row, $conn);
+            }
+        } else {
+            $error = 1;
+            $error_text .= "Ошибка, логин или пароль введен неверно";
+        }
+    }
 } else {
     $error = 1;
     $error_text = "Ошибка, логин или пароль введен неверно";
 }
 
-require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';
+$content = (object)[
+    'input_params' => (object)[
+        'login' => $login,
+    ],
+    'error' => $error,
+    'error_text' => $error_text,
+    'sql' => $sqls,
+    'params' => $params,
+];
+echo json_encode($content);
 
 function gen_token(): string
 {
@@ -94,26 +126,170 @@ function get_all_info($row, $conn): object
 {
     $token = gen_token();
 
-    $sql = "UPDATE users SET token = '$token', token_created_at = now() WHERE id = '$row->id'";
-    pg_query($conn, $sql);
+    $sql = "UPDATE accounts SET token = '$token' WHERE ID = '$row->ID'";
+    mysqli_query($conn, $sql);
+
+    $roleTitle = "";
+
+    switch ($row->role) {
+        case "school":
+            $roleTitle = "Представитель школы";
+            break;
+        case "admin":
+            $roleTitle = "Администратор";
+            break;
+        case "superadmin":
+            $roleTitle = "Главный администратор";
+            break;
+    }
+
+    $school = null;
+    $sql = "SELECT * FROM schools WHERE ID = '$row->schoolID'";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        $school = mysqli_fetch_object($result);
+
+        foreach ($school as $key => $value) {
+            $school->$key = htmlspecialchars_decode($value);
+        }
+    }
 
     return (object)[
-        'id' => (int)$row->id,
+        'id' => (int)$row->ID,
+        'login' => $row->login,
         'email' => $row->email,
-        'company_id' => (int)$row->company_id,
-        'company_name' => $row->company_name != null ? htmlspecialchars_decode($row->company_name) : '',
-        'user_type' => (int)$row->user_type,
-        'user_full_name' => $row->user_full_name != null ? htmlspecialchars_decode($row->user_full_name) : '',
-        'user_first_name' => $row->user_first_name != null ? htmlspecialchars_decode($row->user_first_name) : '',
-        'user_second_name' => $row->user_second_name != null ? htmlspecialchars_decode($row->user_second_name) : '',
-        'user_middle_name' => $row->user_middle_name != null ? htmlspecialchars_decode($row->user_middle_name) : '',
-        'user_birth_date' => $row->user_birth_date,
+        'phone' => $row->phone,
+        'photo' => $row->photo,
+        'fio' => $row->fio,
+        'create_time' => $row->create_time,
+        'role' => $row->role,
+        'role_title' => $roleTitle,
+        'org_name' => $row->org_name,
+        'org_short_name' => $row->org_short_name,
+        'ekis' => $row->ekis,
+        'address' => $row->address,
+        'mrsd' => get_mrsd($conn, $row->ID, $row->msrd),
+        'roles' => get_roles($conn, $row->ID, $row->role),
+        'schoolID' => (int)$row->schoolID,
+        'school' => $school,
         'token' => $token,
         'token_created_at' => new DateTime(),
-        'access' => (object)[
-            'directory' => (int)$row->access_directory,
-            'employers' => (int)$row->access_employers,
-            'clients' => (int)$row->access_clients,
-        ]
     ];
+}
+
+function get_key()
+{
+    $log = 'patriot';
+    $pass = '0ddB5K_7';
+
+    $url = "https://api-st.educom.ru/v1/auth/createSession";
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_setopt($ch, CURLOPT_USERPWD, $log . ":" . $pass);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $res = curl_exec($ch);
+    curl_close($ch);
+
+    $result = json_decode($res);
+    return $result->id;
+}
+
+function check_ekis($login, $password, $key)
+{
+    global $params;
+
+    $url = "https://api-st.educom.ru/v1/users/auth";
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_USERPWD, $login . ":" . $password);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'X-API-TOKEN: ' . $key,
+        'Content-Type: application/json'));
+    $res = curl_exec($ch);
+    curl_close($ch);
+    header('Content-Type: application/json');
+    $result = json_decode($res);
+
+    $params->ekis = $result;
+
+    $eo_id = $result->data->eo_id;
+
+    if (count($result->errors) > 0)
+        return 0;
+    else
+        return $eo_id;
+}
+
+function get_ekis_data($key, $eo_id)
+{
+    $url = "https://api-st.educom.ru/v1/eduorg";
+    $body['filters'][] = array('arhiv' => array("true" => '0'), 'status_id' => array("true" => '1'), 'eo_id' => array("true" => $eo_id));
+    //$body['top'] = 100;
+    $body['skip'] = 0;
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'X-API-TOKEN: ' . $key,
+        'Content-Type: application/json'));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+    $res = curl_exec($ch);
+    curl_close($ch);
+    header('Content-Type: application/json');
+    $result = json_decode($res);
+
+    return $result->data[0];
+}
+
+function get_mrsd($conn, $adminID, $msrd)
+{
+    $sql = "SELECT * FROM admin_msrd WHERE adminID = '$adminID'";
+    $result = mysqli_query($conn, $sql);
+
+    $mrsd = array();
+
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_object($result)) {
+            $mrsd[] = (int)$row->msrd;
+        }
+    } else
+        $mrsd[] = $msrd;
+
+    return $mrsd;
+}
+
+function get_roles($conn, $userID, $role)
+{
+    $sql1 = "
+    SELECT 
+        ar.*, ard.title as roleTitle 
+    FROM 
+        admin_role as ar
+    INNER JOIN 
+        admin_role_dic as ard ON ar.roleID = ard.ID
+    WHERE
+        ar.userID = '$userID'";
+    $result1 = mysqli_query($conn, $sql1);
+
+    $roles = array();
+
+    $roles[] = (object)[
+        'ID' => $role == "superadmin" ? 1 : 0,
+        'title' => $role == "superadmin" ? "Главный администратор" : "Администратор",
+    ];
+
+    if (mysqli_num_rows($result1) > 0) {
+        while ($row1 = mysqli_fetch_object($result1)) {
+            $roles[] = (object)[
+                'ID' => (int)$row1->ID,
+                'title' => $row1->roleTitle,
+            ];
+        }
+    }
+
+    return $roles;
 }

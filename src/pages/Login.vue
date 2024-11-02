@@ -1,13 +1,12 @@
 <script setup>
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-
 import {useAuthStore} from "@stores";
 
 import Logo from "@assets/images/logo.png";
-import DarkToggle from "@components/DarkToggle.vue";
 import DarkModeSwitcher from "@components/DarkModeSwitcher.vue";
 
+const {user} = useAuthStore();
 const router = useRouter();
 const login = ref('');
 const password = ref('');
@@ -23,6 +22,30 @@ const handleSubmit = async () => {
     error.value = result;
   }
 }
+const handleEKIS = () => {
+  // let clientID = '39e036e0e9dcb8';
+  // let apiURL = 'https://test-center.educom.ru';
+  // let redirectURL = "https://test.patriot-sport.ru/admin/api/Login/";
+  //
+  // if(window.location.origin.includes('https://admin.patriot-sport.ru')){
+  //   clientID = '686f4dc440c7be';
+  //   apiURL = 'https://center.educom.ru';
+  //   redirectURL = 'https://admin.patriot-sport.ru/admin/api/Login/';
+  // }
+  //
+  // loginEKISBtn.addEventListener('click', () => {
+  //   const url = `${apiURL}/oauth/authorize?response_type=code&client_id=${clientID}&redirect_uri=${redirectURL}&scope=read`;
+  //   console.log(url);
+  //   //return;
+  //   window.location.replace(url);
+  // });
+};
+
+onMounted(() => {
+  if(user){
+    router.push('/Admin/');
+  }
+});
 </script>
 
 <template>
@@ -71,7 +94,14 @@ const handleSubmit = async () => {
             >
               Войти
             </button>
+
           </form>
+          <button
+              @click="handleEKIS"
+              class="w-full mt-4 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+          >
+            Войти через ЕКИС
+          </button>
         </div>
       </div>
     </div>

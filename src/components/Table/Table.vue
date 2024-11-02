@@ -11,7 +11,7 @@ const props = defineProps({
   pageSize: {
     type: Number,
     required: false,
-    default: 20
+    default: 10
   },
   items: {
     type: Array,
@@ -73,15 +73,17 @@ initFilters();
 
 <template>
   <Card>
-    <template v-if="withFilters" #title>
+    <template v-if="withFilters && items.length > 0" #title>
       <Toolbar class="mb-2">
         <template #start>
           <slot name="buttons"/>
         </template>
         <template #end>
-          <!--              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />-->
-          <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
-                  @click="clearFilter()"/>
+          <div class="flex gap-2">
+            <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)"/>
+            <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
+                    @click="clearFilter()"/>
+          </div>
         </template>
       </Toolbar>
       <slot name="checkbox"/>
@@ -108,7 +110,7 @@ initFilters();
         <template #header>
           <div class="flex justify-between items-center">
             <h2 class="text-xl">{{ title }}</h2>
-            <IconField>
+            <IconField v-if="items.length > 0">
               <InputIcon class="pi pi-search"/>
               <InputText v-model="finalFilters['global'].value" placeholder="Поиск"/>
             </IconField>

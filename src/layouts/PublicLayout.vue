@@ -1,7 +1,7 @@
 <script setup>
 import {ref, onBeforeMount, onMounted} from "vue";
 import {RouterLink} from "vue-router";
-import Logo from "@assets/images/logo.svg";
+import Logo from "@assets/images/logo.png";
 
 const appButton = ref();
 const userScroll = () => {
