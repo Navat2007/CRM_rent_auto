@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {RouterLink} from "vue-router";
-import DarkToggle from "@components/DarkToggle.vue";
+import DarkModeSwitcher from "@components/DarkModeSwitcher.vue";
 </script>
 
 <template>
   <section class="h-screen w-screen bg-white dark:bg-gray-900 flex justify-center items-center">
     <div class="absolute top-0 right-0 flex items-end justify-center pr-2 pt-2">
-      <DarkToggle />
+      <DarkModeSwitcher />
     </div>
 
     <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">

@@ -1,13 +1,18 @@
 <?php
-$DB_SERVER = "188.225.46.81";
-$DB_PORT = "5432";
-$DB_USER = "rent";
-$DB_PASSWORD = "yuh8AC_NzZk-dX9g";
-$DB_DATABASE = "rentcars";
+$DB_SERVER = "localhost";
+$DB_USER = "sport";
+$DB_PASSWORD = "EVEonline2007";
 
-$conn = pg_connect("host=$DB_SERVER port=$DB_PORT dbname=$DB_DATABASE user=$DB_USER password=$DB_PASSWORD");
+if (strpos($_SERVER['DOCUMENT_ROOT'], '/var/www/test-control.patriot-sport.ru') !== false) {
+    $DB_DATABASE = "test_sport";
+} else {
+    $DB_DATABASE = "sport";
+}
 
-if (!$conn) {
-    echo "Failed to connect to PostgreSQL: " . pg_last_error();
-    exit;
+$conn = new mysqli($DB_SERVER, $DB_USER, $DB_PASSWORD, $DB_DATABASE);
+$conn->set_charset("utf8");
+
+if(!$conn)
+{
+    die("Connection failed.". mysql_connect_error());
 }

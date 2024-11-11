@@ -55,7 +55,7 @@ axios.interceptors.response.use((response) => {
   return Promise.reject(error.message);
 });
 
-if (authStore.user) {
+if (authStore.user && authStore.user.token_created_at) {
   let expireDate = moment(authStore.user.token_created_at.date, 'YYYY-MM-DD').add(expireDays, 'days');
 
   if (expireDate.isAfter(moment())) {
@@ -63,6 +63,9 @@ if (authStore.user) {
   } else {
     authStore.logout();
   }
+}
+else {
+  authStore.logout();
 }
 </script>
 
