@@ -18,6 +18,7 @@ import Sidebar from "@components/Containers/Admin/Sidebar/Sidebar.vue";
       </main>
     </div>
   </div>
+
 </template>
 
 <style scoped>

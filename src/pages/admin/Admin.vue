@@ -17,10 +17,12 @@ import PageContainer from "@components/Containers/Admin/PageContainer.vue";
           </svg>
         </div>
         <div class="p-4 text-right"><p
-            class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Мероприятий</p>
+            class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Пользователи</p>
           <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-            3</h4>
-        </div>
+            3</h4></div>
+        <div class="border-t border-blue-gray-50 p-4"><p
+            class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600"><strong
+            class="text-green-500">+100%</strong>&nbsp;с прошлого месяца</p></div>
       </div>
       <div
           class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 border border-blue-gray-100 shadow-sm">
@@ -33,10 +35,12 @@ import PageContainer from "@components/Containers/Admin/PageContainer.vue";
           </svg>
         </div>
         <div class="p-4 text-right"><p
-            class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Заявок</p><h4
+            class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Клиенты</p><h4
             class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-          0</h4>
-        </div>
+          0</h4></div>
+        <div class="border-t border-blue-gray-50 p-4"><p
+            class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600"><strong
+            class="">0%</strong>&nbsp;без изменений</p></div>
       </div>
       <div
           class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 border border-blue-gray-100 shadow-sm">
@@ -53,10 +57,12 @@ import PageContainer from "@components/Containers/Admin/PageContainer.vue";
           </svg>
         </div>
         <div class="p-4 text-right"><p
-            class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Учеников</p>
+            class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Выручка</p>
           <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-            0</h4>
-        </div>
+            0 ₽</h4></div>
+        <div class="border-t border-blue-gray-50 p-4"><p
+            class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600"><strong
+            class="">0%</strong>&nbsp;без изменений</p></div>
       </div>
       <div
           class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 border border-blue-gray-100 shadow-sm">
@@ -69,11 +75,12 @@ import PageContainer from "@components/Containers/Admin/PageContainer.vue";
           </svg>
         </div>
         <div class="p-4 text-right"><p
-            class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Команд</p>
-          <h4
-              class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-            0</h4>
-        </div>
+            class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Бронирование</p><h4
+            class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
+          0</h4></div>
+        <div class="border-t border-blue-gray-50 p-4"><p
+            class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600"><strong
+            class="">0%</strong>&nbsp;без изменений</p></div>
       </div>
     </div>
   </PageContainer>

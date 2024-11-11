@@ -1,26 +1,16 @@
 <script setup>
 import {useAuthStore} from "@stores";
+
 import Logo from "@assets/images/logo.png";
 import {useSidebarStore} from "@stores/sidebar.js";
 import {RouterLink} from "vue-router";
 import DarkModeSwitcher from "@components/DarkModeSwitcher.vue";
 import DropdownUser from "@components/DropdownUser.vue";
-import Support from "@components/Support.vue";
-import {computed} from "vue";
+
 
 const authStore = useAuthStore();
 const sidebarStore = useSidebarStore();
-const {toggleSidebar} = useSidebarStore();
-
-const photo = computed(() => {
-  let tempPhoto = Logo;
-
-  if(authStore.user?.school?.photo && authStore.user?.school?.photo !== ""){
-    tempPhoto = import.meta.env.VITE_FILE_URL + "/" + authStore.user?.school?.photo;
-  }
-
-  return tempPhoto;
-});
+const { toggleSidebar } = useSidebarStore();
 </script>
 
 <template>
@@ -64,15 +54,12 @@ const photo = computed(() => {
         <!-- Hamburger Toggle BTN -->
         <div class="flex items-center gap-2 lg:hidden">
           <img
-              :src="photo"
-              class="h-8 min-h-8 min-w-8"
+              :src="Logo"
+              class="h-12 min-h-12 min-w-12"
               alt="Логотип компании"
           />
           <div>
-            <span
-                class="hidden sm:block self-center text-2xl font-semibold whitespace-nowrap text-gray-800 dark:text-white">{{
-                authStore.user?.school?.org_short_name
-              }}</span>
+            <span class="hidden sm:block self-center text-2xl font-semibold whitespace-nowrap text-gray-800 dark:text-white">{{ authStore.user.company_name }}</span>
             <!--              <span class="block self-center text-sm font-semibold whitespace-nowrap text-gray-300 dark:text-gray-500">АВТОПРОКАТ</span>-->
           </div>
         </div>
@@ -81,16 +68,13 @@ const photo = computed(() => {
       <div class="hidden sm:block"></div>
 
       <div class="flex items-center gap-3 2xsm:gap-7">
-        <ul class="flex items-center gap-4 2xsm:gap-4">
+        <ul class="flex items-center gap-2 2xsm:gap-4">
           <li>
-            <Support/>
-          </li>
-          <li>
-            <DarkModeSwitcher/>
+            <DarkModeSwitcher />
           </li>
         </ul>
 
-        <DropdownUser/>
+        <DropdownUser />
       </div>
     </div>
   </header>

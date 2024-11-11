@@ -1,4 +1,5 @@
 <?php
+pg_close($conn);
 
 if(!isset($error))
     $error = 0;

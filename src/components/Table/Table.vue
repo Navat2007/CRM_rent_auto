@@ -11,7 +11,7 @@ const props = defineProps({
   pageSize: {
     type: Number,
     required: false,
-    default: 10
+    default: 20
   },
   items: {
     type: Array,
@@ -73,17 +73,15 @@ initFilters();
 
 <template>
   <Card>
-    <template v-if="withFilters && items.length > 0" #title>
+    <template v-if="withFilters" #title>
       <Toolbar class="mb-2">
         <template #start>
           <slot name="buttons"/>
         </template>
         <template #end>
-          <div class="flex gap-2">
-            <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)"/>
-            <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
-                    @click="clearFilter()"/>
-          </div>
+          <!--              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />-->
+          <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
+                  @click="clearFilter()"/>
         </template>
       </Toolbar>
       <slot name="checkbox"/>
@@ -103,14 +101,14 @@ initFilters();
           stateStorage="local" :stateKey="tableSaveKey" size="small"
           showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize"
           :rowsPerPageOptions="[10, 20, 50]"
-          resizableColumns columnResizeMode="fit" reorderableColumns
+          resizableColumns columnResizeMode="expand" reorderableColumns
           sortField="id" :sortOrder="1" removableSort rowHover
           filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"
       >
         <template #header>
           <div class="flex justify-between items-center">
             <h2 class="text-xl">{{ title }}</h2>
-            <IconField v-if="items.length > 0">
+            <IconField>
               <InputIcon class="pi pi-search"/>
               <InputText v-model="finalFilters['global'].value" placeholder="Поиск"/>
             </IconField>

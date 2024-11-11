@@ -16,7 +16,7 @@ const props = defineProps({
 <template>
   <div v-if="loading"></div>
   <div v-else>
-    <nav v-if="breadcrumbs.length > 0" class="flex mb-4" aria-label="Breadcrumb">
+    <nav v-if="breadcrumbs.length > 0" class="flex mb-8" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
         <li class="inline-flex items-center">
           <router-link to="/admin/"
