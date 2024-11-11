@@ -354,7 +354,8 @@ if ($error === 0) {
                 issued_date,
                 born_place,
                 registration_address,
-                fact_address            
+                fact_address,
+                last_user_id
             ) 
             VALUES (
                 '$ID',
@@ -364,7 +365,8 @@ if ($error === 0) {
                 " . (empty($passport_date_of_issue) ? 'NULL' : "'" . $passport_date_of_issue . "'") . ",                 
                 '$passport_born_place',                 
                 '$passport_registration_address',                 
-                '$passport_fact_address'              
+                '$passport_fact_address',
+                '$user' 
             )";
         $sqls[] = $sql;
         pg_query($conn, $sql);
@@ -397,14 +399,16 @@ if ($error === 0) {
                 series_number,
                 issued_by_who,
                 issued_date,
-                expire_date          
+                expire_date,
+                last_user_id
             ) 
             VALUES (
                 '$ID',
                 '$dl_series_number',
                 '$dl_issued_by_who',
                 " . (empty($dl_issued_date) ? 'NULL' : "'" . $dl_issued_date . "'") . ",                 
-                " . (empty($dl_expire_date) ? 'NULL' : "'" . $dl_expire_date . "'") . "            
+                " . (empty($dl_expire_date) ? 'NULL' : "'" . $dl_expire_date . "'") . ",
+                '$user'            
             )";
         $sqls[] = $sql;
         pg_query($conn, $sql);

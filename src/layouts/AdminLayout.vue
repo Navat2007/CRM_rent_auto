@@ -12,7 +12,7 @@ import Sidebar from "@components/Containers/Admin/Sidebar/Sidebar.vue";
       <Header />
 
       <main>
-        <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+        <div class="mx-auto p-4 md:p-6 2xl:p-10">
           <slot></slot>
         </div>
       </main>

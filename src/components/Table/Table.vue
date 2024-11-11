@@ -101,7 +101,7 @@ initFilters();
           stateStorage="local" :stateKey="tableSaveKey" size="small"
           showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize"
           :rowsPerPageOptions="[10, 20, 50]"
-          resizableColumns columnResizeMode="fit" reorderableColumns
+          resizableColumns columnResizeMode="expand" reorderableColumns
           sortField="id" :sortOrder="1" removableSort rowHover
           filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"
       >

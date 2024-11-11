@@ -26,6 +26,10 @@ import AdminEditPositions from "@pages/admin/directory/position/EditPositions.vu
 import AdminAdvertisingTypes from "@pages/admin/directory/advertising_types/AdvertisingTypes.vue";
 import AdminAddAdvertisingTypes from "@pages/admin/directory/advertising_types/AddAdvertisingTypes.vue";
 import AdminEditAdvertisingTypes from "@pages/admin/directory/advertising_types/EditAdvertisingTypes.vue";
+import AdminDirectoryCarBodies from "@pages/admin/directory/car_bodies/List.vue";
+import AdminAddDirectoryCarBodies from "@pages/admin/directory/car_bodies/Add.vue";
+import AdminEditDirectoryCarBodies from "@pages/admin/directory/car_bodies/Edit.vue";
+import AdminAuto from "@pages/admin/auto/Auto.vue";
 
 const publicRoutes = [
     {
@@ -149,6 +153,17 @@ const adminRoutes = [
             title: 'Редактирование клиента',
         }
     },
+    //Auto
+    {
+        path: '/Admin/auto',
+        exact: true,
+        component: AdminAuto,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто',
+        }
+    },
     // Directory
     {
         path: '/Admin/directory/positions',
@@ -207,6 +222,35 @@ const adminRoutes = [
             title: 'Редактирование вида рекламы',
         }
     },
+    {
+        path: '/Admin/directory/car_bodies',
+        component: AdminDirectoryCarBodies,
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Должности',
+        }
+    },
+    {
+        path: '/Admin/directory/car_bodies/new',
+        component: AdminAddDirectoryCarBodies,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Новая должность',
+        }
+    },
+    {
+        path: '/Admin/directory/car_bodies/:id',
+        component: AdminEditDirectoryCarBodies,
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Редактирование должности',
+        }
+    },
 ];
 
 const routes = [...publicRoutes, ...adminRoutes,
@@ -238,7 +282,7 @@ router.beforeEach((to, from, next) => {
     setSidebarState(false);
 
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (!auth.user) {
+        if (!auth.user || !auth.user.access) {
             next({path: '/login'});
         } else {
             next();
@@ -246,6 +290,6 @@ router.beforeEach((to, from, next) => {
     } else {
         next();
     }
-})
+});
 
 export default router;

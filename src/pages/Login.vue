@@ -1,13 +1,13 @@
 <script setup>
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 
 import {useAuthStore} from "@stores";
 
 import Logo from "@assets/images/logo.png";
-import DarkToggle from "@components/DarkToggle.vue";
 import DarkModeSwitcher from "@components/DarkModeSwitcher.vue";
 
+const {user} = useAuthStore();
 const router = useRouter();
 const login = ref('');
 const password = ref('');
@@ -22,7 +22,13 @@ const handleSubmit = async () => {
   if(result){
     error.value = result;
   }
-}
+};
+
+onMounted(() => {
+  if(user){
+    router.push('/Admin/');
+  }
+});
 </script>
 
 <template>

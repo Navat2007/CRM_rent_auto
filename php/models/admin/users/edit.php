@@ -128,6 +128,7 @@ $dl_expire_date = htmlspecialchars($_POST["dl_expire_date"]);
 $access_directory = htmlspecialchars($_POST["access_directory"]);
 $access_employers = htmlspecialchars($_POST["access_employers"]);
 $access_clients = htmlspecialchars($_POST["access_clients"]);
+$access_auto = htmlspecialchars($_POST["access_auto"]);
 
 $error = 0;
 $error_text = "";
@@ -466,6 +467,7 @@ if ($error === 0) {
                 access_directory = '$access_directory', 
                 access_employers = '$access_employers', 
                 access_clients = '$access_clients', 
+                access_auto = '$access_auto', 
                 last_user_id = '$user'
             WHERE 
                 user_id = '$ID'";
@@ -477,6 +479,7 @@ if ($error === 0) {
                 access_directory,
                 access_employers,
                 access_clients,
+                access_auto,
                 last_user_id
             ) 
             VALUES (
@@ -484,6 +487,7 @@ if ($error === 0) {
                 '$access_directory', 
                 '$access_employers',
                 '$access_clients',
+                '$access_auto',
                 '$user'
             )";
         $sqls[] = $sql;

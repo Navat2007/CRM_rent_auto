@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import {useSidebarStore} from '@stores/sidebar.js'
 import {ref} from 'vue'
-import {c} from "vite/dist/node/types.d-aGj9QkWt";
+import {useRoute} from "vue-router";
 
 const sidebarStore = useSidebarStore()
 
 const props = defineProps(['items', 'page'])
 const items = ref(props.items)
+const currentPage = useRoute().name
+const opened = ref(false);
 
 const handleItemClick = (index: number) => {
   sidebarStore.selected = sidebarStore.selected === props.items[index].label ? '' : props.items[index].label
@@ -14,7 +16,7 @@ const handleItemClick = (index: number) => {
 </script>
 
 <template>
-  <ul class="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
+  <ul class="mt-4 mb-5.5 flex flex-col gap-2.5 pl-8">
     <template v-for="(childItem, index) in items" :key="index">
       <li v-if="childItem.visible">
         <router-link

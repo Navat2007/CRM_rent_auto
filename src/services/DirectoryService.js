@@ -99,6 +99,55 @@ class DirectoryService {
 
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/advertising_types/delete.php`, form);
     }
+
+    static async getAll(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/universal/load.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    static async getById(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = null;
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/universal/load_by_id.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    static async add(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/universal/add.php`, form);
+    }
+
+    static async edit(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/universal/edit.php`, form);
+    }
+
+    static async delete(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/universal/delete.php`, form);
+    }
 }
 
 export default DirectoryService

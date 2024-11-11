@@ -13,9 +13,12 @@ const {user} = useAuthStore();
 const items = ref([]);
 const loading = ref(true);
 
+const directoryTitle = 'Тип кузова авто';
+const directoryUrl = 'car_bodies';
+
 const breadcrumbs = ref([
   {
-    name: 'Виды рекламы',
+    name: directoryTitle,
     route: null
   },
 ]);
@@ -41,16 +44,15 @@ const filters = ref({
 });
 const filterFields = ref(['id', 'name', 'archive']);
 
-const handleAddButtonClick = (item) => {
-  router.push('/Admin/directory/advertising_types/new');
+const handleAddButtonClick = () => {
+  router.push(`/Admin/directory/${directoryUrl}/new`);
 }
 const handleRowClick = (item) => {
-  //router.push({ name: 'AdminEditUser', params: { id: item.id } });
-  router.push('/Admin/directory/advertising_types/' + item.id);
+  router.push(`/Admin/directory/${directoryUrl}/` + item.id);
 }
 
 async function fetchData() {
-  items.value = await DirectoryService.getAdvertisingTypes(user.company_id);
+  items.value = await DirectoryService.getAll({directory: 'directory_' + directoryUrl, company_id: user.company_id});
   loading.value = false;
 }
 
@@ -62,7 +64,7 @@ onMounted(() => {
 <template>
   <PageContainer :breadcrumbs="breadcrumbs">
     <Table
-        title="Виды рекламы" :items="items" :columns="columns"
+        :title="directoryTitle" :items="items" :columns="columns"
         :filters="filters" :filterFields="filterFields"
         :loading="loading" @onRowClick="handleRowClick"
     >
