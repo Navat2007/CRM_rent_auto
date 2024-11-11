@@ -1,21 +1,23 @@
 <script setup>
-import {onMounted, ref} from "vue";
-import {useAuthStore} from "@stores";
+import {onMounted, ref, computed} from "vue";
+import moment from "moment/moment.js";
 import router from "@router";
 import {FilterMatchMode, FilterOperator} from "@primevue/core/api";
+import {useAuthStore} from "@stores";
 
 import Table from "@components/Table/Table.vue";
-import DirectoryService from "@services/DirectoryService.js";
 import PageContainer from "@components/Containers/Admin/PageContainer.vue";
+import EventsService from "@services/admin/school/EventsService";
 
 const {user} = useAuthStore();
 
 const items = ref([]);
+const advertising_type = ref([]);
 const loading = ref(true);
 
 const breadcrumbs = ref([
   {
-    name: 'Виды рекламы',
+    name: 'Мероприятия',
     route: null
   },
 ]);
@@ -25,32 +27,37 @@ const columns = ref([
     field: 'id',
   },
   {
-    header: 'Название',
-    field: 'name',
+    header: 'Название мероприятия',
+    field: 'title',
   },
-  {
-    header: 'Статус',
-    field: 'archive',
-  }
 ]);
-const statuses = ref(['Активен', 'В архиве']);
 const filters = ref({
   id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
-  name: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.STARTS_WITH}]},
-  archive: {operator: FilterOperator.OR, constraints: [{value: "Активен", matchMode: FilterMatchMode.EQUALS}]},
+  title: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+  sport: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
 });
-const filterFields = ref(['id', 'name', 'archive']);
+const filterFields = ref(['id', 'title', 'sport']);
+const selectedColumns = ref(columns.value);
+const onToggle = (val) => {
+  selectedColumns.value = columns.value.filter(col => val.includes(col));
+};
 
 const handleAddButtonClick = (item) => {
-  router.push('/Admin/directory/advertising_types/new');
+  //router.push('/Admin/clients/new');
 }
 const handleRowClick = (item) => {
-  //router.push({ name: 'AdminEditUser', params: { id: item.id } });
-  router.push('/Admin/directory/advertising_types/' + item.id);
+  //router.push('/Admin/clients/' + item.id);
 }
 
+const formatDate = (value) => {
+  if (value.without_birth_date)
+    return '';
+
+  return moment(value.birth_date).format('DD.MM.YYYY');
+};
+
 async function fetchData() {
-  items.value = await DirectoryService.getAdvertisingTypes(user.company_id);
+  items.value = await EventsService.getAll(loading);
   loading.value = false;
 }
 
@@ -62,7 +69,8 @@ onMounted(() => {
 <template>
   <PageContainer :breadcrumbs="breadcrumbs">
     <Table
-        title="Виды рекламы" :items="items" :columns="columns"
+        title="Мероприятия"
+        :items="items" :columns="columns"
         :filters="filters" :filterFields="filterFields"
         :loading="loading" @onRowClick="handleRowClick"
     >
@@ -72,20 +80,11 @@ onMounted(() => {
             <InputText v-model="filterModel.value" type="number" placeholder="Поиск по ID"/>
           </template>
         </Column>
-        <Column field="name" header="Название" sortable>
+        <Column field="title" header="Мероприятие" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="text" placeholder="Поиск по названию"/>
           </template>
         </Column>
-        <Column field="archive" header="Статус" sortable>
-          <template #filter="{ filterModel }">
-            <Dropdown v-model="filterModel.value" :options="statuses" placeholder="Все" class="p-column-filter"
-                      showClear/>
-          </template>
-        </Column>
-      </template>
-      <template #buttons>
-        <Button v-if="user.access.directory === 2" type="button" icon="pi pi-plus" label="Добавить" outlined @click="handleAddButtonClick"/>
       </template>
     </Table>
   </PageContainer>
