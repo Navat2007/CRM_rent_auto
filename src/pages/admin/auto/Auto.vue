@@ -74,10 +74,10 @@ const onToggle = (val) => {
 };
 
 const handleAddButtonClick = (item) => {
-  router.push('/Admin/clients/new');
+  //router.push('/Admin/clients/new');
 }
 const handleRowClick = (item) => {
-  router.push('/Admin/clients/' + item.id);
+  //router.push('/Admin/clients/' + item.id);
 }
 
 const formatDate = (value) => {
@@ -88,20 +88,8 @@ const formatDate = (value) => {
 };
 
 async function fetchData() {
-  items.value = await ClientService.getClients(user.company_id);
-  items.value.map(item => {
-    if (item.birth_date === null) {
-      item.without_birth_date = true;
-      item.birth_date = new Date('1900-01-01');
-    }
-    else {
-      item.birth_date = new Date(item.birth_date);
-      item.without_birth_date = false;
-    }
-  });
+  //items.value = await ClientService.getClients(user.company_id);
 
-  advertising_type.value = await DirectoryService.getAdvertisingTypes(user.company_id);
-  advertising_type.value = advertising_type.value.filter(advertising => advertising.archive === "Активен").map(advertising => advertising.name);
   loading.value = false;
 }
 

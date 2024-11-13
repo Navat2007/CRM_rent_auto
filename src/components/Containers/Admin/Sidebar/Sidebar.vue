@@ -59,8 +59,23 @@ const menuGroups = ref([
         route: '',
         children: [
           {label: 'Виды рекламы', route: '/Admin/directory/advertising_types', visible: true},
-          {label: 'Должности', route: '/Admin/directory/positions', visible: true},
-          {label: 'Авто: Тип кузова', route: '/Admin/directory/car_bodies', visible: true}
+          {label: 'Должности', route: '/Admin/directory/position', visible: true},
+          {label: 'Авто: Тип кузова', route: '/Admin/directory/car_bodies', visible: true},
+          {label: 'Авто: Марка', route: '/Admin/directory/car_brands', visible: true},
+          {label: 'Авто: Класс', route: '/Admin/directory/car_classes', visible: true},
+          {label: 'Авто: Цвет', route: '/Admin/directory/car_colors', visible: true},
+          {label: 'Авто: Комплектация', route: '/Admin/directory/car_configurations', visible: true},
+          {label: 'Авто: Тип топлива', route: '/Admin/directory/car_fuel_types', visible: true},
+          {label: 'Авто: Поколение', route: '/Admin/directory/car_generations', visible: true},
+          {label: 'Авто: Материал салона', route: '/Admin/directory/car_interior_materia', visible: false},
+          {label: 'Авто: Модель', route: '/Admin/directory/car_models', visible: true},
+          {label: 'Авто: ПТС Форма собственности', route: '/Admin/directory/car_pts_ownership', visible: true},
+          {label: 'Авто: Статус', route: '/Admin/directory/car_statuses', visible: false},
+          {label: 'Авто: Резина', route: '/Admin/directory/car_tires_type', visible: false},
+          {label: 'Авто: Трансмиссия', route: '/Admin/directory/car_transmissions', visible: true},
+          {label: 'Авто: Привод', route: '/Admin/directory/car_wheel_drive', visible: false},
+          {label: 'Авто: Размер колес', route: '/Admin/directory/car_wheel_size', visible: true},
+          {label: 'Услуги при бронировании', route: '/Admin/directory/services', visible: true},
         ],
         visible: user.access?.directory && user.access.directory !== 0
       }
@@ -90,7 +105,7 @@ function toggleSidebar() {
 
 <template>
   <aside
-      class="absolute left-0 top-0 z-9999 flex justify-between h-screen flex-col overflow-hidden bg-boxdark delay-200 duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+      class="absolute left-0 top-0 z-9999 flex h-screen flex-col bg-boxdark delay-200 duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
       :class="{
         'translate-x-0': sidebarStore.isSidebarOpen,
         '-translate-x-full': !sidebarStore.isSidebarOpen,
@@ -99,9 +114,9 @@ function toggleSidebar() {
       }"
       ref="target"
   >
-    <div>
+    <div class="flex flex-col overflow-y-hidden h-full">
       <!-- Sidebar Header -->
-      <div class="flex items-center justify-center mt-8 gap-2 px-6 py-5.5 lg:py-6.5 h-36">
+      <div class="flex flex-none items-center justify-center mt-8 gap-2 px-6 py-5.5 lg:py-6.5 h-36">
         <div class="flex flex-col items-center justify-center">
           <Transition name="bounce">
             <img
@@ -122,8 +137,8 @@ function toggleSidebar() {
       </div>
 
       <!-- Sidebar Menu -->
-      <div class="no-scrollbar flex flex-col overflow-hidden duration-300 ease-linear">
-        <nav class="mt-2 py-4 lg:mt-4">
+      <div class="flex flex-auto flex-col duration-300 ease-linear overflow-y-auto">
+        <nav class="mt-2 py-4 lg:mt-4 ">
           <template v-for="menuGroup in menuGroups" :key="menuGroup.name">
             <div>
               <ul class="mb-6 flex flex-col gap-1.5">
@@ -141,12 +156,18 @@ function toggleSidebar() {
     </div>
 
     <!-- Toggle arrow -->
-    <div class="flex w-full justify-end overflow-hidden">
+    <div
+        class="flex w-full overflow-hidden"
+        :class="{
+            'justify-end': sidebarStore.isSidebarFull,
+            'justify-center':!sidebarStore.isSidebarFull,
+          }"
+    >
       <Icon
           size="32"
           class="text-primary-500 hover:text-primary-300 m-1 delay-200 duration-300"
           :class="{
-            'rotate-0': sidebarStore.isSidebarFull,
+            'rotate-0 mr-4': sidebarStore.isSidebarFull,
             'rotate-180':!sidebarStore.isSidebarFull,
           }"
           @click="toggleSidebar"

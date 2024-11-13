@@ -1,10 +1,9 @@
 <script setup>
 import {ref} from "vue";
-import DirectoryPositionAddForm from "@components/Forms/Directory/DirectoryPositionAddForm.vue";
 import AlertModal from "@components/Modals/AlertModal.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import BaseModal from "@components/Modals/BaseModal.vue";
-import DirectoryAdvertisingTypesAddForm from "@components/Forms/Directory/DirectoryAdvertisingTypesAddForm.vue";
+import DirectoryAddForm from "@components/Forms/Directory/DirectoryAddForm.vue";
 
 const props = defineProps({
   visible: {
@@ -21,7 +20,9 @@ const isAlertModalOpen = ref(false);
 const isSuccessModalOpen = ref(false);
 
 const handleAdd = (data) => {
-  DirectoryService.addAdvertisingTypes(data).then((response) => {
+  data.directory = 'directory_advertising_types';
+
+  DirectoryService.add(data).then((response) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         id.value = parseInt(response.data.params.id);
@@ -42,7 +43,7 @@ const onSuccess = () => {
 
 <template>
   <BaseModal :is-open="visible" @close="emit('onClose')" title="Добавление вида рекламы">
-    <DirectoryAdvertisingTypesAddForm @onSubmit="handleAdd" :card="false" />
+    <DirectoryAddForm @onSubmit="handleAdd" :card="false"  title=""/>
   </BaseModal>
 
   <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>

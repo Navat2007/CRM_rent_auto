@@ -19,7 +19,7 @@ const props = defineProps({
   },
   columns: {
     type: Array,
-    required: true
+    required: false
   },
   filters: {
     type: Object,
@@ -102,7 +102,7 @@ initFilters();
           showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize"
           :rowsPerPageOptions="[10, 20, 50]"
           resizableColumns columnResizeMode="expand" reorderableColumns
-          sortField="id" :sortOrder="1" removableSort rowHover
+          :sortOrder="1" removableSort rowHover
           filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"
       >
         <template #header>

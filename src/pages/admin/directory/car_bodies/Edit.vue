@@ -7,7 +7,7 @@ import DirectoryService from "@services/DirectoryService.js";
 
 import AlertModal from "@components/Modals/AlertModal.vue";
 import PageContainer from "@components/Containers/Admin/PageContainer.vue";
-import DirectoryAdvertisingTypesEditForm from "@components/Forms/Directory/DirectoryAdvertisingTypesEditForm.vue";
+import DirectoryEditForm from "@components/Forms/Directory/DirectoryEditForm.vue";
 
 const item = ref(null);
 const route = useRoute();
@@ -18,24 +18,25 @@ const isAlertModalOpen = ref(false);
 const isSuccessModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
+const directoryParentTitle = 'Тип кузова авто';
+const directoryTitle = 'Редактирование типа кузова авто';
+const directoryUrl = 'car_bodies';
 const breadcrumbs = ref([
   {
-    name: 'Виды рекламы',
-    route: '/Admin/directory/advertising_types'
+    name: directoryParentTitle,
+    route: '/Admin/directory/' + directoryUrl
   },
   {
-    name: 'Редактирование вида рекламы',
+    name: directoryTitle,
     route: null
   }
 ]);
 
 const handleEdit = (data) => {
-  //console.log(data);
-
   data.id = route.params.id;
+  data.directory = 'directory_' + directoryUrl;
 
-  DirectoryService.editAdvertisingTypes(data).then((response) => {
-    //console.log(response.data);
+  DirectoryService.edit(data).then((response) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
@@ -47,11 +48,14 @@ const handleEdit = (data) => {
   });
 }
 const handleDelete = () => {
-  let sendingData = {id: route.params.id};
+  let sendingData = {
+    id: route.params.id,
+    directory: 'directory_' + directoryUrl,
+  };
   isDeleteModalOpen.value = false;
   sending.value = true;
 
-  DirectoryService.deleteAdvertisingTypes(sendingData).then((response) => {
+  DirectoryService.delete(sendingData).then((response) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
@@ -65,11 +69,11 @@ const handleDelete = () => {
 
 const onSuccess = () => {
   isSuccessModalOpen.value = false;
-  router.push('/Admin/directory/advertising_types');
+  router.push('/Admin/directory/' + directoryUrl);
 }
 
 async function fetchData() {
-  item.value = await DirectoryService.getAdvertisingTypesById(route.params.id);
+  item.value = await DirectoryService.getById({directory: 'directory_' + directoryUrl, id: route.params.id});
   loading.value = false;
 }
 
@@ -78,7 +82,7 @@ onMounted(fetchData);
 
 <template>
   <PageContainer :loading="loading" :breadcrumbs="breadcrumbs">
-    <DirectoryAdvertisingTypesEditForm @onSubmit="handleEdit" @onDelete="isDeleteModalOpen = true" :item="item"/>
+    <DirectoryEditForm :title="directoryTitle" @onSubmit="handleEdit" @onDelete="isDeleteModalOpen = true" :item="item"/>
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>

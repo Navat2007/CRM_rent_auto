@@ -30,7 +30,7 @@ const props = defineProps({
     default: null
   }
 });
-const emit = defineEmits(['onSubmit', 'onArchive', 'onDelete']);
+const emit = defineEmits(['onSubmit']);
 
 const loadingAdvertising = ref(true);
 const loadingLegalPersons = ref(true);

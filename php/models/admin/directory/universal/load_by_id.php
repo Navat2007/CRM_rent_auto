@@ -20,11 +20,12 @@ $result = pg_query($conn, $sql);
 if(pg_num_rows($result) > 0)
 {
     $row = pg_fetch_object($result);
-    $params = (object)[
-        'id' => (int)$row->id,
-        'name' => htmlspecialchars_decode($row->name),
-        'active' => (int)$row->archive == 0,
-    ];
+
+    $row->id = (int)$row->id;
+    $row->name = htmlspecialchars_decode($row->name);
+    $row->active = (int)$row->archive == 0;
+
+    $params = $row;
 
     pg_free_result($result);
 }

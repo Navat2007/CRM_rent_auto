@@ -56,7 +56,7 @@ onClickOutside(target, () => {
       >
         <div
             v-if="isOpen" tabindex="-1" aria-hidden="true"
-            class="overflow-y-auto overflow-x-hidden min-w-72 min-h-72 lg:w-1/4"
+            class="overflow-y-auto overflow-x-hidden min-w-96 min-h-72 lg:w-5/12"
         >
           <div class="relative p-4 w-full max-h-full">
             <!-- Modal content -->

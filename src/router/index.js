@@ -20,15 +20,6 @@ import AdminEditLegalPerson from "@pages/admin/legalPerson/EditLegalPerson.vue";
 import AdminClients from "@pages/admin/clients/Clients.vue";
 import AdminAddClient from "@pages/admin/clients/AddClient.vue";
 import AdminEditClient from "@pages/admin/clients/EditClient.vue";
-import AdminPositions from "@pages/admin/directory/position/Positions.vue";
-import AdminAddPositions from "@pages/admin/directory/position/AddPositions.vue";
-import AdminEditPositions from "@pages/admin/directory/position/EditPositions.vue";
-import AdminAdvertisingTypes from "@pages/admin/directory/advertising_types/AdvertisingTypes.vue";
-import AdminAddAdvertisingTypes from "@pages/admin/directory/advertising_types/AddAdvertisingTypes.vue";
-import AdminEditAdvertisingTypes from "@pages/admin/directory/advertising_types/EditAdvertisingTypes.vue";
-import AdminDirectoryCarBodies from "@pages/admin/directory/car_bodies/List.vue";
-import AdminAddDirectoryCarBodies from "@pages/admin/directory/car_bodies/Add.vue";
-import AdminEditDirectoryCarBodies from "@pages/admin/directory/car_bodies/Edit.vue";
 import AdminAuto from "@pages/admin/auto/Auto.vue";
 
 const publicRoutes = [
@@ -166,8 +157,8 @@ const adminRoutes = [
     },
     // Directory
     {
-        path: '/Admin/directory/positions',
-        component: AdminPositions,
+        path: '/Admin/directory/position',
+        component: () => import('@pages/admin/directory/position/List.vue'),
         exact: true,
         meta: {
             layout: AdminLayout,
@@ -176,27 +167,28 @@ const adminRoutes = [
         }
     },
     {
-        path: '/Admin/directory/positions/new',
-        component: AdminAddPositions,
+        path: '/Admin/directory/position/new',
+        component: () => import('@pages/admin/directory/position/Add.vue'),
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Новая должность',
+            title: 'Должности',
         }
     },
     {
-        path: '/Admin/directory/positions/:id',
-        component: AdminEditPositions,
+        path: '/Admin/directory/position/:id',
+        component: () => import('@pages/admin/directory/position/Edit.vue'),
         props: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Редактирование должности',
+            title: 'Должности',
         }
     },
     {
         path: '/Admin/directory/advertising_types',
-        component: AdminAdvertisingTypes,
+        component: () => import('@pages/admin/directory/advertising_types/List.vue'),
+        exact: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
@@ -205,50 +197,485 @@ const adminRoutes = [
     },
     {
         path: '/Admin/directory/advertising_types/new',
-        component: AdminAddAdvertisingTypes,
+        component: () => import('@pages/admin/directory/advertising_types/Add.vue'),
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Новый вид рекламы',
+            title: 'Виды рекламы',
         }
     },
     {
         path: '/Admin/directory/advertising_types/:id',
-        component: AdminEditAdvertisingTypes,
+        component: () => import('@pages/admin/directory/advertising_types/Edit.vue'),
         props: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Редактирование вида рекламы',
+            title: 'Виды рекламы',
         }
     },
     {
         path: '/Admin/directory/car_bodies',
-        component: AdminDirectoryCarBodies,
+        component: () => import('@pages/admin/directory/car_bodies/List.vue'),
         exact: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Должности',
+            title: 'Авто: Тип кузова',
         }
     },
     {
         path: '/Admin/directory/car_bodies/new',
-        component: AdminAddDirectoryCarBodies,
+        component: () => import('@pages/admin/directory/car_bodies/Add.vue'),
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Новая должность',
+            title: 'Авто: Тип кузова',
         }
     },
     {
         path: '/Admin/directory/car_bodies/:id',
-        component: AdminEditDirectoryCarBodies,
+        component: () => import('@pages/admin/directory/car_bodies/Edit.vue'),
         props: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,
-            title: 'Редактирование должности',
+            title: 'Авто: Тип кузова',
+        }
+    },
+    {
+        path: '/Admin/directory/car_brands',
+        component: () => import('@pages/admin/directory/car_brands/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Марка',
+        }
+    },
+    {
+        path: '/Admin/directory/car_brands/new',
+        component: () => import('@pages/admin/directory/car_brands/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Марка',
+        }
+    },
+    {
+        path: '/Admin/directory/car_brands/:id',
+        component: () => import('@pages/admin/directory/car_brands/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Марка',
+        }
+    },
+    {
+        path: '/Admin/directory/car_classes',
+        component: () => import('@pages/admin/directory/car_classes/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Класс',
+        }
+    },
+    {
+        path: '/Admin/directory/car_classes/new',
+        component: () => import('@pages/admin/directory/car_classes/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Класс',
+        }
+    },
+    {
+        path: '/Admin/directory/car_classes/:id',
+        component: () => import('@pages/admin/directory/car_classes/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Класс',
+        }
+    },
+    {
+        path: '/Admin/directory/car_colors',
+        component: () => import('@pages/admin/directory/car_colors/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Цвет',
+        }
+    },
+    {
+        path: '/Admin/directory/car_colors/new',
+        component: () => import('@pages/admin/directory/car_colors/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Цвет',
+        }
+    },
+    {
+        path: '/Admin/directory/car_colors/:id',
+        component: () => import('@pages/admin/directory/car_colors/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Цвет',
+        }
+    },
+    {
+        path: '/Admin/directory/car_configurations',
+        component: () => import('@pages/admin/directory/car_configurations/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Комплектация',
+        }
+    },
+    {
+        path: '/Admin/directory/car_configurations/new',
+        component: () => import('@pages/admin/directory/car_configurations/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Комплектация',
+        }
+    },
+    {
+        path: '/Admin/directory/car_configurations/:id',
+        component: () => import('@pages/admin/directory/car_configurations/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Комплектация',
+        }
+    },
+    {
+        path: '/Admin/directory/car_fuel_types',
+        component: () => import('@pages/admin/directory/car_fuel_types/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Тип топлива',
+        }
+    },
+    {
+        path: '/Admin/directory/car_fuel_types/new',
+        component: () => import('@pages/admin/directory/car_fuel_types/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Тип топлива',
+        }
+    },
+    {
+        path: '/Admin/directory/car_fuel_types/:id',
+        component: () => import('@pages/admin/directory/car_fuel_types/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Тип топлива',
+        }
+    },
+    {
+        path: '/Admin/directory/car_generations',
+        component: () => import('@pages/admin/directory/car_generations/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Поколение',
+        }
+    },
+    {
+        path: '/Admin/directory/car_generations/new',
+        component: () => import('@pages/admin/directory/car_generations/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Поколение',
+        }
+    },
+    {
+        path: '/Admin/directory/car_generations/:id',
+        component: () => import('@pages/admin/directory/car_generations/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Поколение',
+        }
+    },
+    {
+        path: '/Admin/directory/car_interior_materia',
+        component: () => import('@pages/admin/directory/car_interior_materia/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Материал салона',
+        }
+    },
+    {
+        path: '/Admin/directory/car_interior_materia/new',
+        component: () => import('@pages/admin/directory/car_interior_materia/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Материал салона',
+        }
+    },
+    {
+        path: '/Admin/directory/car_interior_materia/:id',
+        component: () => import('@pages/admin/directory/car_interior_materia/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Материал салона',
+        }
+    },
+    {
+        path: '/Admin/directory/car_models',
+        component: () => import('@pages/admin/directory/car_models/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Модель',
+        }
+    },
+    {
+        path: '/Admin/directory/car_models/new',
+        component: () => import('@pages/admin/directory/car_models/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Модель',
+        }
+    },
+    {
+        path: '/Admin/directory/car_models/:id',
+        component: () => import('@pages/admin/directory/car_models/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Модель',
+        }
+    },
+    {
+        path: '/Admin/directory/car_pts_ownership',
+        component: () => import('@pages/admin/directory/car_pts_ownership/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: ПТС Форма собственности',
+        }
+    },
+    {
+        path: '/Admin/directory/car_pts_ownership/new',
+        component: () => import('@pages/admin/directory/car_pts_ownership/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: ПТС Форма собственности',
+        }
+    },
+    {
+        path: '/Admin/directory/car_pts_ownership/:id',
+        component: () => import('@pages/admin/directory/car_pts_ownership/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: ПТС Форма собственности',
+        }
+    },
+    {
+        path: '/Admin/directory/car_statuses',
+        component: () => import('@pages/admin/directory/car_statuses/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Статус',
+        }
+    },
+    {
+        path: '/Admin/directory/car_statuses/new',
+        component: () => import('@pages/admin/directory/car_statuses/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Статус',
+        }
+    },
+    {
+        path: '/Admin/directory/car_statuses/:id',
+        component: () => import('@pages/admin/directory/car_statuses/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Статус',
+        }
+    },
+    {
+        path: '/Admin/directory/car_tires_type',
+        component: () => import('@pages/admin/directory/car_tires_type/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Резина',
+        }
+    },
+    {
+        path: '/Admin/directory/car_tires_type/new',
+        component: () => import('@pages/admin/directory/car_tires_type/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Резина',
+        }
+    },
+    {
+        path: '/Admin/directory/car_tires_type/:id',
+        component: () => import('@pages/admin/directory/car_tires_type/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Резина',
+        }
+    },
+    {
+        path: '/Admin/directory/car_transmissions',
+        component: () => import('@pages/admin/directory/car_transmissions/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Трансмиссия',
+        }
+    },
+    {
+        path: '/Admin/directory/car_transmissions/new',
+        component: () => import('@pages/admin/directory/car_transmissions/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Трансмиссия',
+        }
+    },
+    {
+        path: '/Admin/directory/car_transmissions/:id',
+        component: () => import('@pages/admin/directory/car_transmissions/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Трансмиссия',
+        }
+    },
+    {
+        path: '/Admin/directory/car_wheel_drive',
+        component: () => import('@pages/admin/directory/car_wheel_drive/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Привод',
+        }
+    },
+    {
+        path: '/Admin/directory/car_wheel_drive/new',
+        component: () => import('@pages/admin/directory/car_wheel_drive/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Привод',
+        }
+    },
+    {
+        path: '/Admin/directory/car_wheel_drive/:id',
+        component: () => import('@pages/admin/directory/car_wheel_drive/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Привод',
+        }
+    },
+    {
+        path: '/Admin/directory/car_wheel_size',
+        component: () => import('@pages/admin/directory/car_wheel_size/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Размер колес',
+        }
+    },
+    {
+        path: '/Admin/directory/car_wheel_size/new',
+        component: () => import('@pages/admin/directory/car_wheel_size/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Размер колес',
+        }
+    },
+    {
+        path: '/Admin/directory/car_wheel_size/:id',
+        component: () => import('@pages/admin/directory/car_wheel_size/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Размер колес',
+        }
+    },
+    {
+        path: '/Admin/directory/services',
+        component: () => import('@pages/admin/directory/services/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Услуги при бронировании',
+        }
+    },
+    {
+        path: '/Admin/directory/services/new',
+        component: () => import('@pages/admin/directory/services/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Услуги при бронировании',
+        }
+    },
+    {
+        path: '/Admin/directory/services/:id',
+        component: () => import('@pages/admin/directory/services/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Услуги при бронировании',
         }
     },
 ];

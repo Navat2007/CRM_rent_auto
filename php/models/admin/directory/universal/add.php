@@ -6,6 +6,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/params.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
+$user = $authorization[1];
 $directory = isset($_POST["directory"]) ? htmlspecialchars($_POST["directory"]) : die("Не передан directory");
 $name = htmlspecialchars($_POST["name"]);
 $active = htmlspecialchars($_POST["active"]) === "true" ? 0 : 1;
@@ -21,7 +22,7 @@ if(pg_num_rows($result) > 0)
 }
 
 if($error === 0){
-    $sql = "INSERT INTO $directory (name, archive) VALUES ('$name', '$active') RETURNING id";
+    $sql = "INSERT INTO $directory (name, archive, last_user_id) VALUES ('$name', '$active', '$user') RETURNING id";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
     $row = pg_fetch_object($result);

@@ -1,4 +1,4 @@
-<h3>Add tailwind:</h3><br/>
+<h3>Add tailwind:</h3>
 pnpm add -D tailwindcss@latest postcss@latest autoprefixer@latest <br/>
 pnpm add -D sass <br/>
 npx tailwindcss init -p
@@ -11,7 +11,7 @@ add to style.css:
 @tailwind components;
 @tailwind utilities;
 
-<h3>Libraries:</h3><br/>
+<h3>Libraries:</h3>
 pnpm add
 axios
 lodash
@@ -22,6 +22,8 @@ vite-svg-loader
 
 pnpm add primevue @primevue/themes
 
-<h3>References:</h3><br/>
+<h3>References:</h3>
 https://tailwind.primevue.org<br/>
+https://www.xicons.org/#/<br/>
+https://www.naiveui.com<br/>
 https://flowbite.com

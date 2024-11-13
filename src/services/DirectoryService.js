@@ -2,6 +2,7 @@ import axios from "axios";
 import buildFormData from "@utils/buildFormData.js";
 
 class DirectoryService {
+    // Positions
     static async getPositions(company_id) {
         let form = new FormData();
         form.append('company_id', company_id);
@@ -51,6 +52,7 @@ class DirectoryService {
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/position/delete.php`, form);
     }
 
+    // AdvertisingTypes
     static async getAdvertisingTypes(company_id) {
         let form = new FormData();
         form.append('company_id', company_id);
@@ -100,6 +102,37 @@ class DirectoryService {
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/advertising_types/delete.php`, form);
     }
 
+    // Services
+    static async addService(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/services/add.php`, form);
+    }
+
+    static async editService(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/services/edit.php`, form);
+    }
+
+    // Car classes
+    static async addCarClass(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes/add.php`, form);
+    }
+
+    static async editCarClass(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes/edit.php`, form);
+    }
+
+    // Universal
     static async getAll(data) {
         let form = new FormData();
         buildFormData(form, data);

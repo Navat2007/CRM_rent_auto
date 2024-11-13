@@ -6,6 +6,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/params.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
+$user = $authorization[1];
 $directory = isset($_POST["directory"]) ? htmlspecialchars($_POST["directory"]) : die("Не передан directory");
 $id = isset($_POST["id"]) ? (int)htmlspecialchars($_POST["id"]) : die("Не передан ID");
 $name = htmlspecialchars($_POST["name"]);
@@ -30,7 +31,7 @@ if($row->name != $name)
 }
 
 if($error === 0){
-    $sql = "UPDATE $directory SET name = '$name', archive = '$active' WHERE id = '$id'";
+    $sql = "UPDATE $directory SET name = '$name', archive = '$active', last_user_id = '$user' WHERE id = '$id'";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
 }

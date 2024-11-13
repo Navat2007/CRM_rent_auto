@@ -1,33 +1,35 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import router from "@router";
 
 import DirectoryService from "@services/DirectoryService.js";
 
 import AlertModal from "@components/Modals/AlertModal.vue";
 import PageContainer from "@components/Containers/Admin/PageContainer.vue";
-import DirectoryAdvertisingTypesAddForm from "@components/Forms/Directory/DirectoryAdvertisingTypesAddForm.vue";
+import DirectoryAddForm from "@components/Forms/Directory/DirectoryAddForm.vue";
 
 const error = ref('');
 const loading = ref(false);
 const isAlertModalOpen = ref(false);
 const isSuccessModalOpen = ref(false);
 
+const directoryParentTitle = 'Тип кузова авто';
+const directoryTitle = 'Добавление типа кузова авто';
+const directoryUrl = 'car_bodies';
 const breadcrumbs = ref([
   {
-    name: 'Виды рекламы',
-    route: '/Admin/directory/advertising_types'
+    name: directoryParentTitle,
+    route: '/Admin/directory/' + directoryUrl
   },
   {
-    name: 'Добавление вида рекламы',
+    name: directoryTitle,
     route: null
   }
 ]);
 
 const handleAdd = (data) => {
-  //console.log(data);
-
-  DirectoryService.addAdvertisingTypes(data).then((response) => {
+  data.directory = 'directory_' + directoryUrl;
+  DirectoryService.add(data).then((response) => {
     //console.log(response.data);
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
@@ -42,13 +44,13 @@ const handleAdd = (data) => {
 
 const onSuccess = () => {
   isSuccessModalOpen.value = false;
-  router.push('/Admin/directory/advertising_types');
+  router.push('/Admin/directory/' + directoryUrl);
 }
 </script>
 
 <template>
   <PageContainer :breadcrumbs="breadcrumbs">
-    <DirectoryAdvertisingTypesAddForm @onSubmit="handleAdd"/>
+    <DirectoryAddForm :title="directoryTitle" @onSubmit="handleAdd"/>
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
