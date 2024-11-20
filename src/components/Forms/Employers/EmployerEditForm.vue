@@ -186,6 +186,7 @@ const state = reactive({
   access_directory: parseInt(props.item.access_directory) || 0,
   access_employers: parseInt(props.item.access_employers) || 0,
   access_clients: parseInt(props.item.access_clients) || 0,
+  access_auto: parseInt(props.item.access_auto) || 0,
 });
 const rules = computed(() => {
   return {
@@ -376,7 +377,7 @@ onMounted(() => {
     />
   </div>
 
-  <Card class="w-full">
+  <Card class="xl:w-8/12 w-full">
     <template #title>Редактирование сотрудника
       <Badge v-if="state.archive === 1" value="Архив"></Badge>
     </template>
@@ -792,6 +793,13 @@ onMounted(() => {
               <Fieldset legend="Управление клиентами">
                 <div v-for="item in access" :key="'access_clients' + item.key" class="flex items-center">
                   <RadioButton v-model="state.access_clients" :inputId="'access_clients' + item.key" name="dynamic"
+                               :value="item.key"/>
+                  <label :for="item.key" class="ml-2">{{ item.name }}</label>
+                </div>
+              </Fieldset>
+              <Fieldset legend="Управление автомобилями">
+                <div v-for="item in access" :key="'access_auto' + item.key" class="flex items-center">
+                  <RadioButton v-model="state.access_auto" :inputId="'access_auto' + item.key" name="dynamic"
                                :value="item.key"/>
                   <label :for="item.key" class="ml-2">{{ item.name }}</label>
                 </div>

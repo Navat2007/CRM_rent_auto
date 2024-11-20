@@ -14,7 +14,10 @@ const props = defineProps({
 </script>
 
 <template>
-  <div v-if="loading"></div>
+  <div v-if="loading" class="flex flex-col justify-center items-center">
+    <ProgressSpinner />
+    <p class="text-gray-400">Загрузка...</p>
+  </div>
   <div v-else>
     <nav v-if="breadcrumbs.length > 0" class="flex mb-8" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">

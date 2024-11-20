@@ -20,7 +20,9 @@ import AdminEditLegalPerson from "@pages/admin/legalPerson/EditLegalPerson.vue";
 import AdminClients from "@pages/admin/clients/Clients.vue";
 import AdminAddClient from "@pages/admin/clients/AddClient.vue";
 import AdminEditClient from "@pages/admin/clients/EditClient.vue";
-import AdminAuto from "@pages/admin/auto/Auto.vue";
+import AdminAuto from "@pages/admin/auto/List.vue";
+import AdminAddAuto from "@pages/admin/auto/Add.vue";
+import AdminEditAuto from "@pages/admin/auto/Edit.vue";
 
 const publicRoutes = [
     {
@@ -149,6 +151,27 @@ const adminRoutes = [
         path: '/Admin/auto',
         exact: true,
         component: AdminAuto,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто',
+        }
+    },
+    {
+        path: '/Admin/auto/new',
+        component: AdminAddAuto,
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто',
+        }
+    },
+    {
+        path: '/Admin/auto/:id',
+        component: AdminEditAuto,
+        exact: true,
+        props: true,
         meta: {
             layout: AdminLayout,
             requiresAuth: true,

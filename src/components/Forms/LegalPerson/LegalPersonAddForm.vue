@@ -103,7 +103,7 @@ const onFormSubmit = async (e) => {
 </script>
 
 <template>
-  <Card class="w-full lg:w-2/3">
+  <Card class="xl:w-8/12 w-full">
     <template #title>Добавление юр лица</template>
     <template #content>
       <form @submit.prevent="onFormSubmit">

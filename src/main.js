@@ -3,6 +3,7 @@ import {createPinia} from "pinia";
 import router from '@router'
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
+import Tooltip from 'primevue/tooltip';
 import {definePreset} from "@primevue/themes";
 
 import App from '@/App.vue'
@@ -278,5 +279,7 @@ app.use(PrimeVue, {
         }
     }
 });
+
+app.directive('tooltip', Tooltip);
 
 app.mount('#app')

@@ -7,7 +7,7 @@ import DirectoryService from "@services/DirectoryService.js";
 
 import AlertModal from "@components/Modals/AlertModal.vue";
 import PageContainer from "@components/Containers/Admin/PageContainer.vue";
-import DirectoryEditForm from "@components/Forms/Directory/DirectoryEditForm.vue";
+import DirectoryCarModelsEditForm from "@components/Forms/Directory/Car/Models/DirectoryCarModelsEditForm.vue";
 
 const item = ref(null);
 const route = useRoute();
@@ -36,12 +36,12 @@ const handleEdit = (data) => {
   data.id = route.params.id;
   data.directory = 'directory_' + directoryUrl;
 
-  DirectoryService.edit(data).then((response) => {
+  DirectoryService.editCarModel(data).then((response) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
       } else {
-        error.value = response.data.error_text
+        error.value = response.data.error_text || response.data
         isAlertModalOpen.value = true
       }
     }
@@ -73,7 +73,7 @@ const onSuccess = () => {
 }
 
 async function fetchData() {
-  item.value = await DirectoryService.getById({directory: 'directory_' + directoryUrl, id: route.params.id});
+  item.value = await DirectoryService.getModelById({id: route.params.id});
   loading.value = false;
 }
 
@@ -82,7 +82,7 @@ onMounted(fetchData);
 
 <template>
   <PageContainer :loading="loading" :breadcrumbs="breadcrumbs">
-    <DirectoryEditForm :title="directoryTitle" @onSubmit="handleEdit" @onDelete="isDeleteModalOpen = true" :item="item"/>
+    <DirectoryCarModelsEditForm :title="directoryTitle" @onSubmit="handleEdit" @onDelete="isDeleteModalOpen = true" :item="item"/>
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>

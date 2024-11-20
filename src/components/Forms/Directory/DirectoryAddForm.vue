@@ -62,7 +62,7 @@ Object.assign(state, ...props.additionalInputs.map(item => {
 </script>
 
 <template>
-  <Card v-if="card" class="w-full lg:w-2/3">
+  <Card v-if="card" class="xl:w-8/12 w-full">
     <template #title>{{title}}</template>
     <template #content>
       <form @submit.prevent="onFormSubmit">

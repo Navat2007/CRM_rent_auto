@@ -11,6 +11,11 @@ const props = defineProps({
   value: {
     type: Object,
     required: false
+  },
+  maxFileSize: {
+    type: Number,
+    required: false,
+    default: 10000000
   }
 });
 const emit = defineEmits(['onSelect', 'onDelete']);
@@ -41,13 +46,13 @@ const onDelete = () => {
 
 <template>
   <OverlayBadge v-if="state.image" @click="state.modal = true" value="X" severity="danger" class="inline-flex">
-    <Avatar :image="state.image" size="xlarge" />
+    <Image :src="state.image" size="xlarge" width="250"/>
   </OverlayBadge>
   <FileUpload v-if="!state.image" @select="onFileSelect($event)"
               customUpload :show-upload-button="false" :show-cancel-button="false"
-              :multiple="false" accept="image/*" :maxFileSize="1000000">
+              :multiple="false" accept="image/*" :maxFileSize="maxFileSize">
     <template #empty>
-      <span>Перетащите файл для загрузки.</span>
+      <span>Перетащите файл для загрузки. Максимальный размер фото {{maxFileSize / 1000000}} Мб.</span>
     </template>
   </FileUpload>
   <AlertModal

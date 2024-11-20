@@ -107,7 +107,7 @@ const onFormSubmit = async (e) => {
 </script>
 
 <template>
-  <Card class="w-full lg:w-2/3">
+  <Card class="xl:w-8/12 w-full">
     <template #title>Редактирование юр лица <Badge v-if="state.archive === 1" value="Архив"></Badge></template>
     <template #content>
       <form @submit.prevent="onFormSubmit">

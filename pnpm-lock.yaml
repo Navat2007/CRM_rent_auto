@@ -87,6 +87,9 @@ importers:
       '@vicons/carbon':
         specifier: ^0.12.0
         version: 0.12.0
+      '@vicons/material':
+        specifier: ^0.12.0
+        version: 0.12.0
       '@vicons/utils':
         specifier: ^0.1.4
         version: 0.1.4(vue@3.5.11)
@@ -454,6 +457,9 @@ packages:
 
   '@vicons/carbon@0.12.0':
     resolution: {integrity: sha512-kCOgr/ZOhZzoiFLJ8pwxMa2TMxrkCUOA22qExPabus35F4+USqzcsxaPoYtqRd9ROOYiHrSqwapak/ywF0D9bg==}
+
+  '@vicons/material@0.12.0':
+    resolution: {integrity: sha512-chv1CYAl8P32P3Ycwgd5+vw/OFNc2mtkKdb1Rw4T5IJmKy6GVDsoUKV3N2l208HATn7CCQphZtuPDdsm7K2kmA==}
 
   '@vicons/utils@0.1.4':
     resolution: {integrity: sha512-OHI19qVNN6i+uPQ+Y3f2s0dUxwsYnOCcKBW7XOU4yXXO1aU3ZoKpblCc3+4N0qmgoJs5rWKRAaMisipqEXJwAg==}
@@ -1564,6 +1570,8 @@ snapshots:
   '@types/web-bluetooth@0.0.20': {}
 
   '@vicons/carbon@0.12.0': {}
+
+  '@vicons/material@0.12.0': {}
 
   '@vicons/utils@0.1.4(vue@3.5.11)':
     dependencies:

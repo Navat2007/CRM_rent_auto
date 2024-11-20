@@ -132,6 +132,135 @@ class DirectoryService {
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes/edit.php`, form);
     }
 
+    // Car models
+    static async addCarModel(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/models/add.php`, form);
+    }
+
+    static async editCarModel(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/models/edit.php`, form);
+    }
+
+    static async getAllModels(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/models/load.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    static async getModelById(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = null;
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/models/load_by_id.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    // Car generations
+    static async addCarGeneration(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/generations/add.php`, form);
+    }
+
+    static async editCarGeneration(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/generations/edit.php`, form);
+    }
+
+    static async getAllGenerations(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/generations/load.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    static async getGenerationById(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = null;
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/generations/load_by_id.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    // Car configurations
+    static async addCarConfiguration(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/configurations/add.php`, form);
+    }
+
+    static async editCarConfiguration(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/configurations/edit.php`, form);
+    }
+
+    static async getAllConfigurations(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/configurations/load.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    static async getConfigurationById(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = null;
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/configurations/load_by_id.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
     // Universal
     static async getAll(data) {
         let form = new FormData();

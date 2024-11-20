@@ -262,7 +262,7 @@ onMounted(() => {
         @onDriverLicenseResult="onYandexDriverLicenseOCR"
     />
   </div>
-  <Card class="w-full">
+  <Card class="xl:w-8/12 w-full">
     <template #title>Добавить клиента</template>
     <template #content>
       <Tabs value="0" scrollable>

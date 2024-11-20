@@ -6,7 +6,7 @@ import DirectoryService from "@services/DirectoryService.js";
 
 import AlertModal from "@components/Modals/AlertModal.vue";
 import PageContainer from "@components/Containers/Admin/PageContainer.vue";
-import DirectoryAddForm from "@components/Forms/Directory/DirectoryAddForm.vue";
+import DirectoryCarModelsAddForm from "@components/Forms/Directory/Car/Models/DirectoryCarModelsAddForm.vue";
 
 const error = ref('');
 const loading = ref(false);
@@ -28,14 +28,12 @@ const breadcrumbs = ref([
 ]);
 
 const handleAdd = (data) => {
-  data.directory = 'directory_' + directoryUrl;
-  DirectoryService.add(data).then((response) => {
-    //console.log(response.data);
+  DirectoryService.addCarModel(data).then((response) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
       } else {
-        error.value = response.data.error_text
+        error.value = response.data.error_text || response.data
         isAlertModalOpen.value = true
       }
     }
@@ -50,7 +48,7 @@ const onSuccess = () => {
 
 <template>
   <PageContainer :breadcrumbs="breadcrumbs">
-    <DirectoryAddForm :title="directoryTitle" @onSubmit="handleAdd"/>
+    <DirectoryCarModelsAddForm :title="directoryTitle" @onSubmit="handleAdd"/>
 
     <AlertModal :isOpen="isSuccessModalOpen" @close="onSuccess" title="Запрос выполнен" accept/>
     <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>

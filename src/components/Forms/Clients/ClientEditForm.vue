@@ -363,7 +363,7 @@ onMounted(() => {
     />
   </div>
 
-  <Card class="w-full">
+  <Card class="xl:w-8/12 w-full">
     <template #title>Редактирование клиента
       <Badge v-if="state.archive === 1" value="Архив"></Badge>
     </template>

@@ -11,6 +11,8 @@ import PageContainer from "@components/Containers/Admin/PageContainer.vue";
 const {user} = useAuthStore();
 
 const items = ref([]);
+const models = ref([]);
+const brands = ref([]);
 const loading = ref(true);
 
 const directoryTitle = 'Комплектация авто';
@@ -22,27 +24,15 @@ const breadcrumbs = ref([
     route: null
   },
 ]);
-const columns = ref([
-  {
-    header: 'ID',
-    field: 'id',
-  },
-  {
-    header: 'Название',
-    field: 'name',
-  },
-  {
-    header: 'Статус',
-    field: 'archive',
-  }
-]);
 const statuses = ref(['Активен', 'В архиве']);
 const filters = ref({
   id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
   name: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.STARTS_WITH}]},
+  model: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+  brand: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
   archive: {operator: FilterOperator.OR, constraints: [{value: "Активен", matchMode: FilterMatchMode.EQUALS}]},
 });
-const filterFields = ref(['id', 'name', 'archive']);
+const filterFields = ref(['id', 'name', 'model', 'brand', 'archive']);
 
 const handleAddButtonClick = () => {
   router.push(`/Admin/directory/${directoryUrl}/new`);
@@ -52,7 +42,12 @@ const handleRowClick = (item) => {
 }
 
 async function fetchData() {
-  items.value = await DirectoryService.getAll({directory: 'directory_' + directoryUrl, company_id: user.company_id});
+  items.value = await DirectoryService.getAllConfigurations({company_id: user.company_id});
+  models.value = await DirectoryService.getAll({directory: 'directory_car_models', company_id: user.company_id});
+  models.value = models.value.filter(item => item.archive === "Активен").map(item => item.name);
+  brands.value = await DirectoryService.getAll({directory: 'directory_car_brands', company_id: user.company_id});
+  brands.value = brands.value.filter(item => item.archive === "Активен").map(item => item.name);
+
   loading.value = false;
 }
 
@@ -64,7 +59,7 @@ onMounted(() => {
 <template>
   <PageContainer :breadcrumbs="breadcrumbs">
     <Table
-        :title="directoryTitle" :items="items" :columns="columns"
+        :title="directoryTitle" :items="items"
         :filters="filters" :filterFields="filterFields"
         :loading="loading" @onRowClick="handleRowClick"
     >
@@ -77,6 +72,18 @@ onMounted(() => {
         <Column field="name" header="Название" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="text" placeholder="Поиск по названию"/>
+          </template>
+        </Column>
+        <Column field="model" header="Модель" sortable>
+          <template #filter="{ filterModel }">
+            <Dropdown v-model="filterModel.value" :options="models" placeholder="Все" class="p-column-filter"
+                      showClear filter/>
+          </template>
+        </Column>
+        <Column field="brand" header="Марка" sortable>
+          <template #filter="{ filterModel }">
+            <Dropdown v-model="filterModel.value" :options="brands" placeholder="Все" class="p-column-filter"
+                      showClear filter/>
           </template>
         </Column>
         <Column field="archive" header="Статус" sortable>
