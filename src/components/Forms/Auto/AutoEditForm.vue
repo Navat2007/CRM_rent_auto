@@ -366,8 +366,6 @@ onMounted(() => {
 
   fetchLegalPersons();
   fetchClients();
-
-  console.log(props.item);
 });
 </script>
 

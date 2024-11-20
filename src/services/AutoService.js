@@ -25,8 +25,6 @@ class AutoService {
         let result = null;
         const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/${AutoService.directory}/load_by_id.php`, form);
 
-        console.log(response);
-
         if (response.data.params) {
             result = response.data.params;
         }
