@@ -8,7 +8,7 @@ import PageContainer from "@components/Containers/Admin/PageContainer.vue";
 import AutoService from "@services/AutoService.js";
 import AutoAddForm from "@components/Forms/Auto/AutoAddForm.vue";
 
-const clientID = ref(null);
+const carID = ref(null);
 const error = ref('');
 const loading = ref(false);
 const sending = ref(false);
@@ -42,7 +42,7 @@ const handleAdd = (data) => {
     if (response.data) {
       if (parseInt(response.data.error) === 0) {
         isSuccessModalOpen.value = true
-        clientID.value = response.data.params.id;
+        carID.value = response.data.params.id;
         sending.value = false;
       } else {
         error.value = response.data.error_text
@@ -55,7 +55,7 @@ const handleAdd = (data) => {
 
 const onSuccess = () => {
   isSuccessModalOpen.value = false;
-  router.push('/Admin/auto');
+  router.push('/Admin/auto/' + carID.value);
 }
 </script>
 

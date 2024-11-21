@@ -24,7 +24,7 @@ import TrunkStatus1 from "@assets/icons/trunk_status_1.svg";
 import TrunkStatus2 from "@assets/icons/trunk_status_2.svg";
 import NeedService0 from "@assets/icons/pass_TO_1.svg";
 import NeedService1 from "@assets/icons/pass_TO_2.svg";
-import Failure from "@assets/icons/has_comment_1.svg";
+import Failure from "@assets/icons/has_comment_2.svg";
 import CriticalFailure from "@assets/icons/has_comment_3.svg";
 
 const {user} = useAuthStore();

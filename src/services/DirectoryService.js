@@ -132,6 +132,49 @@ class DirectoryService {
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes/edit.php`, form);
     }
 
+    // Car classes service price
+    static async addCarClassServicePrice(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes_service_price/add.php`, form);
+    }
+
+    static async editCarClassServicePrice(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes_service_price/edit.php`, form);
+    }
+
+    static async getAllCarClassServicePrices(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes_service_price/load.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
+    static async getCarClassServicePriceById(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = null;
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes_service_price/load_by_id.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
     // Car models
     static async addCarModel(data) {
         let form = new FormData();

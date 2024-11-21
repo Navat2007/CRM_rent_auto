@@ -95,8 +95,9 @@ const handleDelete = () => {
 }
 
 const onSuccess = () => {
+  sending.value = false;
   isSuccessModalOpen.value = false;
-  router.push('/Admin/auto');
+  //router.push('/Admin/auto');
 }
 
 async function fetchData() {

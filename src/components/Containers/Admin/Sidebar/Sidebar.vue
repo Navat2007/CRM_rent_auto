@@ -63,6 +63,7 @@ const menuGroups = ref([
           {label: 'Авто: Тип кузова', route: '/Admin/directory/car_bodies', visible: true},
           {label: 'Авто: Марка', route: '/Admin/directory/car_brands', visible: true},
           {label: 'Авто: Класс', route: '/Admin/directory/car_classes', visible: true},
+          {label: 'Авто: Классы и цены на услуги', route: '/Admin/directory/car_classes_service_price', visible: true},
           {label: 'Авто: Цвет', route: '/Admin/directory/car_colors', visible: true},
           {label: 'Авто: Комплектация', route: '/Admin/directory/car_configurations', visible: true},
           {label: 'Авто: Тип топлива', route: '/Admin/directory/car_fuel_types', visible: true},

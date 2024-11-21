@@ -325,6 +325,35 @@ const adminRoutes = [
         }
     },
     {
+        path: '/Admin/directory/car_classes_service_price',
+        component: () => import('@pages/admin/directory/car_classes_service_price/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Классы и цены на услуги',
+        }
+    },
+    {
+        path: '/Admin/directory/car_classes_service_price/new',
+        component: () => import('@pages/admin/directory/car_classes_service_price/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Классы и цены на услуги',
+        }
+    },
+    {
+        path: '/Admin/directory/car_classes_service_price/:id',
+        component: () => import('@pages/admin/directory/car_classes_service_price/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Авто: Классы и цены на услуги',
+        }
+    },
+    {
         path: '/Admin/directory/car_colors',
         component: () => import('@pages/admin/directory/car_colors/List.vue'),
         exact: true,
