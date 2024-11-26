@@ -88,6 +88,7 @@ initFilters();
     </template>
 
     <template #content>
+      <!-- Skeleton -->
       <DataTable v-if="loading" :value="skeletonItems">
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header">
           <template #body>
@@ -95,6 +96,7 @@ initFilters();
           </template>
         </Column>
       </DataTable>
+      <!-- Table -->
       <DataTable
           v-else
           ref="table" :value="items" @row-click="handleRowClick"

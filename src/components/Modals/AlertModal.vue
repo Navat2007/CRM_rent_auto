@@ -31,13 +31,19 @@ const props = defineProps({
   invertButtons: {
     type: Boolean,
     required: false,
+  },
+  clickOutsideClose: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 });
 const emit = defineEmits(['close', 'accept'])
 const target = ref(null)
 
 onClickOutside(target, () => {
-  emit('close')
+  if(props.clickOutsideClose)
+    emit('close');
 })
 </script>
 

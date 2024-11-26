@@ -20,6 +20,8 @@ import OdysseyService from "@services/OdysseyService.js";
 import Table from "@components/Table/Table.vue";
 import {FilterMatchMode, FilterOperator} from "@primevue/core/api";
 import AlertModal from "@components/Modals/AlertModal.vue";
+import ApiCloudService from "@services/ApiCloudService.js";
+import ApiCloud from "@components/Inputs/ApiCloud.vue";
 
 const {user} = useAuthStore();
 
@@ -43,43 +45,12 @@ const loadingOdysseyResults = ref(true);
 const isOdysseyResultModalOpen = ref(false);
 const odysseyResult = ref({});
 const odysseyResults = ref([]);
-const odysseyColumns = ref([
-  {
-    header: 'ID',
-    field: 'id',
-  },
-  {
-    header: 'Дата',
-    field: 'created_at',
-  },
-  {
-    header: 'Показатель скоринга',
-    field: 'scoring_overall_indicator',
-  },
-  {
-    header: 'Фамилия',
-    field: 'lastname',
-  },
-  {
-    header: 'Имя',
-    field: 'firstname',
-  },
-  {
-    header: 'Отчество',
-    field: 'middlename',
-  },
-  {
-    header: 'Дата рождения',
-    field: 'birthday',
-  },
-  {
-    header: 'Полный отчет',
-    field: 'url',
-  },
-]);
 const odysseyFilters = ref({
   id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
-  scoring_overall_indicator: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+  scoring_overall_indicator: {
+    operator: FilterOperator.OR,
+    constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]
+  },
   birthday: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
   created_at: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
   lastname: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
@@ -87,6 +58,16 @@ const odysseyFilters = ref({
   middlename: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
 });
 const odysseyFilterFields = ref(['id', 'created_at', 'lastname', 'firstname', 'middlename', 'birthday']);
+
+const loadingApiCloudResults = ref(true);
+const apiCloudResult = ref(null);
+const apiCloudResults = ref([]);
+const apiCloudFilters = ref({
+  id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+  created_at: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
+  request_type: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+});
+const apiCloudFilterFields = ref(['id', 'created_at', 'request_type']);
 
 const loadingAdvertising = ref(true);
 const advertising_type = ref([]);
@@ -134,6 +115,15 @@ const zodiac = computed(() => {
   const birthDate = moment(state.birthday, 'DD.MM.YYYY').toDate();
   return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
 });
+const verifications = ref([
+  { name: 'Все проверки разом', key: 'all' },
+  { name: 'ГИБДД проверка ВУ', key: 'gibdd_driver' },
+  { name: 'НСИС проверка КФ бонус/малус', key: 'rsa_kbm' },
+  { name: 'ФССП поиск ФЛ', key: 'fssp_physical' },
+  { name: 'ФНС поиск ИНН ФЛ', key: 'nalog_inn' },
+  { name: 'МВД проверка паспорта РФ', key: 'mvd_chekpassport' },
+  { name: 'Поиск в базе банкротств', key: 'bankrot_searchstring' },
+]);
 
 const state = reactive({
   archive: parseInt(props.item.archive),
@@ -307,6 +297,17 @@ const openOdysseyUrl = (url) => {
   window.open(url, '_blank');
 }
 
+const onApiCloudResult = async (data) => {
+  apiCloudResult.value = null;
+  await fetchApiCloudResults();
+}
+
+const openApiCloudResult = (data, request, type) => {
+  apiCloudResult.value = JSON.parse(data);
+  apiCloudResult.value.request = request;
+  apiCloudResult.value.type = type;
+}
+
 async function fetchAdvertising() {
   advertising_type.value = (await DirectoryService.getAdvertisingTypes(user.company_id)).filter(advertising => advertising.archive === "Активен");
   loadingAdvertising.value = false;
@@ -320,7 +321,7 @@ async function fetchLegalPersons() {
 async function fetchOdysseyResults() {
   odysseyResults.value = await OdysseyService.getResults(props.item.id);
 
-  if(odysseyResults.value){
+  if (odysseyResults.value) {
     odysseyResults.value.map(item => {
       item.created_at = new Date(item.created_at);
       item.birthday = new Date(item.birthday);
@@ -328,6 +329,18 @@ async function fetchOdysseyResults() {
   }
 
   loadingOdysseyResults.value = false;
+}
+
+async function fetchApiCloudResults() {
+  apiCloudResults.value = await ApiCloudService.getResults({user_id: props.item.id});
+
+  if (apiCloudResults.value) {
+    apiCloudResults.value.map(item => {
+      item.created_at = new Date(item.created_at);
+    });
+  }
+
+  loadingApiCloudResults.value = false;
 }
 
 const formatDate = (value, field) => {
@@ -341,6 +354,7 @@ onMounted(() => {
   fetchAdvertising();
   fetchLegalPersons();
   fetchOdysseyResults();
+  fetchApiCloudResults();
 });
 </script>
 
@@ -361,9 +375,16 @@ onMounted(() => {
         :loading-results="loadingOdysseyResults"
         @onResult="onOdysseyResult"
     />
+    <ApiCloud
+        :id="props.item.id"
+        :state="state"
+        :view-result="apiCloudResult"
+        :loading-results="loadingApiCloudResults"
+        @onResult="onApiCloudResult"
+    />
   </div>
 
-  <Card class="xl:w-8/12 w-full">
+  <Card class="xl:w-10/12 w-full">
     <template #title>Редактирование клиента
       <Badge v-if="state.archive === 1" value="Архив"></Badge>
     </template>
@@ -375,6 +396,7 @@ onMounted(() => {
           <Tab value="2" class="flex gap-2">Водительское удостоверение</Tab>
           <Tab value="3" class="flex gap-2">Прочие документы</Tab>
           <Tab value="4" class="flex gap-2">Проверки в odyssey</Tab>
+          <Tab value="5" class="flex gap-2">Проверки в api-cloud</Tab>
         </TabList>
         <form @submit.prevent="onFormSubmit" autocomplete="off">
           <TabPanels>
@@ -743,7 +765,7 @@ onMounted(() => {
               <!-- Проверки Odyssey -->
               <Table
                   title="Проверки Odyssey"
-                  :items="odysseyResults" :columns="odysseyColumns"
+                  :items="odysseyResults"
                   :loading="loadingOdysseyResults" :filters="odysseyFilters"
                   :filter-fields="odysseyFilterFields"
               >
@@ -795,12 +817,56 @@ onMounted(() => {
                   </Column>
                   <Column header="Полный отчет" headerStyle="width: 8rem; min-width: 8rem;">
                     <template #body="slotProps">
-                      <Button type="button" @click="openOdysseyUrl(slotProps.data.url)" icon="pi pi-search" severity="secondary" rounded></Button>
+                      <Button type="button" @click="openOdysseyUrl(slotProps.data.url)" icon="pi pi-search"
+                              severity="secondary" rounded></Button>
                     </template>
                   </Column>
                   <Column header="Инициатор" headerStyle="min-width: 30rem;">
                     <template #body="{ data }">
-                      {{ data.init_full_name }} - {{data.init_email}}
+                      {{ data.init_full_name }} - {{ data.init_email }}
+                    </template>
+                  </Column>
+                </template>
+              </Table>
+            </TabPanel>
+            <TabPanel value="5">
+              <!-- Проверки api-cloud -->
+              <Table
+                  title="Проверки api-cloud"
+                  :items="apiCloudResults"
+                  :loading="loadingApiCloudResults" :filters="apiCloudFilters"
+                  :filter-fields="apiCloudFilterFields"
+              >
+                <template #columns>
+                  <Column header="Полный отчет" headerStyle="width: 8rem; min-width: 8rem;">
+                    <template #body="slotProps" class="flex justify-center items-center">
+                      <div class="flex items-center justify-center">
+                        <Button type="button" @click="openApiCloudResult(slotProps.data.response, slotProps.data.request_parameters, slotProps.data.request_type)" icon="pi pi-search"
+                                severity="secondary" rounded></Button>
+                      </div>
+                    </template>
+                  </Column>
+                  <Column field="created_at" dataType="date" header="Дата" headerStyle="width: 10rem; min-width: 10rem;"
+                          sortable>
+                    <template #body="{ data }">
+                      {{ formatDateTime(data, 'created_at') }}
+                    </template>
+                    <template #filter="{ filterModel }">
+                      <DatePicker
+                          v-model="filterModel.value"
+                          dateFormat="dd.mm.yy" placeholder="дд.мм.гг"
+                      />
+                    </template>
+                  </Column>
+                  <Column field="request_type" header="Тип запроса" headerStyle="width: 10rem; min-width: 10rem;"
+                          sortable>
+                    <template #body="{ data }">
+                      {{ verifications.find(item => item.key === data.request_type).name }}
+                    </template>
+                  </Column>
+                  <Column header="Инициатор" headerStyle="min-width: 30rem;">
+                    <template #body="{ data }">
+                      {{ data.init_full_name }} - {{ data.init_email }}
                     </template>
                   </Column>
                 </template>

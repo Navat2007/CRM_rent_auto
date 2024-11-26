@@ -107,10 +107,8 @@ async function sendRequest() {
 
 <template>
   <div>
-    <div>
-      <Button icon="pi pi-upload" label="Проверить в odyssey" :loading="sending || loadingResults" outlined
-              @click="check"/>
-    </div>
+    <Button icon="pi pi-upload" label="Проверить в odyssey" :loading="sending || loadingResults" outlined
+            @click="check"/>
   </div>
 
   <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
