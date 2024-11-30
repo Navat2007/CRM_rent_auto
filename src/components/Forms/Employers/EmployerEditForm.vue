@@ -19,6 +19,8 @@ import OdysseyService from "@services/OdysseyService.js";
 import Odyssey from "@components/Inputs/Odyssey.vue";
 import Table from "@components/Table/Table.vue";
 import AlertModal from "@components/Modals/AlertModal.vue";
+import ApiCloud from "@components/Inputs/ApiCloud.vue";
+import ApiCloudService from "@services/ApiCloudService.js";
 
 const {user} = useAuthStore();
 
@@ -86,6 +88,16 @@ const odysseyFilters = ref({
   middlename: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
 });
 const odysseyFilterFields = ref(['id', 'created_at', 'lastname', 'firstname', 'middlename', 'birthday']);
+
+const loadingApiCloudResults = ref(true);
+const apiCloudResult = ref(null);
+const apiCloudResults = ref([]);
+const apiCloudFilters = ref({
+  id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+  created_at: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
+  request_type: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+});
+const apiCloudFilterFields = ref(['id', 'created_at', 'request_type']);
 
 const isPositionAddModalOpen = ref(false);
 const genders = ref([
@@ -327,6 +339,17 @@ const openOdysseyUrl = (url) => {
   window.open(url, '_blank');
 }
 
+const onApiCloudResult = async (data) => {
+  apiCloudResult.value = null;
+  await fetchApiCloudResults();
+}
+
+const openApiCloudResult = (data, request, type) => {
+  apiCloudResult.value = JSON.parse(data);
+  apiCloudResult.value.request = request;
+  apiCloudResult.value.type = type;
+}
+
 async function fetchPositions() {
   positions.value = (await DirectoryService.getPositions(user.company_id)).filter(position => position.archive === "Активен");
   loadingPositions.value = false;
@@ -345,6 +368,18 @@ async function fetchOdysseyResults() {
   loadingOdysseyResults.value = false;
 }
 
+async function fetchApiCloudResults() {
+  apiCloudResults.value = await ApiCloudService.getResults({user_id: props.item.id});
+
+  if (apiCloudResults.value) {
+    apiCloudResults.value.map(item => {
+      item.created_at = new Date(item.created_at);
+    });
+  }
+
+  loadingApiCloudResults.value = false;
+}
+
 const formatDate = (value, field) => {
   return moment(value[field]).format('DD.MM.YYYY');
 };
@@ -355,6 +390,7 @@ const formatDateTime = (value, field) => {
 onMounted(() => {
   fetchPositions();
   fetchOdysseyResults();
+  fetchApiCloudResults();
 });
 </script>
 
@@ -375,6 +411,13 @@ onMounted(() => {
         :loading-results="loadingOdysseyResults"
         @onResult="onOdysseyResult"
     />
+    <ApiCloud
+        :id="props.item.id"
+        :state="state"
+        :view-result="apiCloudResult"
+        :loading-results="loadingApiCloudResults"
+        @onResult="onApiCloudResult"
+    />
   </div>
 
   <Card class="xl:w-8/12 w-full">
@@ -390,6 +433,7 @@ onMounted(() => {
           <Tab value="3" class="flex gap-2">Прочие документы</Tab>
           <Tab value="4" class="flex gap-2">Права доступа</Tab>
           <Tab value="5" class="flex gap-2">Проверки в odyssey</Tab>
+          <Tab value="6" class="flex gap-2">Проверки в api-cloud</Tab>
         </TabList>
         <form @submit.prevent="onFormSubmit" autocomplete="off">
           <TabPanels>
@@ -867,6 +911,49 @@ onMounted(() => {
                   <Column header="Инициатор" headerStyle="min-width: 30rem;">
                     <template #body="{ data }">
                       {{ data.init_full_name }} - {{data.init_email}}
+                    </template>
+                  </Column>
+                </template>
+              </Table>
+            </TabPanel>
+            <TabPanel value="6">
+              <!-- Проверки api-cloud -->
+              <Table
+                  title="Проверки api-cloud"
+                  :items="apiCloudResults"
+                  :loading="loadingApiCloudResults" :filters="apiCloudFilters"
+                  :filter-fields="apiCloudFilterFields"
+              >
+                <template #columns>
+                  <Column header="Полный отчет" headerStyle="width: 8rem; min-width: 8rem;">
+                    <template #body="slotProps" class="flex justify-center items-center">
+                      <div class="flex items-center justify-center">
+                        <Button type="button" @click="openApiCloudResult(slotProps.data.response, slotProps.data.request_parameters, slotProps.data.request_type)" icon="pi pi-search"
+                                severity="secondary" rounded></Button>
+                      </div>
+                    </template>
+                  </Column>
+                  <Column field="created_at" dataType="date" header="Дата" headerStyle="width: 10rem; min-width: 10rem;"
+                          sortable>
+                    <template #body="{ data }">
+                      {{ formatDateTime(data, 'created_at') }}
+                    </template>
+                    <template #filter="{ filterModel }">
+                      <DatePicker
+                          v-model="filterModel.value"
+                          dateFormat="dd.mm.yy" placeholder="дд.мм.гг"
+                      />
+                    </template>
+                  </Column>
+                  <Column field="request_type" header="Тип запроса" headerStyle="width: 10rem; min-width: 10rem;"
+                          sortable>
+                    <template #body="{ data }">
+                      {{ verifications.find(item => item.key === data.request_type).name }}
+                    </template>
+                  </Column>
+                  <Column header="Инициатор" headerStyle="min-width: 30rem;">
+                    <template #body="{ data }">
+                      {{ data.init_full_name }} - {{ data.init_email }}
                     </template>
                   </Column>
                 </template>
