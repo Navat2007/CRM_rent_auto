@@ -661,7 +661,7 @@ onMounted(() => {
             </TabPanel>
           </TabPanels>
           <Divider v-if="user.access.employers === 2" type="dashed"/>
-          <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
+          <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500 mb-4">
             {{ error.$message }}
           </p>
           <div v-if="user.access.employers === 2">

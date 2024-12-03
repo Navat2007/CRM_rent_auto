@@ -626,25 +626,6 @@ onMounted(() => {
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата увольнения</label>
                   <DatePickerWithMask :value="state.firingDate" @onChange="e => state.firingDate = e"/>
                 </div>
-                <Divider type="dashed"/>
-                <!-- Пароль -->
-                <div>
-                  <label for="password"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Пароль*</label>
-                  <Password id="password" v-model="state.password" placeholder="Введите пароль" :toggleMask="true"
-                            :feedback="false" class="w-full mb-3" inputClass="w-full"/>
-                  <FormError :errors="v$.password.$errors"/>
-                </div>
-                <!-- Подтвердить пароль -->
-                <div>
-                  <label for="confirmPassword"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить
-                    пароль*</label>
-                  <Password id="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
-                            :toggleMask="true"
-                            :feedback="false" class="w-full mb-3" inputClass="w-full"/>
-                  <FormError :errors="v$.confirmPassword.$errors"/>
-                </div>
                 <div v-if="state.archive === 0" class="grid gap-4 my-4 sm:grid-cols-1">
                   <Divider type="dashed"/>
                   <div v-if="passwordDisabled">
@@ -961,7 +942,7 @@ onMounted(() => {
             </TabPanel>
           </TabPanels>
           <Divider v-if="user.access.employers === 2" type="dashed"/>
-          <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500">
+          <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500 mb-4">
             {{ error.$message }}
           </p>
           <div v-if="user.access.employers === 2 && state.archive === 0">
