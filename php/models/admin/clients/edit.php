@@ -134,19 +134,22 @@ $params = null;
 #endregion
 
 #region User valid check
-$sql = "SELECT * FROM users WHERE id = '$ID'";
-$sqls[] = $sql;
-$result = pg_query($conn, $sql);
-$admin_row = pg_fetch_object($result);
-
-if ($admin_row->email != $email) {
-    $sql = "SELECT * FROM users WHERE email = '$email' AND archive = 0";
+if(isset($_POST["email"]) && $email != "")
+{
+    $sql = "SELECT * FROM users WHERE id = '$ID'";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
+    $admin_row = pg_fetch_object($result);
 
-    if (pg_num_rows($result) > 0) {
-        $error = 1;
-        $error_text = "Такой email уже существует";
+    if ($admin_row->email != $email) {
+        $sql = "SELECT * FROM users WHERE email = '$email' AND archive = 0";
+        $sqls[] = $sql;
+        $result = pg_query($conn, $sql);
+
+        if (pg_num_rows($result) > 0) {
+            $error = 1;
+            $error_text = "Такой email уже существует";
+        }
     }
 }
 

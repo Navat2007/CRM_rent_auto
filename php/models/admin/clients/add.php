@@ -133,14 +133,17 @@ $params = null;
 #endregion
 
 #region User valid check
-$sql = "SELECT * FROM users WHERE email = '$email' AND archive = 0";
-$sqls[] = $sql;
-$result = pg_query($conn, $sql);
-
-if(pg_num_rows($result) > 0)
+if(isset($_POST["email"]) && $email != "")
 {
-    $error = 1;
-    $error_text = "Такой email уже существует";
+    $sql = "SELECT * FROM users WHERE email = '$email' AND archive = 0";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
+
+    if(pg_num_rows($result) > 0)
+    {
+        $error = 1;
+        $error_text = "Такой email уже существует";
+    }
 }
 #endregion
 
