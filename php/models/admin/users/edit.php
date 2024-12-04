@@ -125,10 +125,11 @@ $dl_issued_by_who = htmlspecialchars($_POST["dl_issued_by_who"]);
 $dl_issued_date = htmlspecialchars($_POST["dl_issued_date"]);
 $dl_expire_date = htmlspecialchars($_POST["dl_expire_date"]);
 
-$access_directory = htmlspecialchars($_POST["access_directory"]);
-$access_employers = htmlspecialchars($_POST["access_employers"]);
-$access_clients = htmlspecialchars($_POST["access_clients"]);
-$access_auto = htmlspecialchars($_POST["access_auto"]);
+$access_directory = isset($_POST["access_directory"]) ? htmlspecialchars($_POST["access_directory"]) : 0;
+$access_employers = isset($_POST["access_employers"]) ? htmlspecialchars($_POST["access_employers"]) : 0;
+$access_clients = isset($_POST["access_clients"]) ? htmlspecialchars($_POST["access_clients"]) : 0;
+$access_auto = isset($_POST["access_auto"]) ? htmlspecialchars($_POST["access_auto"]) : 0;
+$access_booking = isset($_POST["access_booking"]) ? htmlspecialchars($_POST["access_booking"]) : 0;
 
 $error = 0;
 $error_text = "";
@@ -468,6 +469,7 @@ if ($error === 0) {
                 access_employers = '$access_employers', 
                 access_clients = '$access_clients', 
                 access_auto = '$access_auto', 
+                access_booking = '$access_booking', 
                 last_user_id = '$user'
             WHERE 
                 user_id = '$ID'";
@@ -480,6 +482,7 @@ if ($error === 0) {
                 access_employers,
                 access_clients,
                 access_auto,
+                access_booking,
                 last_user_id
             ) 
             VALUES (
@@ -488,6 +491,7 @@ if ($error === 0) {
                 '$access_employers',
                 '$access_clients',
                 '$access_auto',
+                '$access_booking',
                 '$user'
             )";
         $sqls[] = $sql;

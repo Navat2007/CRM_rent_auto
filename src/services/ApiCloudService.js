@@ -35,6 +35,8 @@ class ApiCloudService {
 
         const response = await axios.postForm(`${import.meta.env.VITE_SERVICE_API_URL}/api-cloud/${method}.php`, form);
 
+        console.log(response);
+
         if (response.data.params) {
             result = response.data.params;
         }
