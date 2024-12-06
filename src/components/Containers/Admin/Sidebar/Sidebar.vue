@@ -3,7 +3,7 @@ import {ref} from "vue";
 import {onClickOutside} from '@vueuse/core';
 import {useAuthStore, useSidebarStore} from '@stores';
 import {Icon} from '@vicons/utils'
-import {Home, Building, Group, Car, Folders, ArrowLeft} from '@vicons/carbon';
+import {Home, Building, Group, Car, TrafficEvent, Folders, ArrowLeft} from '@vicons/carbon';
 
 import SidebarItem from "@components/Containers/Admin/Sidebar/SidebarItem.vue";
 import Logo from "@assets/images/logo.png";
@@ -35,7 +35,7 @@ const menuGroups = ref([
             visible: user.access?.employers && user.access.employers !== 0
           },
         ],
-        visible: true
+        visible: user.access?.employers && user.access.employers !== 0
       },
       {
         icon: Group,
@@ -52,6 +52,24 @@ const menuGroups = ref([
         label: 'Авто',
         route: '/Admin/auto',
         visible: user.access?.auto && user.access?.auto !== 0
+      },
+      {
+        icon: TrafficEvent,
+        label: 'Бронирование',
+        route: '',
+        children: [
+          {
+            label: 'Договора проката',
+            route: '/Admin/booking/rentalContracts',
+            visible: user.access?.booking && user.access.booking !== 0
+          },
+          {
+            label: 'Календарь занятости авто',
+            route: '/Admin/booking/rentalCalendar',
+            visible: user.access?.booking && user.access.booking !== 0
+          },
+        ],
+        visible: user.access?.booking && user.access?.booking !== 0
       },
       {
         icon: Folders,

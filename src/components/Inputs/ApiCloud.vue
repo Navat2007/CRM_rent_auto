@@ -171,7 +171,6 @@ const regions = {
 
 watchEffect(() => {
   if (props.viewResult !== null) {
-    console.log(props.viewResult);
     selectedVerification.value = props.viewResult.type;
 
     switch (props.viewResult.type) {
@@ -232,10 +231,10 @@ watchEffect(() => {
 async function prepareRequest() {
   sending.value = true;
 
-  const passport_serial = props.state.passport_series_number.slice(0, 4).trim();
-  const passport_number = props.state.passport_series_number.slice(4).trim();
-  const driver_serial = props.state.dl_series_number.slice(0, 4).trim();
-  const driver_number = props.state.dl_series_number.slice(4).trim();
+  const passport_serial = props.state.passport_series_number ? props.state.passport_series_number.slice(0, 4).trim() : "";
+  const passport_number = props.state.passport_series_number ? props.state.passport_series_number.slice(4).trim() : "";
+  const driver_serial = props.state.dl_series_number ? props.state.dl_series_number.slice(0, 4).trim() : "";
+  const driver_number = props.state.dl_series_number ? props.state.dl_series_number.slice(4).trim() : "";
   const driver_issue_date = props.state.dl_issued_date;
 
   setTimeout(async () => {

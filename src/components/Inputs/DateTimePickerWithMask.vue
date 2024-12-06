@@ -11,7 +11,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['onChange']);
 
-const date = ref(props.value ? moment(props.value, 'DD.MM.YYYY').toDate() : moment().toDate());
+const date = ref(props.value ? moment(props.value, 'DD.MM.YYYY HH:mm').toDate() : moment().toDate());
 const state = reactive({
   date: props.value || null,
   showHireDateCalendar: false,
@@ -26,10 +26,9 @@ const handleMaskComplete = () => {
   emit('onChange', state.date);
 }
 const handleDateSelect = (date) => {
-  const formattedDate = moment(date).format("DD.MM.YYYY");
-  state.date = formattedDate;
-  state.showHireDateCalendar = false;
-  emit('onChange', formattedDate);
+  state.date = moment(date).format("DD.MM.YYYY HH:mm");
+  //state.showHireDateCalendar = false;
+  //emit('onChange', formattedDate);
 }
 const handleClear = () => {
   state.date = null;
@@ -49,7 +48,7 @@ const handleBlur = () => {
   <InputGroup class="w-full">
     <InputMask v-model="state.date" :modelValue="state.date"
                @complete="handleMaskComplete" @blur="handleBlur"
-               mask="99.99.9999" placeholder="дд.мм.гггг" fluid/>
+               mask="99.99.9999 99:99" placeholder="дд.мм.гггг ч:м" fluid/>
     <InputGroupAddon v-if="state.date" @click="handleClear" class="input-group-addon">
       <i class="pi pi-times"></i>
     </InputGroupAddon>
@@ -57,8 +56,18 @@ const handleBlur = () => {
       <i class="pi pi-calendar"></i>
     </InputGroupAddon>
   </InputGroup>
-  <BaseModal :is-open="state.showHireDateCalendar" @close="toggleModal" title="Выберите дату">
-    <DatePicker v-model="date" @date-select="handleDateSelect" inline show-button-bar fluid/>
+  <BaseModal
+      :is-open="state.showHireDateCalendar" title="Выберите дату"
+      @close="() => {
+        emit('onChange', state.date);
+        toggleModal();
+      }"
+  >
+    <DatePicker
+        v-model="date" @date-select="handleDateSelect"
+        @clearClick="handleClear"
+        inline show-button-bar showTime hour-format="24" fluid
+    />
   </BaseModal>
 </template>
 

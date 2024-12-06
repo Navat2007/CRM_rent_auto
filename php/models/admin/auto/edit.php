@@ -303,23 +303,23 @@ if ($error === 0) {
                 $params = $file_to_DB;
             }
         }
-    } else if (isset($avatar) && empty($avatar)) {
-        $sql = "SELECT * FROM users_info WHERE user_id = '$ID'";
+    } else if (empty($avatar)) {
+        $sql = "SELECT * FROM car WHERE id = '$ID'";
         $sqls[] = $sql;
         $result = pg_query($conn, $sql);
         $row = pg_fetch_object($result);
 
         if ($row) {
-            $oldpath = $_SERVER['DOCUMENT_ROOT'] . $row->user_photo_avatar;
+            $oldpath = $_SERVER['DOCUMENT_ROOT'] . $row->car_photo_avatar;
             @unlink($oldpath);
         }
 
         $add_sql = "UPDATE 
-                        users_info
+                        car
                     SET
-                        user_photo_avatar = ''
+                        car_photo_avatar = ''
                     WHERE 
-                        user_id = '$ID'";
+                        id = '$ID'";
         pg_query($conn, $add_sql);
     }
     #endregion

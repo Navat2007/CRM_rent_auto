@@ -18,6 +18,20 @@ class ClientsService {
         return result;
     }
 
+    static async getAllForBooking(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/${this.directory}/load_for_booking.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
     static async getClientById(id) {
         let form = new FormData();
         form.append('id', id);

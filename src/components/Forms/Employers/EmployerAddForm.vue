@@ -124,6 +124,7 @@ const state = reactive({
   access_employers: 0,
   access_clients: 0,
   access_auto: 0,
+  access_booking: 0,
 });
 const rules = computed(() => {
   return {
@@ -654,6 +655,13 @@ onMounted(() => {
               <Fieldset legend="Управление автомобилями">
                 <div v-for="item in access" :key="'access_auto' + item.key" class="flex items-center">
                   <RadioButton v-model="state.access_auto" :inputId="'access_auto' + item.key" name="dynamic"
+                               :value="item.key"/>
+                  <label :for="item.key" class="ml-2">{{ item.name }}</label>
+                </div>
+              </Fieldset>
+              <Fieldset legend="Управление бронированием">
+                <div v-for="item in access" :key="'access_booking' + item.key" class="flex items-center">
+                  <RadioButton v-model="state.access_booking" :inputId="'access_booking' + item.key" name="dynamic"
                                :value="item.key"/>
                   <label :for="item.key" class="ml-2">{{ item.name }}</label>
                 </div>

@@ -83,7 +83,7 @@ const adminRoutes = [
             title: 'Редактирование сотрудника',
         }
     },
-    //Clients
+    // Clients
     {
         path: '/Admin/legalPerson',
         exact: true,
@@ -146,7 +146,7 @@ const adminRoutes = [
             title: 'Редактирование клиента',
         }
     },
-    //Auto
+    // Auto
     {
         path: '/Admin/auto',
         exact: true,
@@ -176,6 +176,38 @@ const adminRoutes = [
             layout: AdminLayout,
             requiresAuth: true,
             title: 'Авто',
+        }
+    },
+    // Booking
+    {
+        path: '/Admin/booking/rentalContracts',
+        exact: true,
+        component: () => import('@pages/admin/booking/rentalContracts/List.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Договора проката',
+        }
+    },
+    {
+        path: '/Admin/booking/rentalContracts/new',
+        component: () => import('@pages/admin/booking/rentalContracts/Add.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Договора проката',
+        }
+    },
+    {
+        path: '/Admin/booking/rentalContracts/:id',
+        component: () => import('@pages/admin/booking/rentalContracts/Edit.vue'),
+        exact: true,
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Договора проката',
         }
     },
     // Directory
