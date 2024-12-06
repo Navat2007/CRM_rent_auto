@@ -19,8 +19,11 @@ const openWindow = () => {
 </script>
 
 <template>
-  <Card v-if="variant === 'primary'" style="overflow: hidden" pt:root="sm:flex-row" pt:header="sm:flex-auto sm:w-1/2" pt:body="sm:flex-auto sm:w-1/2"
-        pt:content="sm:mb-auto">
+  <Card
+      v-if="variant === 'primary'" style="overflow: hidden"
+      class="shadow-card hover:shadow-cardHover transition-shadow active:shadow-card"
+      pt:root="sm:flex-row" pt:header="sm:flex-auto sm:w-1/2"
+      pt:body="sm:flex-auto sm:w-1/2" pt:content="sm:mb-auto">
     <template #header>
       <div >
         <img class="w-full h-full object-cover" v-if="item.avatar" alt="car photo" :src="item.avatar" />

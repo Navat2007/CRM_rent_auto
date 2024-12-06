@@ -234,21 +234,13 @@ export default {
                 12: '12px'
             },
             boxShadow: {
-                default: '0px 8px 13px -3px rgba(0, 0, 0, 0.07)',
-                card: '0px 1px 3px rgba(0, 0, 0, 0.12)',
-                'card-2': '0px 1px 2px rgba(0, 0, 0, 0.05)',
-                switcher:
-                    '0px 2px 4px rgba(0, 0, 0, 0.2), inset 0px 2px 2px #FFFFFF, inset 0px -1px 1px rgba(0, 0, 0, 0.1)',
-                'switch-1': '0px 0px 5px rgba(0, 0, 0, 0.15)',
-                1: '0px 1px 3px rgba(0, 0, 0, 0.08)',
-                2: '0px 1px 4px rgba(0, 0, 0, 0.12)',
-                3: '0px 1px 5px rgba(0, 0, 0, 0.14)',
-                4: '0px 4px 10px rgba(0, 0, 0, 0.12)',
-                5: '0px 1px 1px rgba(0, 0, 0, 0.15)',
-                6: '0px 3px 15px rgba(0, 0, 0, 0.1)',
-                7: '-5px 0 0 #313D4A, 5px 0 0 #313D4A',
-                8: '1px 0 0 #313D4A, -1px 0 0 #313D4A, 0 1px 0 #313D4A, 0 -1px 0 #313D4A, 0 3px 13px rgb(0 0 0 / 8%)',
-                9: '0px 2px 3px rgba(183, 183, 183, 0.5)'
+                button: '0px 1px 2px 0px rgba(0, 0, 0, 0.20)',
+                authButton: 'rgba(0, 0, 0, 0.04) 0px 0.5px 1.75px, rgba(0, 0, 0, 0.19) 0px 1.85px 6.25px',
+                footer: '0px 10px 36px 0px rgba(0, 0, 0, 0.19), 0px 3px 13px 0px rgba(0, 0, 0, 0.04)',
+                footerApp: '0px 0px 15px 0px rgba(0, 0, 0, 0.15)',
+                card: '0px 1.85px 6.25px 0px rgba(0, 0, 0, 0.19)',
+                cardHover: '0px 3px 13px 0px rgba(0, 0, 0, 0.04), 0px 10px 36px 0px rgba(0, 0, 0, 0.19)',
+                filter: '0px 3px 13px 0px rgba(0, 0, 0, 0.04), 0px 10px 36px 0px rgba(0, 0, 0, 0.19)',
             },
             dropShadow: {
                 1: '0px 1px 0px #E2E8F0',
