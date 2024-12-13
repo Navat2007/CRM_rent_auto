@@ -35,6 +35,7 @@ const filters = ref({
   brand: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
   model: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
   class: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+  fio: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
   start_date: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
   end_date: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
 });
@@ -44,6 +45,7 @@ const filterFields = ref([
   'brand',
   'model',
   'class',
+  'fio',
   'start_date',
   'end_date',
 ]);
@@ -113,6 +115,11 @@ onMounted(() => {
           <template #filter="{ filterModel }">
             <Dropdown v-model="filterModel.value" :options="classes" placeholder="Все" class="p-column-filter"
                       showClear filter/>
+          </template>
+        </Column>
+        <Column field="fio" header="Клиент" sortable headerStyle="width: 15rem; min-width: 10rem;">
+          <template #filter="{ filterModel }">
+            <InputText v-model="filterModel.value" type="text" placeholder="Поиск по ФИО"/>
           </template>
         </Column>
         <Column field="start_date" dataType="date" header="Начало" sortable>
