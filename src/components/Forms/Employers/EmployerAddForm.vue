@@ -264,10 +264,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <YandexOCR
-      @onPassportResult="onYandexPassportOCR"
-      @onDriverLicenseResult="onYandexDriverLicenseOCR"
-  />
+  <div class="flex flex-wrap gap-4 mb-4">
+    <YandexOCR
+        @onPassportResult="onYandexPassportOCR"
+        @onDriverLicenseResult="onYandexDriverLicenseOCR"
+    />
+  </div>
+
   <Card class="xl:w-8/12 w-full">
     <template #title>Редактирование сотрудника</template>
     <template #content>
@@ -343,7 +346,8 @@ onMounted(() => {
                   <label for="birthday"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата рождения</label>
                   <div>
-                    <DatePickerWithMask :value="state.birthday" :key="state.birthday" @onChange="e => state.birthday = e"/>
+                    <DatePickerWithMask :value="state.birthday" :key="state.birthday"
+                                        @onChange="e => state.birthday = e"/>
                     <p class="mt-2">{{ age }}{{ zodiac }}</p>
                   </div>
                 </div>
@@ -378,9 +382,10 @@ onMounted(() => {
                   <label for="position"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Должность</label>
                   <Select v-model="state.position" :loading="loadingPositions" :options="positions" optionLabel="name"
-                          optionValue="id" placeholder="Выберите должность" showClear filter class="w-full" >
+                          optionValue="id" placeholder="Выберите должность" showClear filter class="w-full">
                     <template v-if="user.access.directory === 2" #header>
-                      <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить" outlined @click="isPositionAddModalOpen = true" />
+                      <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить" outlined
+                              @click="isPositionAddModalOpen = true"/>
                     </template>
                   </Select>
                 </div>
@@ -480,7 +485,8 @@ onMounted(() => {
                 <!-- Подтвердить пароль -->
                 <div>
                   <label for="confirmPassword"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить пароль*</label>
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Подтвердить
+                    пароль*</label>
                   <Password id="confirmPassword" v-model="state.confirmPassword" placeholder="Введите пароль"
                             :toggleMask="true"
                             :feedback="false" class="w-full mb-3" inputClass="w-full"/>
@@ -574,7 +580,8 @@ onMounted(() => {
                 </div>
                 <Divider type="dashed" v-if="state.passport_ocr_upload_files.length > 0"/>
                 <!-- Паспорт. Распознанные файлы -->
-                <FileGallery v-if="state.passport_ocr_upload_files.length > 0" :ocr-items="state.passport_ocr_upload_files" :without-select="true"/>
+                <FileGallery v-if="state.passport_ocr_upload_files.length > 0"
+                             :ocr-items="state.passport_ocr_upload_files" :without-select="true"/>
                 <Divider type="dashed"/>
                 <!-- Паспорт. Файлы -->
                 <FileGallery :items="state.passport_files"
@@ -610,17 +617,20 @@ onMounted(() => {
                 <div>
                   <label for="dl_issued_date"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
-                  <DatePickerWithMask :value="state.dl_issued_date" :key="state.dl_issued_date" @onChange="e => state.dl_issued_date = e"/>
+                  <DatePickerWithMask :value="state.dl_issued_date" :key="state.dl_issued_date"
+                                      @onChange="e => state.dl_issued_date = e"/>
                 </div>
                 <!-- Водительское удостоверение. Действуют до -->
                 <div>
                   <label for="dl_expire_date"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Действуют до</label>
-                  <DatePickerWithMask :value="state.dl_expire_date" :key="state.dl_expire_date" @onChange="e => state.dl_expire_date = e"/>
+                  <DatePickerWithMask :value="state.dl_expire_date" :key="state.dl_expire_date"
+                                      @onChange="e => state.dl_expire_date = e"/>
                 </div>
                 <Divider type="dashed" v-if="state.dl_ocr_upload_files.length > 0"/>
                 <!-- Водительское удостоверение. Распознанные файлы -->
-                <FileGallery v-if="state.dl_ocr_upload_files.length > 0" :ocr-items="state.dl_ocr_upload_files" :without-select="true"/>
+                <FileGallery v-if="state.dl_ocr_upload_files.length > 0" :ocr-items="state.dl_ocr_upload_files"
+                             :without-select="true"/>
                 <Divider type="dashed"/>
                 <!-- Водительское удостоверение. Файлы -->
                 <FileGallery :items="state.dl_files" @onSelect="e => state.dl_upload_files = e.files"/>
@@ -679,5 +689,6 @@ onMounted(() => {
       </Tabs>
     </template>
   </Card>
-  <PopUpAddDirectoryPosition :visible="isPositionAddModalOpen" @on-add="onPositionAdd" @on-close="isPositionAddModalOpen = false" />
+  <PopUpAddDirectoryPosition :visible="isPositionAddModalOpen" @on-add="onPositionAdd"
+                             @on-close="isPositionAddModalOpen = false"/>
 </template>

@@ -12,7 +12,7 @@ const props = defineProps({
   accept: {
     type: String,
     required: false,
-    default: "image/*"
+    default: "image/*, application/pdf"
   }
 });
 const emit = defineEmits(['onPassportResult', 'onDriverLicenseResult']);
