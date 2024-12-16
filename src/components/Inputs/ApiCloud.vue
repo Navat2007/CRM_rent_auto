@@ -248,6 +248,7 @@ async function prepareRequest() {
         await sendRequest('rsa_kbm', {
           surname: props.state.lastName,
           name: props.state.firstName,
+          secondname: props.state.patronym,
           birthday: props.state.birthday,
           seria: driver_serial,
           nomer: driver_number,
@@ -298,6 +299,7 @@ async function prepareRequest() {
         await sendRequest('rsa_kbm', {
           surname: props.state.lastName,
           name: props.state.firstName,
+          secondname: props.state.patronym,
           birthday: props.state.birthday,
           seria: driver_serial,
           nomer: driver_number,
@@ -659,7 +661,24 @@ async function sendRequest(type, data, verification, rule) {
             <div v-else class="flex flex-col gap-2">
               <span class="text-blue-400">{{ rsa_kbm_verification.result.request }}</span>
               <div>
-                <span>kbmValue: </span><span class="font-bold">{{ rsa_kbm_verification.result.kbmValue }}</span>
+                <span>Коэффициент КБМ: </span>
+                <span
+                    class="font-bold"
+                    :class="{
+                      'text-green-600': parseFloat(rsa_kbm_verification.result.kbmValue) < 1.17,
+                      'text-red-600': parseFloat(rsa_kbm_verification.result.kbmValue) > 1.17,
+                    }"
+                >
+                  {{ rsa_kbm_verification.result.kbmValue }}
+                </span>
+              </div>
+              <div>
+                <span v-if="parseFloat(rsa_kbm_verification.result.kbmValue) === 1.17">
+                  Новый водитель или информация не найдена
+                </span>
+                <span v-else-if="parseFloat(rsa_kbm_verification.result.kbmValue) > 1.17" class="text-red-600">
+                  Аварийный водитель
+                </span>
               </div>
             </div>
             <Panel v-if="showRawResult" header="Необработанный ответ" class="mt-4" toggleable collapsed>
@@ -686,43 +705,47 @@ async function sendRequest(type, data, verification, rule) {
                     class="mt-4" toggleable collapsed
                 >
                   <template #header>
-                    {{ record.document_type }} от {{record.process_date}}
+                    {{ record.document_type }} от {{ record.process_date }}
                   </template>
 
                   <div class="flex flex-col gap-2">
                     <div class="flex justify-between">
-                      <span class="text-2xl">Общая сумма:</span><span class="text-amber-700 text-2xl font-bold">{{record.sum}}</span>
+                      <span class="text-2xl">Общая сумма:</span><span
+                        class="text-amber-700 text-2xl font-bold">{{ record.sum }}</span>
                     </div>
 
                     <div v-for="subject in record.subjectArray" class="flex justify-between">
-                      <span class="text-wrap w-60 max-w-90">{{subject.title}}:</span><span class="text-amber-700 font-bold">{{subject.sum}}</span>
+                      <span class="text-wrap w-60 max-w-90">{{ subject.title }}:</span><span
+                        class="text-amber-700 font-bold">{{ subject.sum }}</span>
                     </div>
 
                     <Divider type="dashed"/>
 
                     <div class="flex flex-col">
-                      <span>Тип дела:</span><span class="font-bold">{{record.subject}}</span>
+                      <span>Тип дела:</span><span class="font-bold">{{ record.subject }}</span>
                     </div>
                     <div class="flex flex-col">
-                      <span>Номер дела:</span><span class="font-bold">{{record.process_title}}</span>
+                      <span>Номер дела:</span><span class="font-bold">{{ record.process_title }}</span>
                     </div>
                     <div class="flex flex-col">
-                      <span>Дата дела:</span><span class="font-bold">{{record.process_date}}</span>
+                      <span>Дата дела:</span><span class="font-bold">{{ record.process_date }}</span>
                     </div>
                     <div class="flex flex-col">
-                      <span>Исполнительный документ:</span><span class="font-bold">{{record.recIspDoc}}</span>
+                      <span>Исполнительный документ:</span><span class="font-bold">{{ record.recIspDoc }}</span>
                     </div>
                     <div v-if="record.stopIP" class="flex flex-col">
-                      <span>stopIP:</span><span class="font-bold">{{record.stopIP}}</span>
+                      <span>stopIP:</span><span class="font-bold">{{ record.stopIP }}</span>
                     </div>
                     <div class="flex flex-col">
-                      <span>Организация инициатор:</span><span class="font-bold">{{record.document_organization}}</span>
+                      <span>Организация инициатор:</span><span
+                        class="font-bold">{{ record.document_organization }}</span>
                     </div>
                     <div class="flex flex-col">
-                      <span>Информация о приставе:</span><span class="font-bold">{{record.officer_name}}</span>
+                      <span>Информация о приставе:</span><span class="font-bold">{{ record.officer_name }}</span>
                     </div>
                     <div class="flex flex-col">
-                      <span>Контакты пристава:</span><span class="font-bold">{{record.officer_phones.join(',')}}</span>
+                      <span>Контакты пристава:</span><span
+                        class="font-bold">{{ record.officer_phones.join(',') }}</span>
                     </div>
                   </div>
 

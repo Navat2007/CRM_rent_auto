@@ -20,6 +20,7 @@ $user = $authorization[1];
 $user_id = isset($_POST["user_id"]) ? (int)htmlspecialchars($_POST["user_id"]) : die("Не передан user ID");
 $surname = isset($_POST["surname"]) ? htmlspecialchars($_POST["surname"]) : die("Не передана фамилия");
 $name = isset($_POST["name"]) ? htmlspecialchars($_POST["name"]) : die("Не передано имя");
+$secondname = isset($_POST["secondname"]) ? htmlspecialchars($_POST["secondname"]) : "";
 $birthday = isset($_POST["birthday"]) ? htmlspecialchars($_POST["birthday"]) : die("Не передана дата рождения");
 $seria = isset($_POST["seria"]) ? htmlspecialchars($_POST["seria"]) : die("Не передана серия");
 $nomer = isset($_POST["nomer"]) ? htmlspecialchars($_POST["nomer"]) : die("Не передан номер");
@@ -36,6 +37,11 @@ $data = [
     'driverDocSeries' => $seria,
     'driverDocNumber' => $nomer,
 ];
+
+if(!empty($secondname)){
+    $data['patronymic'] = $secondname;
+}
+
 $url = 'https://api-cloud.ru/api/rsa.php?' . http_build_query($data);
 
 $result = get_result($url);
@@ -56,13 +62,13 @@ if($error === 0){
     INSERT INTO 
         api_cloud_results (user_id, last_user_id, request_type, request_parameters, response) 
     VALUES 
-        ('$user_id', '$user', '$typeDB', 'Фамилия: $surname, Имя: $name, Дата рождения: $birthday, Серия документа водителя: $seria Номер документа водителя: $nomer', '$result')";
+        ('$user_id', '$user', '$typeDB', 'Фамилия: $surname, Имя: $name, Отчество: $secondname, Дата рождения: $birthday, Серия документа водителя: $seria Номер документа водителя: $nomer', '$result')";
     $sqls[] = $sql;
     pg_query($conn, $sql);
 }
 
 $paramsJSON['url'] = $url;
-$paramsJSON['request'] = "Фамилия: $surname, Имя: $name, Дата рождения: $birthday, Серия документа водителя: $seria Номер документа водителя: $nomer";
+$paramsJSON['request'] = "Фамилия: $surname, Имя: $name, Отчество: $secondname, Дата рождения: $birthday, Серия документа водителя: $seria Номер документа водителя: $nomer";
 $params = $paramsJSON;
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';
