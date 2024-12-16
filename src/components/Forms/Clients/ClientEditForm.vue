@@ -116,13 +116,13 @@ const zodiac = computed(() => {
   return state.birthday ? ' (' + getZodiacSign(birthDate) + ')' : null;
 });
 const verifications = ref([
-  { name: 'Все проверки разом', key: 'all' },
-  { name: 'ГИБДД проверка ВУ', key: 'gibdd_driver' },
-  { name: 'НСИС проверка КФ бонус/малус', key: 'rsa_kbm' },
-  { name: 'ФССП поиск ФЛ', key: 'fssp_physical' },
-  { name: 'ФНС поиск ИНН ФЛ', key: 'nalog_inn' },
-  { name: 'МВД проверка паспорта РФ', key: 'mvd_chekpassport' },
-  { name: 'Поиск в базе банкротств', key: 'bankrot_searchstring' },
+  {name: 'Все проверки разом', key: 'all'},
+  {name: 'ГИБДД проверка ВУ', key: 'gibdd_driver'},
+  {name: 'НСИС проверка КФ бонус/малус', key: 'rsa_kbm'},
+  {name: 'ФССП поиск ФЛ', key: 'fssp_physical'},
+  {name: 'ФНС поиск ИНН ФЛ', key: 'nalog_inn'},
+  {name: 'МВД проверка паспорта РФ', key: 'mvd_chekpassport'},
+  {name: 'Поиск в базе банкротств', key: 'bankrot_searchstring'},
 ]);
 
 const state = reactive({
@@ -639,21 +639,10 @@ onMounted(() => {
                       placeholder="..."
                   >
                 </div>
-                <!-- Паспорт. Код подразделения -->
-                <div>
-                  <label for="passport_department_code"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Код подразделения</label>
-                  <input
-                      v-model="state.passport_department_code"
-                      type="text" id="passport_department_code"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="..."
-                  >
-                </div>
-                <!-- Паспорт. Кем выдан -->
+                <!-- Паспорт. Паспорт выдан -->
                 <div>
                   <label for="passport_issued_by"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Кем выдан</label>
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Паспорт выдан</label>
                   <input
                       v-model="state.passport_issued_by"
                       type="text" id="passport_issued_by"
@@ -661,12 +650,25 @@ onMounted(() => {
                       placeholder="..."
                   >
                 </div>
-                <!-- Паспорт. Дата выдачи -->
-                <div>
-                  <label for="passport_date_of_issue"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
-                  <DatePickerWithMask :value="state.passport_date_of_issue" :key="state.passport_date_of_issue"
-                                      @onChange="e => state.passport_date_of_issue = e"/>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <!-- Паспорт. Дата выдачи -->
+                  <div>
+                    <label for="passport_date_of_issue"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
+                    <DatePickerWithMask :value="state.passport_date_of_issue" :key="state.passport_date_of_issue"
+                                        @onChange="e => state.passport_date_of_issue = e"/>
+                  </div>
+                  <!-- Паспорт. Код подразделения -->
+                  <div>
+                    <label for="passport_department_code"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Код подразделения</label>
+                    <input
+                        v-model="state.passport_department_code"
+                        type="text" id="passport_department_code"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="..."
+                    >
+                  </div>
                 </div>
                 <!-- Паспорт. Кем выдан -->
                 <div>
@@ -841,7 +843,9 @@ onMounted(() => {
                   <Column header="Полный отчет" headerStyle="width: 8rem; min-width: 8rem;">
                     <template #body="slotProps" class="flex justify-center items-center">
                       <div class="flex items-center justify-center">
-                        <Button type="button" @click="openApiCloudResult(slotProps.data.response, slotProps.data.request_parameters, slotProps.data.request_type)" icon="pi pi-search"
+                        <Button type="button"
+                                @click="openApiCloudResult(slotProps.data.response, slotProps.data.request_parameters, slotProps.data.request_type)"
+                                icon="pi pi-search"
                                 severity="secondary" rounded></Button>
                       </div>
                     </template>

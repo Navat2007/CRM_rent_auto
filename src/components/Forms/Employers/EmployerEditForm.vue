@@ -677,21 +677,10 @@ onMounted(() => {
                       placeholder="..."
                   >
                 </div>
-                <!-- Паспорт. Код подразделения -->
-                <div>
-                  <label for="passport_department_code"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Код подразделения</label>
-                  <input
-                      v-model="state.passport_department_code"
-                      type="text" id="passport_department_code"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="..."
-                  >
-                </div>
-                <!-- Паспорт. Кем выдан -->
+                <!-- Паспорт. Паспорт выдан -->
                 <div>
                   <label for="passport_issued_by"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Кем выдан</label>
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Паспорт выдан</label>
                   <input
                       v-model="state.passport_issued_by"
                       type="text" id="passport_issued_by"
@@ -699,14 +688,27 @@ onMounted(() => {
                       placeholder="..."
                   >
                 </div>
-                <!-- Паспорт. Дата выдачи -->
-                <div>
-                  <label for="passport_date_of_issue"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
-                  <DatePickerWithMask :value="state.passport_date_of_issue" :key="state.passport_date_of_issue"
-                                      @onChange="e => state.passport_date_of_issue = e"/>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <!-- Паспорт. Дата выдачи -->
+                  <div>
+                    <label for="passport_date_of_issue"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата выдачи</label>
+                    <DatePickerWithMask :value="state.passport_date_of_issue" :key="state.passport_date_of_issue"
+                                        @onChange="e => state.passport_date_of_issue = e"/>
+                  </div>
+                  <!-- Паспорт. Код подразделения -->
+                  <div>
+                    <label for="passport_department_code"
+                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Код подразделения</label>
+                    <input
+                        v-model="state.passport_department_code"
+                        type="text" id="passport_department_code"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="..."
+                    >
+                  </div>
                 </div>
-                <!-- Паспорт. Кем выдан -->
+                <!-- Паспорт. Место рождения -->
                 <div>
                   <label for="passport_born_place"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Место рождения</label>
