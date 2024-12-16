@@ -33,7 +33,7 @@ const getBase64 = async (e) => {
     });
   }
 
-  let match = props.accept.split(",").join("|");
+  let match = props.accept.split(/[\s,]+/).join("|");
 
   if (e.target.files.length > 0) {
     let file = e.target.files[0];

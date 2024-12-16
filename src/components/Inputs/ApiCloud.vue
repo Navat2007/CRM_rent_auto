@@ -168,6 +168,7 @@ const regions = {
   "82": "Республика Крым",
   "92": "Севастополь"
 }
+const kbmDefaultValue = 1.17;
 
 watchEffect(() => {
   if (props.viewResult !== null) {
@@ -665,18 +666,18 @@ async function sendRequest(type, data, verification, rule) {
                 <span
                     class="font-bold"
                     :class="{
-                      'text-green-600': parseFloat(rsa_kbm_verification.result.kbmValue) < 1.17,
-                      'text-red-600': parseFloat(rsa_kbm_verification.result.kbmValue) > 1.17,
+                      'text-green-600': parseFloat(rsa_kbm_verification.result.kbmValue) < kbmDefaultValue,
+                      'text-red-600': parseFloat(rsa_kbm_verification.result.kbmValue) > kbmDefaultValue,
                     }"
                 >
                   {{ rsa_kbm_verification.result.kbmValue }}
                 </span>
               </div>
               <div>
-                <span v-if="parseFloat(rsa_kbm_verification.result.kbmValue) === 1.17">
+                <span v-if="parseFloat(rsa_kbm_verification.result.kbmValue) === kbmDefaultValue">
                   Новый водитель или информация не найдена
                 </span>
-                <span v-else-if="parseFloat(rsa_kbm_verification.result.kbmValue) > 1.17" class="text-red-600">
+                <span v-else-if="parseFloat(rsa_kbm_verification.result.kbmValue) > kbmDefaultValue" class="text-red-600">
                   Аварийный водитель
                 </span>
               </div>
