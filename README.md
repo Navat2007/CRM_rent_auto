@@ -27,3 +27,6 @@ https://tailwind.primevue.org<br/>
 https://www.xicons.org/#/<br/>
 https://www.naiveui.com<br/>
 https://flowbite.com
+
+<h3>Update:</h3>
+pnpm up --latest

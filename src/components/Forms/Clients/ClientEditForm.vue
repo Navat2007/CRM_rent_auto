@@ -59,7 +59,9 @@ const odysseyFilters = ref({
 });
 const odysseyFilterFields = ref(['id', 'created_at', 'lastname', 'firstname', 'middlename', 'birthday']);
 
+const uploadINN = ref(false);
 const loadingApiCloudResults = ref(true);
+const apiCloudRef = ref(null);
 const apiCloudResult = ref(null);
 const apiCloudResults = ref([]);
 const apiCloudFilters = ref({
@@ -297,9 +299,24 @@ const openOdysseyUrl = (url) => {
   window.open(url, '_blank');
 }
 
+const onApiCloudRequestSend = async (data) => {
+  if(uploadINN.value){
+    apiCloudRef.value.openDrawer();
+
+    uploadINN.value = false;
+
+    if(data.result)
+    {
+      if(data.result.inn)
+        state.inn = data.result.inn;
+    }
+  }
+
+  await fetchApiCloudResults();
+}
+
 const onApiCloudResult = async (data) => {
   apiCloudResult.value = null;
-  await fetchApiCloudResults();
 }
 
 const openApiCloudResult = (data, request, type) => {
@@ -333,13 +350,6 @@ async function fetchOdysseyResults() {
 
 async function fetchApiCloudResults() {
   apiCloudResults.value = await ApiCloudService.getResults({user_id: props.item.id});
-
-  if (apiCloudResults.value) {
-    apiCloudResults.value.map(item => {
-      item.created_at = new Date(item.created_at);
-    });
-  }
-
   loadingApiCloudResults.value = false;
 }
 
@@ -376,11 +386,13 @@ onMounted(() => {
         @onResult="onOdysseyResult"
     />
     <ApiCloud
+        ref="apiCloudRef"
         :id="props.item.id"
         :state="state"
         :view-result="apiCloudResult"
         :loading-results="loadingApiCloudResults"
         @onResult="onApiCloudResult"
+        @onRequestSend="onApiCloudRequestSend"
     />
   </div>
 
@@ -501,11 +513,19 @@ onMounted(() => {
                              placeholder="999-999-999 99" fluid/>
                 </div>
                 <!-- ИНН -->
-                <div>
+                <div class="flex flex-col">
                   <label for="inn"
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ИНН</label>
-                  <InputMask id="inn" v-model="state.inn" :modelValue="state.inn" mask="999999999999"
-                             placeholder="999999999999" fluid/>
+                  <div class="flex gap-2">
+                    <InputMask id="inn" v-model="state.inn" :modelValue="state.inn" mask="999999999999"
+                               placeholder="999999999999" fluid/>
+                    <Button pt:root="min-w-32" type="button" icon="pi pi-upload" label="Запросить" :loading="uploadINN" outlined
+                            @click="() => {
+                              uploadINN = true;
+                              this.$refs.apiCloudRef.sendNalogINNRequest();
+                            }"
+                    />
+                  </div>
                 </div>
                 <!-- Номер банковской карты -->
                 <div>

@@ -26,7 +26,7 @@ const props = defineProps({
     default: false
   }
 });
-const emit = defineEmits(['onResult']);
+const emit = defineEmits(['onResult', 'onRequestSend']);
 
 const sending = ref(false);
 const error = ref('');
@@ -382,7 +382,30 @@ async function sendRequest(type, data, verification, rule) {
   } else if (result.status === 404) {
     verification.value.error = result.message;
   }
+
+  emit('onRequestSend', {
+    type: type,
+    data: data,
+    rule: rule.value,
+    result: result,
+    error: verification.value.error
+  })
 }
+
+const openDrawer = () => {
+  isSelectModalOpen.value = true;
+}
+
+const sendNalogINNRequest = async () => {
+  selectedVerification.value = 'nalog_inn';
+
+  await prepareRequest();
+}
+
+defineExpose({
+  openDrawer,
+  sendNalogINNRequest
+})
 </script>
 
 <template>
@@ -465,7 +488,7 @@ async function sendRequest(type, data, verification, rule) {
           </label>
         </div>
         <!-- nalog -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 hidden">
           <RadioButton
               v-model="selectedVerification" inputId="nalog_inn" name="verification" value="nalog_inn"
               :disabled="nalog_inn"
@@ -656,8 +679,8 @@ async function sendRequest(type, data, verification, rule) {
           <Panel header="НСИС проверка КФ бонус/малус" toggleable>
             <div v-if="rsa_kbm_verification.error">
               {{ rsa_kbm_verification.error }}
-              <span v-if="rsa_kbm_verification.result.errormsg">{{ rsa_kbm_verification.result.errormsg }}</span>
-              <span v-if="rsa_kbm_verification.result.details">{{ rsa_kbm_verification.result.details }}</span>
+              <span v-if="rsa_kbm_verification.result?.errormsg">{{ rsa_kbm_verification.result?.errormsg }}</span>
+              <span v-if="rsa_kbm_verification.result?.details">{{ rsa_kbm_verification.result?.details }}</span>
             </div>
             <div v-else class="flex flex-col gap-2">
               <span class="text-blue-400">{{ rsa_kbm_verification.result.request }}</span>
@@ -763,6 +786,15 @@ async function sendRequest(type, data, verification, rule) {
           <Panel header="ФНС поиск ИНН ФЛ" toggleable>
             <div v-if="nalog_inn_verification.error">
               {{ nalog_inn_verification.error }}
+              <div>
+                <span v-if="state.passport_series_number === null || state.passport_series_number === ''"
+                      class="text-red-600">Не заполнено: Серия и номер паспорта</span>
+                <span v-if="state.lastName === null || state.lastName === ''"
+                      class="text-red-600">Не заполнено: Фамилия</span>
+                <span v-if="state.firstName === null || state.firstName === ''"
+                      class="text-red-600">Не заполнено: Имя</span>
+                <span v-if="state.birthday === null || state.birthday === ''" class="text-red-600">Не заполнено: Дата рождения</span>
+              </div>
             </div>
             <div v-else class="flex flex-col gap-2">
               <span class="text-blue-400">{{ nalog_inn_verification.result.request }}</span>
@@ -771,7 +803,7 @@ async function sendRequest(type, data, verification, rule) {
                 <span v-if="nalog_inn_verification.result.info">{{ nalog_inn_verification.result.info }}</span>
               </div>
             </div>
-            <Panel v-if="showRawResult" header="Необработанный ответ" class="mt-4" toggleable collapsed>
+            <Panel v-if="showRawResult && nalog_inn_verification.result" header="Необработанный ответ" class="mt-4" toggleable collapsed>
               {{ nalog_inn_verification.result }}
             </Panel>
           </Panel>

@@ -53,7 +53,13 @@ class ApiCloudService {
 
         if (response.data.params) {
             result = response.data.params;
+
+            result.map(item => {
+                if(item.created_at) item.created_at = new Date(item.created_at);
+            });
         }
+
+        //console.log(result);
 
         return result;
     }
