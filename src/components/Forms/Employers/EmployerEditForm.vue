@@ -581,7 +581,7 @@ onMounted(async () => {
                     <Button pt:root="min-w-32" type="button" icon="pi pi-upload" label="Запросить" :loading="uploadINN" outlined
                             @click="() => {
                               uploadINN = true;
-                              this.$refs.apiCloudRef.sendNalogINNRequest();
+                              apiCloudRef.sendNalogINNRequest();
                             }"
                     />
                   </div>
