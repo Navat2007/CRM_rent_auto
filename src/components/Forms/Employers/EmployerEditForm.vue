@@ -577,7 +577,7 @@ onMounted(async () => {
                          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ИНН</label>
                   <div class="flex gap-2">
                     <InputMask id="inn" v-model="state.inn" :modelValue="state.inn" mask="999999999999"
-                               placeholder="999999999999" fluid/>
+                               placeholder="999999999999" />
                     <Button pt:root="min-w-32" type="button" icon="pi pi-upload" label="Запросить" :loading="uploadINN" outlined
                             @click="() => {
                               uploadINN = true;
