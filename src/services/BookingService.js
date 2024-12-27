@@ -59,6 +59,20 @@ class BookingService {
 
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/${this.directory}/delete.php`, form);
     }
+
+    static async getCalendar(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/booking/rentalCalendar/load.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
 }
 
 export default BookingService
