@@ -799,6 +799,9 @@ defineExpose({
             <div v-else class="flex flex-col gap-2">
               <span class="text-blue-400">{{ nalog_inn_verification.result.request }}</span>
               <div>
+                <div v-if="nalog_inn_verification.result.inn">
+                  <span>ИНН: </span><span class="font-bold">{{ nalog_inn_verification.result.inn }}</span>
+                </div>
                 <span v-if="nalog_inn_verification.result.message">{{ nalog_inn_verification.result.message }}</span>
                 <span v-if="nalog_inn_verification.result.info">{{ nalog_inn_verification.result.info }}</span>
               </div>

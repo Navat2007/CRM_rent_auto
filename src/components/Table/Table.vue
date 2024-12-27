@@ -40,7 +40,12 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: true
-  }
+  },
+  inCard: {
+    type: Boolean,
+    required: false,
+    default: true
+  },
 })
 const emit = defineEmits(['onRowClick']);
 
@@ -72,18 +77,22 @@ initFilters();
 </script>
 
 <template>
-  <Card>
+  <Card v-if="inCard">
     <template v-if="withFilters" #title>
-      <Toolbar class="mb-2">
-        <template #start>
+      <div class="mb-2 flex flex-col sm:flex-row gap-2 justify-between">
+        <div>
           <slot name="buttons"/>
-        </template>
-        <template #end>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <IconField>
+            <InputIcon class="pi pi-search"/>
+            <InputText v-model="finalFilters['global'].value" placeholder="Поиск" fluid/>
+          </IconField>
           <!--              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />-->
           <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
                   @click="clearFilter()"/>
-        </template>
-      </Toolbar>
+        </div>
+      </div>
       <slot name="checkbox"/>
     </template>
 
@@ -103,17 +112,14 @@ initFilters();
           stateStorage="local" :stateKey="tableSaveKey" size="small"
           showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize"
           :rowsPerPageOptions="[10, 20, 50]"
-          resizableColumns columnResizeMode="expand" reorderableColumns
+          columnResizeMode="expand" reorderableColumns
           :sortOrder="1" removableSort rowHover
           filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"
+          pt:header="border-0 mr-0 pr-0"
       >
         <template #header>
           <div class="flex justify-between items-center">
             <h2 class="text-xl">{{ title }}</h2>
-            <IconField>
-              <InputIcon class="pi pi-search"/>
-              <InputText v-model="finalFilters['global'].value" placeholder="Поиск"/>
-            </IconField>
           </div>
         </template>
         <template #empty> Результаты не найдены.</template>
@@ -121,6 +127,55 @@ initFilters();
       </DataTable>
     </template>
   </Card>
+  <div v-else>
+    <div v-if="withFilters">
+      <div class="mb-2 flex flex-col sm:flex-row gap-2 justify-between">
+        <div>
+          <slot name="buttons"/>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <IconField>
+            <InputIcon class="pi pi-search"/>
+            <InputText v-model="finalFilters['global'].value" placeholder="Поиск" fluid/>
+          </IconField>
+          <!--              <Button icon="pi pi-download" label="" class="main-button" @click="exportCSV($event)" />-->
+          <Button type="button" icon="pi pi-filter-slash" outlined label="Очистить"
+                  @click="clearFilter()"/>
+        </div>
+      </div>
+      <slot name="checkbox"/>
+    </div>
+    <div>
+      <!-- Skeleton -->
+      <DataTable v-if="loading" :value="skeletonItems">
+        <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header">
+          <template #body>
+            <Skeleton></Skeleton>
+          </template>
+        </Column>
+      </DataTable>
+      <!-- Table -->
+      <DataTable
+          v-else
+          ref="table" :value="items" @row-click="handleRowClick"
+          stateStorage="local" :stateKey="tableSaveKey" size="small"
+          showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize"
+          :rowsPerPageOptions="[10, 20, 50]"
+          resizableColumns columnResizeMode="expand" reorderableColumns
+          :sortOrder="1" removableSort rowHover
+          filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"
+          pt:header="border-0 mr-0 pr-0"
+      >
+        <template #header>
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl">{{ title }}</h2>
+          </div>
+        </template>
+        <template #empty> Результаты не найдены.</template>
+        <slot name="columns"/>
+      </DataTable>
+    </div>
+  </div>
 </template>
 
 <style scoped>

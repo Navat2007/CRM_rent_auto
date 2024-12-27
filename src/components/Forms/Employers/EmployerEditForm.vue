@@ -872,7 +872,7 @@ onMounted(async () => {
             <TabPanel value="5">
               <!-- Проверки Odyssey -->
               <Table
-                  title="Проверки Odyssey"
+                  title="Проверки Odyssey" :inCard="false"
                   :items="odysseyResults" :columns="odysseyColumns"
                   :loading="loadingOdysseyResults" :filters="odysseyFilters"
                   :filter-fields="odysseyFilterFields"
@@ -938,47 +938,33 @@ onMounted(async () => {
             </TabPanel>
             <TabPanel value="6">
               <!-- Проверки api-cloud -->
-              <Table
-                  v-if="!loadingApiCloudResults"
-                  title="Проверки api-cloud"
-                  :items="apiCloudResults"
-                  :loading="loadingApiCloudResults" :filters="apiCloudFilters"
-                  :filter-fields="apiCloudFilterFields"
-              >
-                <template #columns>
-                  <Column header="Полный отчет" headerStyle="width: 8rem; min-width: 8rem;">
-                    <template #body="slotProps" class="flex justify-center items-center">
-                      <div class="flex items-center justify-center">
-                        <Button type="button" @click="openApiCloudResult(slotProps.data.response, slotProps.data.request_parameters, slotProps.data.request_type)" icon="pi pi-search"
-                                severity="secondary" rounded></Button>
-                      </div>
-                    </template>
-                  </Column>
-                  <Column field="created_at" dataType="date" header="Дата" headerStyle="width: 10rem; min-width: 10rem;"
-                          sortable>
-                    <template #body="{ data }">
-                      {{ formatDateTime(data, 'created_at') }}
-                    </template>
-                    <template #filter="{ filterModel }">
-                      <DatePicker
-                          v-model="filterModel.value"
-                          dateFormat="dd.mm.yy" placeholder="дд.мм.гг"
-                      />
-                    </template>
-                  </Column>
-                  <Column field="request_type" header="Тип запроса" headerStyle="width: 10rem; min-width: 10rem;"
-                          sortable>
-                    <template #body="{ data }">
-                      {{ verifications.find(item => item.key === data.request_type).name }}
-                    </template>
-                  </Column>
-                  <Column header="Инициатор" headerStyle="min-width: 30rem;">
-                    <template #body="{ data }">
-                      {{ data.init_full_name }} - {{ data.init_email }}
-                    </template>
-                  </Column>
-                </template>
-              </Table>
+              <DataTable :value="apiCloudResults" tableStyle="min-width: 50rem" rowHover>
+                <Column field="code" header="Полный отчет">
+                  <template #body="slotProps" class="flex justify-center items-center">
+                    <div class="flex items-center justify-center">
+                      <Button type="button"
+                              @click="openApiCloudResult(slotProps.data.response, slotProps.data.request_parameters, slotProps.data.request_type)"
+                              icon="pi pi-search"
+                              severity="secondary" rounded></Button>
+                    </div>
+                  </template>
+                </Column>
+                <Column field="name" header="Дата">
+                  <template #body="{ data }">
+                    {{ formatDateTime(data, 'created_at') }}
+                  </template>
+                </Column>
+                <Column field="category" header="Тип запроса">
+                  <template #body="{ data }">
+                    {{ verifications.find(item => item.key === data.request_type).name }}
+                  </template>
+                </Column>
+                <Column field="quantity" header="Инициатор">
+                  <template #body="{ data }">
+                    {{ data.init_full_name }} - {{ data.init_email }}
+                  </template>
+                </Column>
+              </DataTable>
             </TabPanel>
           </TabPanels>
           <Divider v-if="user.access.employers === 2" type="dashed"/>
