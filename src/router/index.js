@@ -210,6 +210,16 @@ const adminRoutes = [
             title: 'Договора проката',
         }
     },
+    {
+        path: '/Admin/booking/rentalCalendar',
+        exact: true,
+        component: () => import('@pages/admin/booking/rentalCalendar/List.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Календарь занятости авто',
+        }
+    },
     // Directory
     {
         path: '/Admin/directory/position',
