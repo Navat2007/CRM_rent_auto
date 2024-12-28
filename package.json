@@ -33,8 +33,7 @@
     "vue-disable-autocomplete": "^0.0.4",
     "vue-hooks-form": "^0.3.1",
     "vue-router": "^4.5.0",
-    "vue3-apexcharts": "^1.8.0",
-    "vue3-mobile-detection": "^1.0.5"
+    "vue3-apexcharts": "^1.8.0"
   },
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.2.5",

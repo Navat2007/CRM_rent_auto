@@ -1,6 +1,5 @@
 <script setup>
 import {computed, ref, watchEffect} from "vue";
-import router from "@router";
 import moment from "moment";
 
 import {useAuthStore} from "@stores";
@@ -30,7 +29,9 @@ const days = computed(() => {
   }
 
   return array;
-})
+});
+const selectedContract = ref(null);
+const drawer = ref(false);
 
 const breadcrumbs = ref([
   {
@@ -43,12 +44,12 @@ const breadcrumbs = ref([
   },
 ]);
 
-const handleRowClick = (item) => {
-  router.push('/Admin/booking/rentalContracts/' + item.id);
+const handleCellClick = (item) => {
+  selectedContract.value = item;
+  drawer.value = true;
 }
-
-const getBackgroundColor = (data) => {
-
+const handleOpenContract = () => {
+  window.open('/Admin/booking/rentalContracts/' + selectedContract.value.id, '_blank');
 }
 
 const getContractComponent = (data, day) => {
@@ -86,8 +87,6 @@ async function fetchData() {
     day_in_month: startDate.daysInMonth(),
   });
 
-  console.log(items.value);
-
   loading.value = false;
 }
 </script>
@@ -116,7 +115,7 @@ async function fetchData() {
         <label for="on_label">Месяц</label>
       </FloatLabel>
     </div>
-    <DataTable :value="items" tableStyle="min-width: 50rem" rowHover :loading="loading">
+    <DataTable :value="items" tableStyle="min-width: 50rem" :loading="loading">
       <Column field="id" header="ID авто">
       </Column>
       <Column field="state_number" header="Гос номер">
@@ -130,12 +129,23 @@ async function fetchData() {
         </template>
       </Column>
 
-      <Column v-for="day in days" :pt="{bodyCell: getBackgroundColor(day)}">
+      <Column
+          v-for="day in days"
+          :pt="{
+            bodyCell: 'p-0 border border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800'
+          }"
+      >
         <template #header="slotProps">
           {{ day.title + (day.weekend ? '*' : '') }}
         </template>
         <template #body="{data}">
-          <BookingCalendarCell :item="getContractComponent(data, day)"/>
+          <BookingCalendarCell
+              :item="getContractComponent(data, day)"
+              :day="day"
+              :month="moment(selectedMonth.value).month() + 1"
+              :year="moment(selectedYear.value).year()"
+              @onSelect="handleCellClick"
+          />
         </template>
       </Column>
 
@@ -151,4 +161,30 @@ async function fetchData() {
       <!--      </Column>-->
     </DataTable>
   </PageContainer>
+
+  <Drawer
+      position="right" class="w-full md:w-3/5 lg:w-2/5 xl:w-2/6"
+      v-model:visible="drawer"
+      header="Договор проката"
+  >
+    <div class="flex flex-col mb-8">
+      <div class="mb-4">
+        <img class="w-full h-64 object-cover" v-if="selectedContract.avatar" alt="car photo" :src="selectedContract.avatar"/>
+        <img class="w-full h-64 object-cover" v-else src="@/assets/images/client-placeholder.png" alt="car photo"/>
+      </div>
+
+      <div class="flex justify-between gap-2"><span>Договор:</span><span
+          class="font-bold">{{ selectedContract.id }} от {{ moment(selectedContract.start_date).format('DD.MM.YYYY HH:mm') }}</span></div>
+      <div class="flex justify-between gap-2"><span>Возврат:</span><span
+          class="font-bold">{{ moment(selectedContract.end_date).format('DD.MM.YYYY HH:mm') }}</span></div>
+      <div class="flex justify-between gap-2"><span>ФИО:</span><span
+          class="font-bold">{{ selectedContract.fio === null || selectedContract.fio === '' ? 'Не указан' : selectedContract.fio }}</span></div>
+      <div class="flex justify-between gap-2"><span>Email:</span><span
+          class="font-bold">{{ selectedContract.email === null || selectedContract.email === '' ? 'Не указан' : selectedContract.email }}</span></div>
+      <div class="flex justify-between gap-2"><span>Телефон:</span><span
+          class="font-bold">{{ selectedContract.phone === null || selectedContract.phone === '' ? 'Не указан' : selectedContract.phone }}</span></div>
+    </div>
+
+    <Button icon="pi pi-sign-in" aria-label="Save" label="Открыть договор" fluid @click="handleOpenContract"/>
+  </Drawer>
 </template>
