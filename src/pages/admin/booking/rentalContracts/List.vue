@@ -146,7 +146,7 @@ onMounted(() => {
         </Column>
       </template>
       <template #buttons>
-        <Button v-if="user.access.clients === 2" type="button" icon="pi pi-plus" label="Добавить" outlined
+        <Button v-if="user.access.booking === 2" type="button" icon="pi pi-plus" label="Добавить" outlined
                 @click="handleAddButtonClick"/>
       </template>
     </Table>
