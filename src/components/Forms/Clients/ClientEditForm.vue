@@ -22,6 +22,8 @@ import {FilterMatchMode, FilterOperator} from "@primevue/core/api";
 import AlertModal from "@components/Modals/AlertModal.vue";
 import ApiCloudService from "@services/ApiCloudService.js";
 import ApiCloud from "@components/Inputs/ApiCloud.vue";
+import Himera from "@components/Inputs/Himera.vue";
+import HimeraService from "@services/HimeraService.js";
 
 const {user} = useAuthStore();
 
@@ -58,6 +60,58 @@ const odysseyFilters = ref({
   middlename: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
 });
 const odysseyFilterFields = ref(['id', 'created_at', 'lastname', 'firstname', 'middlename', 'birthday']);
+
+const loadingHimeraResults = ref(true);
+const isHimeraResultModalOpen = ref(false);
+const himeraResult = ref({});
+const himeraResults = ref([]);
+const himeraColumns = ref([
+  {
+    header: 'ID',
+    field: 'id',
+  },
+  {
+    header: 'Дата',
+    field: 'created_at',
+  },
+  {
+    header: 'Показатель скоринга',
+    field: 'scoring_overall_indicator',
+  },
+  {
+    header: 'Фамилия',
+    field: 'lastname',
+  },
+  {
+    header: 'Имя',
+    field: 'firstname',
+  },
+  {
+    header: 'Отчество',
+    field: 'middlename',
+  },
+  {
+    header: 'Дата рождения',
+    field: 'birthday',
+  },
+  {
+    header: 'Полный отчет',
+    field: 'url',
+  },
+]);
+const himeraFilters = ref({
+  id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+  scoring_overall_indicator: {
+    operator: FilterOperator.OR,
+    constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]
+  },
+  birthday: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
+  created_at: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
+  lastname: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+  firstname: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+  middlename: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+});
+const himeraFilterFields = ref(['id', 'created_at', 'lastname', 'firstname', 'middlename', 'birthday']);
 
 const uploadINN = ref(false);
 const loadingApiCloudResults = ref(true);
@@ -299,6 +353,16 @@ const openOdysseyUrl = (url) => {
   window.open(url, '_blank');
 }
 
+const onHimeraResult = async (data) => {
+  himeraResult.value = data;
+  isHimeraResultModalOpen.value = true;
+  await fetchHimeraResults();
+}
+
+const openHimeraUrl = (url) => {
+  window.open(url, '_blank');
+}
+
 const onApiCloudRequestSend = async (data) => {
   if(uploadINN.value){
     apiCloudRef.value.openDrawer();
@@ -348,6 +412,19 @@ async function fetchOdysseyResults() {
   loadingOdysseyResults.value = false;
 }
 
+async function fetchHimeraResults() {
+  himeraResults.value = await HimeraService.getResults(props.item.id);
+
+  if(himeraResults.value){
+    himeraResults.value.map(item => {
+      item.created_at = new Date(item.created_at);
+      item.birthday = new Date(item.birthday);
+    });
+  }
+
+  loadingHimeraResults.value = false;
+}
+
 async function fetchApiCloudResults() {
   apiCloudResults.value = await ApiCloudService.getResults({user_id: props.item.id});
   loadingApiCloudResults.value = false;
@@ -360,11 +437,12 @@ const formatDateTime = (value, field) => {
   return moment(value[field]).format('DD.MM.YYYY HH:mm');
 };
 
-onMounted(() => {
-  fetchAdvertising();
-  fetchLegalPersons();
-  fetchOdysseyResults();
-  fetchApiCloudResults();
+onMounted(async () => {
+  await fetchAdvertising();
+  await fetchLegalPersons();
+  await fetchOdysseyResults();
+  await fetchHimeraResults();
+  await fetchApiCloudResults();
 });
 </script>
 
@@ -384,6 +462,16 @@ onMounted(() => {
         :results="odysseyResults"
         :loading-results="loadingOdysseyResults"
         @onResult="onOdysseyResult"
+    />
+    <Himera
+        :id="props.item.id"
+        :lastname="state.lastName"
+        :firstname="state.firstName"
+        :middlename="state.patronym"
+        :birthday="state.birthday"
+        :results="himeraResults"
+        :loading-results="loadingHimeraResults"
+        @onResult="onHimeraResult"
     />
     <ApiCloud
         ref="apiCloudRef"
@@ -408,7 +496,8 @@ onMounted(() => {
           <Tab value="2" class="flex gap-2">Водительское удостоверение</Tab>
           <Tab value="3" class="flex gap-2">Прочие документы</Tab>
           <Tab value="4" class="flex gap-2">Проверки в odyssey</Tab>
-          <Tab value="5" class="flex gap-2">Проверки в api-cloud</Tab>
+          <Tab value="5" class="flex gap-2">Проверки в himera</Tab>
+          <Tab value="6" class="flex gap-2">Проверки в api-cloud</Tab>
         </TabList>
         <form @submit.prevent="onFormSubmit" autocomplete="off">
           <TabPanels>
@@ -852,6 +941,74 @@ onMounted(() => {
               </Table>
             </TabPanel>
             <TabPanel value="5">
+              <!-- Проверки Himera -->
+              <Table
+                  title="Проверки Himera"
+                  :items="himeraResults"
+                  :loading="loadingHimeraResults" :filters="himeraFilters"
+                  :filter-fields="himeraFilterFields" :inCard="false"
+              >
+                <template #columns>
+                  <Column field="created_at" dataType="date" header="Дата" headerStyle="width: 10rem; min-width: 10rem;"
+                          sortable>
+                    <template #body="{ data }">
+                      {{ formatDateTime(data, 'created_at') }}
+                    </template>
+                    <template #filter="{ filterModel }">
+                      <DatePicker
+                          v-model="filterModel.value"
+                          dateFormat="dd.mm.yy" placeholder="дд.мм.гг"
+                      />
+                    </template>
+                  </Column>
+                  <Column field="scoring_overall_indicator" header="Cкоринг" dataType="numeric"
+                          headerStyle="width: 10rem; min-width: 10rem;" sortable>
+                    <template #filter="{ filterModel }">
+                      <InputText v-model="filterModel.value" type="number" placeholder="Поиск по скорингу"/>
+                    </template>
+                  </Column>
+                  <Column field="lastname" header="Фамилия" headerStyle="width: 10rem; min-width: 10rem;" sortable>
+                    <template #filter="{ filterModel }">
+                      <InputText v-model="filterModel.value" type="text" placeholder="Поиск по фамилии"/>
+                    </template>
+                  </Column>
+                  <Column field="firstname" header="Имя" headerStyle="width: 10rem; min-width: 10rem;" sortable>
+                    <template #filter="{ filterModel }">
+                      <InputText v-model="filterModel.value" type="text" placeholder="Поиск по имени"/>
+                    </template>
+                  </Column>
+                  <Column field="middlename" header="Отчество" headerStyle="width: 10rem; min-width: 10rem;" sortable>
+                    <template #filter="{ filterModel }">
+                      <InputText v-model="filterModel.value" type="text" placeholder="Поиск по отчеству"/>
+                    </template>
+                  </Column>
+                  <Column field="birthday" dataType="date" header="Дата рождения"
+                          headerStyle="width: 12rem; min-width: 12rem;" sortable>
+                    <template #body="{ data }">
+                      {{ formatDate(data, 'birthday') }}
+                    </template>
+                    <template #filter="{ filterModel }">
+                      <DatePicker
+                          v-model="filterModel.value"
+                          dateFormat="dd.mm.yy" placeholder="дд.мм.гг"
+                      />
+                    </template>
+                  </Column>
+                  <Column header="Полный отчет" headerStyle="width: 8rem; min-width: 8rem;">
+                    <template #body="slotProps">
+                      <Button type="button" @click="openHimeraUrl(slotProps.data.url)" icon="pi pi-search"
+                              severity="secondary" rounded></Button>
+                    </template>
+                  </Column>
+                  <Column header="Инициатор" headerStyle="min-width: 30rem;">
+                    <template #body="{ data }">
+                      {{ data.init_full_name }} - {{ data.init_email }}
+                    </template>
+                  </Column>
+                </template>
+              </Table>
+            </TabPanel>
+            <TabPanel value="6">
               <!-- Проверки api-cloud -->
               <DataTable :value="apiCloudResults" tableStyle="min-width: 50rem" rowHover>
                 <Column field="code" header="Полный отчет">
