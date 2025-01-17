@@ -13,6 +13,9 @@ $birthday = explode('.', htmlspecialchars($_POST["birthday"]));
 $url = "https://api.himera-search.info/2.0/name_standart";
 $content = "key=b29eca2977887cdc9ea101889f96d54b&lastname=$f&firstname=$i&middlename=$o&day=$birthday[0]&month=$birthday[1]&year=$birthday[2]";
 
+//$url = "https://api.himera-search.info/2.0/scoring";
+//$content = "key=b29eca2977887cdc9ea101889f96d54b&lastname=$f&firstname=$i&middlename=$o&birthday=$_POST["birthday"]";
+
 $curl = curl_init();
 curl_setopt($curl, CURLOPT_URL, $url);
 curl_setopt($curl, CURLOPT_HTTPHEADER, [

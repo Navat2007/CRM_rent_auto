@@ -30,6 +30,7 @@ class HimeraService {
         form.append("birthday", moment(result.birthday, "DD.MM.YYYY").format("YYYY-MM-DD"));
 
         const response = await axios.postForm(`${import.meta.env.VITE_SERVICE_API_URL}/himera/save.php`, form);
+        //console.log(response);
     }
     static async getResults(user_id) {
         let form = new FormData();
