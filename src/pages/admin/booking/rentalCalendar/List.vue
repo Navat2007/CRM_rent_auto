@@ -1,5 +1,5 @@
 <script setup>
-import {computed, ref, watchEffect} from "vue";
+import {ref, watch, onMounted} from "vue";
 import moment from "moment";
 
 import {useAuthStore} from "@stores";
@@ -11,25 +11,8 @@ const {user} = useAuthStore();
 
 const items = ref([]);
 const loading = ref(false);
-const selectedYear = ref(new Date());
-const selectedMonth = ref(new Date());
-const days = computed(() => {
-  const year = moment(selectedYear.value).year();
-  const month = moment(selectedMonth.value).month() + 1;
-  const startDate = moment(year + '-' + month + '-01');
-  const endDate = moment(year + '-' + month + '-' + startDate.daysInMonth());
-
-  let array = [];
-
-  for (let m = moment(startDate); m.diff(endDate, 'days') <= 0; m.add(1, 'days')) {
-    array.push({
-      title: m.format('DD'),
-      weekend: m.day() === 0 || m.day() === 6,
-    })
-  }
-
-  return array;
-});
+const date = ref(new Date());
+const days = ref([]);
 const selectedContract = ref(null);
 const drawer = ref(false);
 
@@ -54,8 +37,8 @@ const handleOpenContract = () => {
 
 const getContractComponent = (data, day) => {
   if (data?.contracts?.length > 0) {
-    const year = moment(selectedYear.value).year();
-    const month = moment(selectedMonth.value).month() + 1;
+    const year = moment(date.value).year();
+    const month = moment(date.value).month() + 1;
     const currentDate = moment(`${year}-${month}-${day.title}`, 'YYYY-MM-DD');
 
     return data.contracts.find(
@@ -69,26 +52,45 @@ const getContractComponent = (data, day) => {
   return undefined;
 }
 
-watchEffect(() => {
-  fetchData();
-}, [days])
+watch(() => date.value, () => {
+  setTimeout(async () => {
+    await fetchData();
+  }, 250);
+});
 
 async function fetchData() {
   loading.value = true;
 
-  const year = moment(selectedYear.value).year();
-  const month = moment(selectedMonth.value).month() + 1;
+  const year = moment(date.value).year();
+  const month = moment(date.value).month() + 1;
   const startDate = moment(year + '-' + month + '-01');
 
-  items.value = await BookingService.getCalendar({
+  await BookingService.getCalendar({
     company_id: user.company_id,
     year: year,
     month: month,
     day_in_month: startDate.daysInMonth(),
-  });
+  }).then((result) => {
+    items.value = result;
 
-  loading.value = false;
+    const endDate = moment(year + '-' + month + '-' + startDate.daysInMonth());
+
+    let array = [];
+
+    for (let m = moment(startDate); m.diff(endDate, 'days') <= 0; m.add(1, 'days')) {
+      array.push({
+        title: m.format('DD'),
+        weekend: m.day() === 0 || m.day() === 6,
+      })
+    }
+
+    days.value = array;
+  }).finally(() => {
+    loading.value = false;
+  });
 }
+
+onMounted(fetchData);
 </script>
 
 <template>
@@ -96,39 +98,37 @@ async function fetchData() {
     <div class="flex flex-col sm:flex-row gap-2 mb-4">
       <FloatLabel variant="on">
         <DatePicker
-            v-model="selectedYear" view="year" dateFormat="yy"
+            v-model="date" view="year" dateFormat="yy"
             :disabled="loading"
-            @valueChange="(e)=> {
-              selectedMonth = new Date(e.getFullYear(), selectedMonth.getMonth(), 1);
-            }"
         />
         <label for="on_label">Год</label>
       </FloatLabel>
       <FloatLabel variant="on">
         <DatePicker
-            v-model="selectedMonth" view="month" dateFormat="MM"
+            v-model="date" view="month" dateFormat="MM"
             :disabled="loading"
-            @valueChange="(e)=> {
-              selectedYear = e;
-            }"
         />
         <label for="on_label">Месяц</label>
       </FloatLabel>
     </div>
-    <DataTable :value="items" tableStyle="min-width: 50rem" :loading="loading">
+    <DataTable
+        :value="items"
+        tableStyle="min-width: 50rem"
+        :loading="loading"
+        scrollable scrollHeight="700px"
+    >
       <Column field="id" header="ID авто">
       </Column>
       <Column field="state_number" header="Гос номер">
       </Column>
       <Column header="Авто">
         <template #body="slotProps">
-          <div class="flex flex-row gap-1">
+          <div class="flex flex-row gap-1 whitespace-nowrap">
             <span>{{ slotProps.data.brand }}</span>
             <span>{{ slotProps.data.model }}</span>
           </div>
         </template>
       </Column>
-
       <Column
           v-for="day in days"
           :pt="{
@@ -142,13 +142,12 @@ async function fetchData() {
           <BookingCalendarCell
               :item="getContractComponent(data, day)"
               :day="day"
-              :month="moment(selectedMonth.value).month() + 1"
-              :year="moment(selectedYear.value).year()"
+              :month="moment(date.value).month() + 1"
+              :year="moment(date.value).year()"
               @onSelect="handleCellClick"
           />
         </template>
       </Column>
-
       <!--      <Column field="summary" header="Сумма">-->
       <!--      </Column>-->
       <!--      <Column field="tariff" header="Тариф">-->
@@ -157,8 +156,8 @@ async function fetchData() {
       <!--      </Column>-->
       <!--      <Column field="object" header="Объект">-->
       <!--      </Column>-->
-      <!--      <Column field="client" header="Клиент">-->
-      <!--      </Column>-->
+<!--      <Column field="client" header="Клиент">-->
+<!--      </Column>-->
     </DataTable>
   </PageContainer>
 

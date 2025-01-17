@@ -4,7 +4,8 @@ import moment from "moment/moment.js";
 const props = defineProps({
   item: {
     type: Object,
-    required: true
+    required: false,
+    default: undefined
   },
   day: {
     type: Object,

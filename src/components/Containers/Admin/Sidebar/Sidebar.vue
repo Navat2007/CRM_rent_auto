@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from "vue";
+import {ref, markRaw} from "vue";
 import {onClickOutside} from '@vueuse/core';
 import {useAuthStore, useSidebarStore} from '@stores';
 import {Icon} from '@vicons/utils'
@@ -19,13 +19,13 @@ const menuGroups = ref([
     name: 'МЕНЮ',
     menuItems: [
       {
-        icon: Home,
+        icon: markRaw(Home),
         label: 'Главная',
         route: '/Admin/',
         visible: true
       },
       {
-        icon: Building,
+        icon: markRaw(Building),
         label: 'Компания',
         route: '',
         children: [
@@ -38,7 +38,7 @@ const menuGroups = ref([
         visible: user.access?.employers && user.access.employers !== 0
       },
       {
-        icon: Group,
+        icon: markRaw(Group),
         label: 'Клиенты',
         route: '',
         children: [
@@ -48,13 +48,13 @@ const menuGroups = ref([
         visible: user.access?.clients && user.access?.clients !== 0
       },
       {
-        icon: Car,
+        icon: markRaw(Car),
         label: 'Авто',
         route: '/Admin/auto',
         visible: user.access?.auto && user.access?.auto !== 0
       },
       {
-        icon: TrafficEvent,
+        icon: markRaw(TrafficEvent),
         label: 'Бронирование',
         route: '',
         children: [
@@ -72,7 +72,7 @@ const menuGroups = ref([
         visible: user.access?.booking && user.access?.booking !== 0
       },
       {
-        icon: Folders,
+        icon: markRaw(Folders),
         label: 'Справочники',
         route: '',
         children: [

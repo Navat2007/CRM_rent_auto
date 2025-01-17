@@ -68,6 +68,8 @@ const handleSendRequest = () => {
 async function sendRequest() {
   let result = await HimeraService.sendRequest(props.lastname, props.firstname, props.middlename, props.birthday);
 
+  //let result = {data: [], status: "ok", url: "https://www.himera.ru/test/123"};
+
   console.log(result);
 
   if(!result){
@@ -108,7 +110,7 @@ async function sendRequest() {
 </script>
 
 <template>
-  <div>
+  <div class="flex gap-4">
     <Button
         icon="pi pi-upload"
         label="Проверить в himera"
