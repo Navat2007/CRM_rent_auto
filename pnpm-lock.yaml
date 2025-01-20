@@ -44,6 +44,9 @@ dependencies:
   pinia:
     specifier: ^2.3.0
     version: 2.3.0(vue@3.5.13)
+  pnpm:
+    specifier: ^9.15.4
+    version: 9.15.4
   primeicons:
     specifier: ^7.0.0
     version: 7.0.0
@@ -1726,6 +1729,12 @@ packages:
       mlly: 1.7.3
       pathe: 1.1.2
     dev: true
+
+  /pnpm@9.15.4:
+    resolution: {integrity: sha512-stwg4vxys+GISEWbNzWaMgZGY+VielHkx0ssKd2OjgSRSDw6u0B4nP1Xi/Ni+2uoJhsF8Dh9dnku1uI+o7G2oA==}
+    engines: {node: '>=18.12'}
+    hasBin: true
+    dev: false
 
   /postcss-import@15.1.0(postcss@8.4.49):
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}

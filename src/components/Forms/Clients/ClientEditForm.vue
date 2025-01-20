@@ -961,12 +961,12 @@ onMounted(async () => {
                       />
                     </template>
                   </Column>
-                  <Column field="scoring_overall_indicator" header="Cкоринг" dataType="numeric"
-                          headerStyle="width: 10rem; min-width: 10rem;" sortable>
-                    <template #filter="{ filterModel }">
-                      <InputText v-model="filterModel.value" type="number" placeholder="Поиск по скорингу"/>
-                    </template>
-                  </Column>
+<!--                  <Column field="scoring_overall_indicator" header="Cкоринг" dataType="numeric"-->
+<!--                          headerStyle="width: 10rem; min-width: 10rem;" sortable>-->
+<!--                    <template #filter="{ filterModel }">-->
+<!--                      <InputText v-model="filterModel.value" type="number" placeholder="Поиск по скорингу"/>-->
+<!--                    </template>-->
+<!--                  </Column>-->
                   <Column field="lastname" header="Фамилия" headerStyle="width: 10rem; min-width: 10rem;" sortable>
                     <template #filter="{ filterModel }">
                       <InputText v-model="filterModel.value" type="text" placeholder="Поиск по фамилии"/>
