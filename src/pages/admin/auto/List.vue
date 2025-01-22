@@ -90,14 +90,66 @@ const filterFields = ref([
   'archive'
 ]);
 
+const contextMenu = ref();
+const contextMenuItems = ref([]);
+
+const onRowRightClick = (event, place, current, data) => {
+  switch (place) {
+    case 'body_condition':
+      contextMenuItems.value = [
+        { label: 'Неизвестно', icon: BodyStatus0, command: () => {handleUpdateStatus(0, 'body_condition', current.value === 0, data)}, selected: current.value === 0 },
+        { label: 'Чистый', icon: BodyStatus1, command: () => {handleUpdateStatus(1, 'body_condition', current.value === 1, data)}, selected: current.value === 1 },
+        { label: 'Грязный', icon: BodyStatus2, command: () => {handleUpdateStatus(2, 'body_condition', current.value === 2, data)}, selected: current.value === 2 }
+      ];
+      break;
+    case 'interior_condition':
+      contextMenuItems.value = [
+        { label: 'Неизвестно', icon: InteriorStatus0, command: () => {handleUpdateStatus(0, 'interior_condition', current.value === 0, data)}, selected: current.value === 0 },
+        { label: 'Чистый', icon: InteriorStatus1, command: () => {handleUpdateStatus(1, 'interior_condition', current.value === 1, data)}, selected: current.value === 1 },
+        { label: 'Грязный', icon: InteriorStatus2, command: () => {handleUpdateStatus(2, 'interior_condition', current.value === 2, data)}, selected: current.value === 2 }
+      ];
+      break;
+    case 'trunk_condition':
+      contextMenuItems.value = [
+        { label: 'Неизвестно', icon: TrunkStatus0, command: () => {handleUpdateStatus(0, 'trunk_condition', current.value === 0, data)}, selected: current.value === 0 },
+        { label: 'Чистый', icon: TrunkStatus1, command: () => {handleUpdateStatus(1, 'trunk_condition', current.value === 1, data)}, selected: current.value === 1 },
+        { label: 'Грязный', icon: TrunkStatus2, command: () => {handleUpdateStatus(2, 'trunk_condition', current.value === 2, data)}, selected: current.value === 2 }
+      ];
+      break;
+    case 'need_refuel':
+      contextMenuItems.value = [
+        { label: 'Неизвестно', icon: FuelStatus0, command: () => {handleUpdateStatus(0, 'need_refuel', current.value === 0, data)}, selected: current.value === 0 },
+        { label: 'Низкий уровень топлива', icon: FuelStatus1, command: () => {handleUpdateStatus(1, 'need_refuel', current.value === 1, data)}, selected: current.value === 1 },
+        { label: 'Средний уровень топлива', icon: FuelStatus2, command: () => {handleUpdateStatus(2, 'need_refuel', current.value === 2, data)}, selected: current.value === 2 },
+        { label: 'Полный бак', icon: FuelStatus3, command: () => {handleUpdateStatus(3, 'need_refuel', current.value === 3, data)}, selected: current.value === 3 }
+      ];
+      break;
+    case 'need_service':
+      contextMenuItems.value = [
+        { label: 'Нужно обслужить', icon: NeedService1, command: () => {handleUpdateStatus(1, 'need_service', current === 1, data)}, selected: current === 1 },
+        { label: 'Обслужен', icon: NeedService0, command: () => {handleUpdateStatus(0, 'need_service', current === 0, data)}, selected: current === 0 },
+      ];
+      break;
+  }
+
+  contextMenu.value.show(event);
+};
+
 const handleAddButtonClick = (item) => {
   router.push('/Admin/auto/new');
 }
 const handleRowClick = (item) => {
   router.push('/Admin/auto/' + item.id);
 }
+const handleUpdateStatus = async (status, place, selected, data) => {
+  if(!selected){
+    const result = await AutoService.updateStatus({status, place, id: data.id});
+    console.log(result);
+    items.value.find(item => item.id === data.id)[place] = status;
+  }
+}
 
-const getCarCondition = (condition, data) => {
+const getCarCondition = (condition, data,) => {
   switch (condition) {
     case 'body':
       switch (data.body_condition) {
@@ -217,7 +269,10 @@ onMounted(() => {
                       showClear/>
           </template>
           <template #body="{data}" class="flex justify-center items-center">
-            <div class="flex items-center justify-center">
+            <div
+                @contextmenu="onRowRightClick($event, 'body_condition', conditions.find(item => item.value === data.body_condition), data)"
+                class="flex items-center justify-center"
+            >
               <Icon size="24" v-tooltip.top="conditions.find(item => item.value === data.body_condition)?.label">
                 <component :is="getCarCondition('body', data)"/>
               </Icon>
@@ -235,7 +290,10 @@ onMounted(() => {
                       showClear/>
           </template>
           <template #body="{data}" class="flex justify-center items-center">
-            <div class="flex items-center justify-center">
+            <div
+                @contextmenu="onRowRightClick($event, 'interior_condition', conditions.find(item => item.value === data.interior_condition), data)"
+                class="flex items-center justify-center"
+            >
               <Icon size="24" v-tooltip.top="conditions.find(item => item.value === data.interior_condition)?.label">
                 <component :is="getCarCondition('interior', data)"/>
               </Icon>
@@ -253,7 +311,10 @@ onMounted(() => {
                       showClear/>
           </template>
           <template #body="{data}" class="flex justify-center items-center">
-            <div class="flex items-center justify-center">
+            <div
+                @contextmenu="onRowRightClick($event, 'trunk_condition', conditions.find(item => item.value === data.trunk_condition), data)"
+                class="flex items-center justify-center"
+            >
               <Icon size="24" v-tooltip.top="conditions.find(item => item.value === data.trunk_condition)?.label">
                 <component :is="getCarCondition('trunk', data)"/>
               </Icon>
@@ -271,7 +332,10 @@ onMounted(() => {
                       showClear/>
           </template>
           <template #body="{data}" class="flex justify-center items-center">
-            <div class="flex items-center justify-center">
+            <div
+                @contextmenu="onRowRightClick($event, 'need_refuel', fuelLevels.find(item => item.value === data.need_refuel), data)"
+                class="flex items-center justify-center"
+            >
               <Icon size="24" v-tooltip.top="fuelLevels.find(item => item.value === data.need_refuel)?.label">
                 <component :is="getCarCondition('fuel', data)"/>
               </Icon>
@@ -288,7 +352,10 @@ onMounted(() => {
                       showClear/>
           </template>
           <template #body="{data}" class="flex justify-center items-center">
-            <div class="flex items-center justify-center">
+            <div
+                @contextmenu="onRowRightClick($event, 'need_service', data.need_service, data)"
+                class="flex items-center justify-center"
+            >
               <Icon size="24" v-tooltip.top="data.need_service === 0 ? 'Обслужен' : 'Нужно обслужить'">
                 <component :is="getCarCondition('to', data)"/>
               </Icon>
@@ -327,5 +394,18 @@ onMounted(() => {
                 @click="handleAddButtonClick"/>
       </template>
     </Table>
+    <ContextMenu ref="contextMenu" :model="contextMenuItems">
+      <template #item="{ item, props }">
+        <a v-ripple v-bind="props.action"
+           class="flex items-center"
+           :class="{ 'bg-gray-200': item.selected }"
+        >
+          <Icon size="24">
+            <component :is="item.icon"/>
+          </Icon>
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </template>
+    </ContextMenu>
   </PageContainer>
 </template>

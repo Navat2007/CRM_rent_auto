@@ -73,6 +73,13 @@ class AutoService {
 
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/${this.directory}/delete.php`, form);
     }
+
+    static async updateStatus(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/${this.directory}/update_status.php`, form);
+    }
 }
 
 export default AutoService

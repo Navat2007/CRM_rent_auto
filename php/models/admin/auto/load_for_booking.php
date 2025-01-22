@@ -48,12 +48,12 @@ if(pg_num_rows($result) > 0)
     {
         $row->id = (int)$row->id;
         $row->avatar = $row->avatar == null ? "" : ("https://" . $_SERVER['HTTP_HOST'] . $row->avatar);
-        $row->brand = $row->brand == null ? "Не указано" : htmlspecialchars_decode($row->brand);
-        $row->model = $row->model == null ? "Не указано" : htmlspecialchars_decode($row->model);
-        $row->class = $row->class == null ? "Не указано" : htmlspecialchars_decode($row->class);
-        $row->generation = $row->generation == null ? "Не указано" : htmlspecialchars_decode($row->generation);
-        $row->configuration = $row->configuration == null ? "Не указано" : htmlspecialchars_decode($row->configuration);
-        $row->fuel_type = $row->fuel_type == null ? "Не указано" : htmlspecialchars_decode($row->fuel_type);
+        $row->brand = $row->brand == null ? null : htmlspecialchars_decode($row->brand);
+        $row->model = $row->model == null ? null : htmlspecialchars_decode($row->model);
+        $row->class = $row->class == null ? null : htmlspecialchars_decode($row->class);
+        $row->generation = $row->generation == null ? null : htmlspecialchars_decode($row->generation);
+        $row->configuration = $row->configuration == null ? null : htmlspecialchars_decode($row->configuration);
+        $row->fuel_type = $row->fuel_type == null ? null : htmlspecialchars_decode($row->fuel_type);
         $row->status = htmlspecialchars_decode($row->status);
         $row->state_number = htmlspecialchars_decode($row->state_number);
         $row->archive = (int)$row->archive == 0 ? 'Активен' : 'В архиве';

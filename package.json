@@ -33,6 +33,7 @@
     "vue-cookies": "^1.8.5",
     "vue-disable-autocomplete": "^0.0.4",
     "vue-hooks-form": "^0.3.1",
+    "vue-messenger": "^2.3.3",
     "vue-router": "^4.5.0",
     "vue3-apexcharts": "^1.8.0"
   },

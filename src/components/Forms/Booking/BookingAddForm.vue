@@ -195,10 +195,10 @@ onMounted(() => {
                 </div>
                 <div class="flex flex-col gap-4 sm:grid-cols-2 grid-cols-1">
                   <div v-if="currentCar">
-                    <Car :item="currentCar"/>
+                    <Car :item="currentCar" layout="OneString"/>
                   </div>
                   <div v-if="currentClient">
-                    <Client :item="currentClient"/>
+                    <Client :item="currentClient" layout="OneString"/>
                   </div>
                 </div>
               </div>

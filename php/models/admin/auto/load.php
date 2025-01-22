@@ -32,6 +32,8 @@ if($company_id != 0){
     $sql .= " AND car.company_id = '{$company_id}'";
 }
 
+$sql .= " ORDER BY car.id";
+
 $sqls[] = $sql;
 $result = pg_query($conn, $sql);
 

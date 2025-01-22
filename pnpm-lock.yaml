@@ -74,6 +74,9 @@ dependencies:
   vue-hooks-form:
     specifier: ^0.3.1
     version: 0.3.1(vue@3.5.13)
+  vue-messenger:
+    specifier: ^2.3.3
+    version: 2.3.3
   vue-router:
     specifier: ^4.5.0
     version: 4.5.0(vue@3.5.13)
@@ -2203,6 +2206,10 @@ packages:
       lodash.topath: 4.5.2
       vue: 3.5.13
       vue-demi: 0.13.11(vue@3.5.13)
+    dev: false
+
+  /vue-messenger@2.3.3:
+    resolution: {integrity: sha512-Z+a54WsxiuKXbIaWrC47UPI/hOMsfLAlbM50iZPbpIQ9p8gD/tHPSS9gNhRoQMT0ZifzEN6lMqnoe9c+pbc8sQ==}
     dev: false
 
   /vue-router@4.5.0(vue@3.5.13):

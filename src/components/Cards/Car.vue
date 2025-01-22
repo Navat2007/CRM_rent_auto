@@ -1,15 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import {Icon} from "@vicons/utils";
+
+enum Layouts {
+  Full = "Full",
+  Small = "Small",
+  OneString = "OneString",
+}
 
 const props = defineProps({
   item: {
     type: Object,
     required: true
   },
-  variant: {
-    type: String,
-    required: false,
-    default: 'primary'
+  layout: {
+    type: String as () => Layouts,
+    default: Layouts.Full
   }
 });
 
@@ -20,7 +25,7 @@ const openWindow = () => {
 
 <template>
   <Card
-      v-if="variant === 'primary'" style="overflow: hidden"
+      v-if="layout === Layouts.Full" style="overflow: hidden"
       class="shadow-card hover:shadow-cardHover transition-shadow active:shadow-card"
       pt:root="sm:flex-row" pt:header="sm:flex-auto sm:w-1/2" pt:body="sm:flex-auto sm:w-1/2"
   >
@@ -54,7 +59,7 @@ const openWindow = () => {
       </div>
     </template>
   </Card>
-  <Card v-if="variant === 'secondary'" style="overflow: hidden">
+  <Card v-if="layout === Layouts.Small" style="overflow: hidden" class="shadow-card hover:shadow-cardHover transition-shadow active:shadow-card">
     <template #title>
       <span class="text-sm text-gray-800 border-2 border-dashed rounded-xl p-1">{{ item.state_number }}</span>
       <div class="flex justify-between mt-2">
@@ -79,6 +84,23 @@ const openWindow = () => {
         </div>
         <div class="flex justify-between"><span>Тип топлива</span><span class="font-bold">{{ item.fuel_type }}</span>
         </div>
+      </div>
+    </template>
+  </Card>
+  <Card v-if="layout === Layouts.OneString" class="shadow-card hover:shadow-cardHover transition-shadow active:shadow-card">
+    <template #content>
+      <div class="flex flex-wrap gap-2">
+        <span class="font-bold">{{ item.brand }} {{ item.model }}</span>
+        <span v-if="item.state_number">{{ item.state_number }}.</span>
+        <span v-if="item.class">Класс:</span><span v-if="item.class" class="font-bold">{{ item.class }}</span>
+        <span v-if="item.configuration">Комплектация:</span><span v-if="item.configuration" class="font-bold">{{ item.configuration }}</span>
+        <span v-if="item.generation">Поколение:</span><span v-if="item.generation" class="font-bold">{{ item.generation }}</span>
+        <span v-if="item.fuel_type">Тип топлива:</span><span v-if="item.fuel_type" class="font-bold">{{ item.fuel_type }}</span>
+      </div>
+    </template>
+    <template #footer>
+      <div class="flex justify-end gap-4 mt-1">
+        <Button @click="openWindow" label="Открыть" severity="primary" size="large"/>
       </div>
     </template>
   </Card>
