@@ -143,8 +143,7 @@ const handleRowClick = (item) => {
 }
 const handleUpdateStatus = async (status, place, selected, data) => {
   if(!selected){
-    const result = await AutoService.updateStatus({status, place, id: data.id});
-    console.log(result);
+    await AutoService.updateStatus({status, place, id: data.id});
     items.value.find(item => item.id === data.id)[place] = status;
   }
 }
