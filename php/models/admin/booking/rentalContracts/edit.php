@@ -12,6 +12,8 @@ $companyId = htmlspecialchars($_POST["companyId"]);
 $carId = htmlspecialchars($_POST["carId"]);
 $clientId = htmlspecialchars($_POST["clientId"]);
 $directory_territory_car_use_id = htmlspecialchars($_POST["directory_territory_car_use_id"]);
+$address_give_out = htmlspecialchars($_POST["address_give_out"]);
+$address_take_back = htmlspecialchars($_POST["address_take_back"]);
 $start_date = htmlspecialchars($_POST["start_date"]);
 $end_date = htmlspecialchars($_POST["end_date"]);
 
@@ -33,6 +35,8 @@ if($error === 0){
         car_id = '$carId', 
         client_id = '$clientId', 
         directory_territory_car_use_id = '$directory_territory_car_use_id',
+        address_give_out = '$address_give_out', 
+        address_take_back = '$address_take_back',         
         start_date = " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", 
         end_date = " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ",
         last_user_id = '$user'

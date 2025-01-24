@@ -12,6 +12,7 @@ import DateTimePickerWithMask from "@components/Inputs/DateTimePickerWithMask.vu
 import Client from "@components/Cards/Client.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import AddDirectoryDrawer from "@components/Drawers/Directory/AddDirectoryDrawer.vue";
+import FormError from "@components/Inputs/FormError.vue";
 
 const {user} = useAuthStore();
 
@@ -46,6 +47,8 @@ const state = reactive({
   carId: 0,
   clientId: 0,
   directory_territory_car_use_id: 0,
+  address_give_out: props.item.address_give_out,
+  address_take_back : props.item.address_take_back,
   start_date: props.item.start_date ? moment(props.item.start_date).format('DD.MM.YYYY HH:mm') : null,
   end_date: props.item.end_date ? moment(props.item.end_date).format('DD.MM.YYYY HH:mm') : null,
 });
@@ -224,8 +227,7 @@ onMounted(() => {
                 </div>
                 <!-- Территория использования -->
                 <div>
-                  <label for="position"
-                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Территория использования</label>
+                  <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Территория использования</label>
                   <Select v-model="state.directory_territory_car_use_id" :loading="loadingTerritoryUse" :options="territories"
                           optionLabel="name"
                           optionValue="id" placeholder="Выберите территорию использования" showClear filter class="w-full">
@@ -234,6 +236,28 @@ onMounted(() => {
                               @click="isTerritoryUseDrawerOpen = true"/>
                     </template>
                   </Select>
+                </div>
+                <!-- Адрес выдачи -->
+                <div>
+                  <label for="address_give_out"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес выдачи</label>
+                  <input
+                      v-model="state.address_give_out"
+                      type="text" id="address_give_out"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
+                </div>
+                <!-- Адрес приема -->
+                <div>
+                  <label for="address_take_back "
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес приема</label>
+                  <input
+                      v-model="state.address_take_back "
+                      type="text" id="address_take_back "
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="..."
+                  >
                 </div>
                 <div class="flex flex-col gap-4 sm:grid-cols-2 grid-cols-1">
                   <div v-if="currentCar">

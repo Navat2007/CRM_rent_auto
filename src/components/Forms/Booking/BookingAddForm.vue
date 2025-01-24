@@ -46,6 +46,8 @@ const state = reactive({
   carId: 0,
   clientId: 0,
   directory_territory_car_use_id: 0,
+  address_give_out: '',
+  address_take_back : '',
   start_date: null,
   end_date: null,
 });
