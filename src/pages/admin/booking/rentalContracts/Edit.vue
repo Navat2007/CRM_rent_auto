@@ -35,6 +35,8 @@ const breadcrumbs = ref([
 ]);
 
 const handleEdit = (data) => {
+  console.log(data);
+
   sending.value = true;
 
   let sendingData = {...data};
@@ -42,6 +44,10 @@ const handleEdit = (data) => {
 
   sendingData.start_date = sendingData.start_date && sendingData.start_date !== "Invalid date" ? moment(sendingData.start_date, 'DD.MM.YYYY HH:mm').format('YYYY-MM-DD HH:mm') : null;
   sendingData.end_date = sendingData.end_date && sendingData.end_date !== "Invalid date" ? moment(sendingData.end_date, 'DD.MM.YYYY HH:mm').format('YYYY-MM-DD HH:mm') : null;
+
+  if(sendingData.directory_territory_car_use_id === '' || sendingData.directory_territory_car_use_id === null) {
+    sendingData.directory_territory_car_use_id = 0;
+  }
 
   BookingService.edit(sendingData).then((response) => {
     if (response.data) {

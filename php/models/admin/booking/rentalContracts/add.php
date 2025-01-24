@@ -10,6 +10,7 @@ $user = $authorization[1];
 $companyId = htmlspecialchars($_POST["companyId"]);
 $carId = htmlspecialchars($_POST["carId"]);
 $clientId = htmlspecialchars($_POST["clientId"]);
+$directory_territory_car_use_id = htmlspecialchars($_POST["directory_territory_car_use_id"]);
 $start_date = htmlspecialchars($_POST["start_date"]);
 $end_date = htmlspecialchars($_POST["end_date"]);
 
@@ -25,8 +26,8 @@ if(pg_num_rows($result) > 0)
 
 if($error === 0){
     $sql = "
-        INSERT INTO booking (car_id, client_id, start_date, end_date, last_user_id) 
-        VALUES ('$carId', '$clientId', " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ", $user) 
+        INSERT INTO booking (car_id, client_id, directory_territory_car_use_id, start_date, end_date, last_user_id) 
+        VALUES ('$carId', '$clientId', '$directory_territory_car_use_id', " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ", $user) 
         RETURNING id";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);

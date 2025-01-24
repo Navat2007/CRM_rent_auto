@@ -772,6 +772,35 @@ const adminRoutes = [
             title: 'Услуги при бронировании',
         }
     },
+    {
+        path: '/Admin/directory/territory_car_use',
+        component: () => import('@pages/admin/directory/territory_car_use/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Территория использования',
+        }
+    },
+    {
+        path: '/Admin/directory/territory_car_use/new',
+        component: () => import('@pages/admin/directory/territory_car_use/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Территория использования',
+        }
+    },
+    {
+        path: '/Admin/directory/territory_car_use/:id',
+        component: () => import('@pages/admin/directory/territory_car_use/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Территория использования',
+        }
+    },
 ];
 
 const routes = [...publicRoutes, ...adminRoutes,

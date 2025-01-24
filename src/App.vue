@@ -11,6 +11,12 @@ const authStore = useAuthStore();
 console.log(authStore.user);
 
 axios.interceptors.response.use((response) => {
+  if (response.data !== undefined && response.data !== null && typeof response.data !== 'object') {
+    if(response?.data?.includes('Warning')) {
+      console.log(response.data);
+    }
+  }
+
   const version = parseInt(window.localStorage.getItem('version'));
 
   fetch(`${import.meta.env.VITE_API_URL}/admin/check_version.php`, {

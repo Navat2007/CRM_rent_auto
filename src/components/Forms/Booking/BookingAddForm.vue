@@ -10,6 +10,8 @@ import ClientsService from "@services/ClientsService.js";
 import Car from "@components/Cards/Car.vue";
 import DateTimePickerWithMask from "@components/Inputs/DateTimePickerWithMask.vue";
 import Client from "@components/Cards/Client.vue";
+import DirectoryService from "@services/DirectoryService.js";
+import AddDirectoryDrawer from "@components/Drawers/Directory/AddDirectoryDrawer.vue";
 
 const {user} = useAuthStore();
 
@@ -35,10 +37,15 @@ const loadingClients = ref(true);
 const clients = ref([]);
 const currentClient = ref(null);
 
+const loadingTerritoryUse = ref(true);
+const isTerritoryUseDrawerOpen = ref(false);
+const territories = ref([]);
+
 const state = reactive({
   companyId: user.company_id,
   carId: 0,
   clientId: 0,
+  directory_territory_car_use_id: 0,
   start_date: null,
   end_date: null,
 });
@@ -90,6 +97,21 @@ async function fetchClients() {
   loadingClients.value = false;
 }
 
+async function fetchTerritoryUse() {
+  territories.value = (await DirectoryService.getAll({
+    directory: 'directory_territory_car_use',
+    company_id: user.company_id
+  })).filter(item => item.archive === "Активен");
+  loadingTerritoryUse.value = false;
+}
+
+async function onDirectoryTerritoryUseAdd(id) {
+  loadingTerritoryUse.value = true;
+  await fetchTerritoryUse();
+  state.directory_territory_car_use_id = id;
+  isTerritoryUseDrawerOpen.value = false;
+}
+
 watchEffect(() => {
   if (state.carId !== 0) {
     currentCar.value = cars.value.find(car => car.id === state.carId);
@@ -107,6 +129,7 @@ watchEffect(() => {
 onMounted(() => {
   fetchCars();
   fetchClients();
+  fetchTerritoryUse();
 });
 </script>
 
@@ -193,6 +216,19 @@ onMounted(() => {
                                             @onChange="e => state.end_date = e"/>
                   </div>
                 </div>
+                <!-- Территория использования -->
+                <div>
+                  <label for="position"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Территория использования</label>
+                  <Select v-model="state.directory_territory_car_use_id" :loading="loadingTerritoryUse" :options="territories"
+                          optionLabel="name"
+                          optionValue="id" placeholder="Выберите территорию использования" showClear filter class="w-full">
+                    <template v-if="user.access.directory === 2" #header>
+                      <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить" outlined
+                              @click="isTerritoryUseDrawerOpen = true"/>
+                    </template>
+                  </Select>
+                </div>
                 <div class="flex flex-col gap-4 sm:grid-cols-2 grid-cols-1">
                   <div v-if="currentCar">
                     <Car :item="currentCar" layout="OneString"/>
@@ -215,4 +251,9 @@ onMounted(() => {
       </Tabs>
     </template>
   </Card>
+  <AddDirectoryDrawer
+      title="Добавление территории использования" directory="directory_territory_car_use"
+      :visible="isTerritoryUseDrawerOpen"
+      @onAdd="onDirectoryTerritoryUseAdd" @onClose="isTerritoryUseDrawerOpen = false"
+  />
 </template>

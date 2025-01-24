@@ -1,5 +1,5 @@
 <script setup>
-import {ref, markRaw} from "vue";
+import {ref, markRaw, onMounted} from "vue";
 import {onClickOutside} from '@vueuse/core';
 import {useAuthStore, useSidebarStore} from '@stores';
 import {Icon} from '@vicons/utils'
@@ -94,6 +94,7 @@ const menuGroups = ref([
           {label: 'Авто: Трансмиссия', route: '/Admin/directory/car_transmissions', visible: true},
           {label: 'Авто: Привод', route: '/Admin/directory/car_wheel_drive', visible: false},
           {label: 'Авто: Размер колес', route: '/Admin/directory/car_wheel_size', visible: true},
+          {label: 'Авто: Территория использования', route: '/Admin/directory/territory_car_use', visible: true},
           {label: 'Услуги при бронировании', route: '/Admin/directory/services', visible: true},
         ],
         visible: user.access?.directory && user.access.directory !== 0
@@ -120,6 +121,10 @@ function toggleSidebar() {
     }, 500);
   }
 }
+
+onMounted(() => {
+  menuGroups.value[0].menuItems.find(item => item.label === 'Справочники').children.sort((a, b) => a.label.localeCompare(b.label));
+})
 </script>
 
 <template>

@@ -23,6 +23,7 @@ if(pg_num_rows($result) > 0)
     $row->id = (int)$row->id;
     $row->carId = (int)$row->car_id;
     $row->clientId = (int)$row->client_id;
+    $row->directory_territory_car_use_id = (int)$row->directory_territory_car_use_id;
 
     $params = $row;
 
