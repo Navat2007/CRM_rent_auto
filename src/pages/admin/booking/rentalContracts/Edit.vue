@@ -35,8 +35,6 @@ const breadcrumbs = ref([
 ]);
 
 const handleEdit = (data) => {
-  console.log(data);
-
   sending.value = true;
 
   let sendingData = {...data};

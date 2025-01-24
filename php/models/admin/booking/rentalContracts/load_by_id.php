@@ -24,6 +24,8 @@ if(pg_num_rows($result) > 0)
     $row->carId = (int)$row->car_id;
     $row->clientId = (int)$row->client_id;
     $row->directory_territory_car_use_id = (int)$row->directory_territory_car_use_id;
+    $row->address_give_out = $row->address_give_out == null ? null : htmlspecialchars_decode($row->address_give_out);
+    $row->address_take_back = $row->address_take_back == null ? null : htmlspecialchars_decode($row->address_take_back);
 
     $params = $row;
 

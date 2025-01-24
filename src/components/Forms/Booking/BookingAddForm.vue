@@ -231,6 +231,28 @@ onMounted(() => {
                     </template>
                   </Select>
                 </div>
+                <!-- Адрес выдачи -->
+                <div>
+                  <label for="address_give_out"
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес выдачи</label>
+                  <input
+                      v-model="state.address_give_out"
+                      type="text" id="address_give_out"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="Введите адрес (поиск начинается с 4 символов)"
+                  >
+                </div>
+                <!-- Адрес приема -->
+                <div>
+                  <label for="address_take_back "
+                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес приема</label>
+                  <input
+                      v-model="state.address_take_back "
+                      type="text" id="address_take_back "
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="Введите адрес (поиск начинается с 4 символов)"
+                  >
+                </div>
                 <div class="flex flex-col gap-4 sm:grid-cols-2 grid-cols-1">
                   <div v-if="currentCar">
                     <Car :item="currentCar" layout="OneString"/>
