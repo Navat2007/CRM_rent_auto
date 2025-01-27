@@ -49,11 +49,11 @@ const columns = ref([
 ]);
 const statuses = ref(['Активен', 'Отключен', 'В архиве']);
 const filters = ref({
-  id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
-  full_name: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
-  email: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
-  position: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
-  status: {operator: FilterOperator.OR, constraints: [{value: "Активен", matchMode: FilterMatchMode.EQUALS}]},
+  id: {value: null, matchMode: FilterMatchMode.EQUALS},
+  full_name: {value: null, matchMode: FilterMatchMode.CONTAINS},
+  email: {value: null, matchMode: FilterMatchMode.CONTAINS},
+  position: {value: null, matchMode: FilterMatchMode.EQUALS},
+  status: {value: "Активен", matchMode: FilterMatchMode.EQUALS},
 });
 const filterFields = ref(['id', 'full_name', 'email', 'position', 'status']);
 
@@ -86,30 +86,30 @@ onMounted(() => {
     >
       <template #columns>
         <Column field="id" header="ID" dataType="numeric" headerStyle="width: 3rem; min-width: 3rem;" sortable>
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="number" placeholder="Поиск по ID"/>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="number" style="width: 10rem;" placeholder="Поиск по ID" @input="filterCallback()"/>
           </template>
         </Column>
         <Column field="full_name" header="ФИО" sortable>
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Поиск по ФИО"/>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" placeholder="Поиск по ФИО" @input="filterCallback()"/>
           </template>
         </Column>
         <Column field="email" header="Email" sortable>
-          <template #filter="{ filterModel }">
-            <InputText v-model="filterModel.value" type="text" placeholder="Поиск по Email"/>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" placeholder="Поиск по Email" @input="filterCallback()"/>
           </template>
         </Column>
         <Column field="position" header="Должность" sortable>
-          <template #filter="{ filterModel }">
+          <template #filter="{ filterModel, filterCallback }">
             <Dropdown v-model="filterModel.value" :options="positions" placeholder="Все" class="p-column-filter"
-                      showClear filter/>
+                      showClear filter @change="filterCallback()"/>
           </template>
         </Column>
         <Column field="status" header="Статус" sortable>
-          <template #filter="{ filterModel }">
+          <template #filter="{ filterModel, filterCallback }">
             <Dropdown v-model="filterModel.value" :options="statuses" placeholder="Все" class="p-column-filter"
-                      showClear/>
+                      showClear @change="filterCallback()"/>
           </template>
         </Column>
       </template>

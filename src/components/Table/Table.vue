@@ -114,7 +114,7 @@ initFilters();
           :rowsPerPageOptions="[10, 20, 50]"
           columnResizeMode="expand" reorderableColumns
           :sortOrder="1" removableSort rowHover
-          filterDisplay="menu" v-model:filters="finalFilters" :globalFilterFields="filterFields"
+          filterDisplay="row" v-model:filters="finalFilters" :globalFilterFields="filterFields"
           pt:header="border-0 mr-0 pr-0"
       >
         <template #header>
