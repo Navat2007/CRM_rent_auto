@@ -46,6 +46,11 @@ const props = defineProps({
     required: false,
     default: true
   },
+  filterDisplay: {
+    type: String,
+    required: false,
+    default: 'menu'
+  },
 })
 const emit = defineEmits(['onRowClick']);
 
@@ -114,7 +119,7 @@ initFilters();
           :rowsPerPageOptions="[10, 20, 50]"
           columnResizeMode="expand" reorderableColumns
           :sortOrder="1" removableSort rowHover
-          filterDisplay="row" v-model:filters="finalFilters" :globalFilterFields="filterFields"
+          :filterDisplay="filterDisplay" v-model:filters="finalFilters" :globalFilterFields="filterFields"
           pt:header="border-0 mr-0 pr-0"
       >
         <template #header>

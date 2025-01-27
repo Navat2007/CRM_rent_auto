@@ -83,6 +83,7 @@ onMounted(() => {
         :items="items" :columns="columns"
         :filters="filters" :filterFields="filterFields"
         :loading="loading" @onRowClick="handleRowClick"
+        filterDisplay="row"
     >
       <template #columns>
         <Column field="id" header="ID" dataType="numeric" headerStyle="width: 3rem; min-width: 3rem;" sortable>
