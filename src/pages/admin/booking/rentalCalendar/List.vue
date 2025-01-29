@@ -117,11 +117,11 @@ onMounted(fetchData);
         :loading="loading"
         scrollable scrollHeight="700px"
     >
-      <Column field="id" header="ID авто">
+      <Column field="id" header="ID авто" frozen>
       </Column>
-      <Column field="state_number" header="Гос номер">
+      <Column field="state_number" style="min-width: 200px" header="Гос номер" frozen>
       </Column>
-      <Column header="Авто">
+      <Column header="Авто" frozen>
         <template #body="slotProps">
           <div class="flex flex-row gap-1 whitespace-nowrap">
             <span>{{ slotProps.data.brand }}</span>
