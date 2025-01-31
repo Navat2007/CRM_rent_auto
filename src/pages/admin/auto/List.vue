@@ -26,6 +26,7 @@ import NeedService0 from "@assets/icons/pass_TO_1.svg";
 import NeedService1 from "@assets/icons/pass_TO_2.svg";
 import Failure from "@assets/icons/has_comment_2.svg";
 import CriticalFailure from "@assets/icons/has_comment_3.svg";
+import DataTable from "primevue/datatable";
 
 const {user} = useAuthStore();
 
@@ -229,12 +230,16 @@ onMounted(() => {
         :loading="loading" @onRowClick="handleRowClick"
     >
       <template #columns>
-        <Column field="id" header="ID" dataType="numeric" headerStyle="width: 7rem; min-width: 7rem;" sortable>
+        <Column :pt="{
+          filterMenuIcon: 'text-primary-500',
+        }" field="id" header="ID" dataType="numeric" headerStyle="width: 7rem; min-width: 7rem;" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="number" placeholder="Поиск по ID"/>
           </template>
         </Column>
-        <Column field="brand" header="Марка" sortable headerStyle="width: 15rem; min-width: 10rem;">
+        <Column :pt="{
+          filterMenuIcon: 'text-primary-500',
+        }" field="brand" header="Марка" sortable headerStyle="width: 15rem; min-width: 10rem;">
           <template #filter="{ filterModel }">
             <Dropdown v-model="filterModel.value" :options="brands" placeholder="Все" class="p-column-filter"
                       showClear filter/>
