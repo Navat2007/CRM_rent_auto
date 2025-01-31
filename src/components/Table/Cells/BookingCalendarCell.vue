@@ -46,7 +46,7 @@ const getBackgroundColor = () => {
 <template>
   <div
       v-if="item"
-      class="flex justify-center py-3 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
+      class="flex justify-center py-1.5 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
       :class="{
         [getBackgroundColor()]: true
       }"
@@ -56,7 +56,7 @@ const getBackgroundColor = () => {
   </div>
   <div
       v-else
-      class="flex justify-center py-3 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
+      class="flex justify-center py-1.5 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
       :class="{
         'bg-blue-200': day.weekend,
       }"
