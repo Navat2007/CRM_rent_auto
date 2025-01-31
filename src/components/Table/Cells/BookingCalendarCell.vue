@@ -26,15 +26,15 @@ const getBackgroundColor = () => {
   //const currentDate = moment(`${props.year}-${props.month}-${props.day.title}`, 'YYYY-MM-DD');
   const currentDate = moment();
 
-  if(currentDate.isBefore(moment(props.item.start_date, 'YYYY-MM-DD'))){
+  if(currentDate.isBefore(moment(props.item.start_date, 'YYYY-MM-DD HH:mm:ss'))){
     return 'bg-yellow-500'
   }
-  else if (currentDate.isAfter(moment(props.item.end_date, 'YYYY-MM-DD'))){
+  else if (currentDate.isAfter(moment(props.item.end_date, 'YYYY-MM-DD HH:mm:ss'))){
     return 'bg-blue-500'
   }
   else if(currentDate.isBetween(
-      moment(props.item.start_date, 'YYYY-MM-DD'),
-      moment(props.item.end_date, 'YYYY-MM-DD'),
+      moment(props.item.start_date, 'YYYY-MM-DD HH:mm:ss'),
+      moment(props.item.end_date, 'YYYY-MM-DD HH:mm:ss'),
       undefined, '[]'
   )){
     return 'bg-green-500'

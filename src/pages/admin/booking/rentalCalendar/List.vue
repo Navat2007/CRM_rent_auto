@@ -125,13 +125,18 @@ async function calculateFilters(){
                 if(item.contracts.length === 0)
                     addItem(item);
                 else{
+                    let isFree = true;
+
                     for(const contract of item.contracts) {
-                        if (currentDate.isAfter(moment(contract.end_date, 'YYYY-MM-DD')))
+                        if (currentDate.isBefore(moment(contract.end_date, 'YYYY-MM-DD HH:mm:ss')))
                         {
-                            addItem(item);
+                            isFree = false;
                             break;
                         }
                     }
+
+                    if(isFree)
+                        addItem(item);
                 }
             }
 
@@ -139,7 +144,7 @@ async function calculateFilters(){
                 if(item.contracts.length > 0)
                 {
                     for(const contract of item.contracts) {
-                        if(currentDate.isBefore(moment(contract.start_date, 'YYYY-MM-DD')))
+                        if(currentDate.isBefore(moment(contract.start_date, 'YYYY-MM-DD HH:mm:ss')))
                         {
                             addItem(item);
                             break;
@@ -153,11 +158,12 @@ async function calculateFilters(){
                 {
                     for(const contract of item.contracts) {
                         if(currentDate.isBetween(
-                            moment(contract.start_date, 'YYYY-MM-DD'),
-                            moment(contract.end_date, 'YYYY-MM-DD'),
+                            moment(contract.start_date, 'YYYY-MM-DD HH:mm:ss'),
+                            moment(contract.end_date, 'YYYY-MM-DD HH:mm:ss'),
                             undefined, '[]'
                         ))
                         {
+                            console.log(contract);
                             addItem(item);
                             break;
                         }
@@ -202,6 +208,9 @@ onMounted(fetchData);
             :loading="loading || calculate"
             scrollable scrollHeight="495px"
         >
+            <template #empty>
+                По выбранным фильтрам не найдено автомобилей
+            </template>
             <Column field="id" header="ID авто" frozen>
             </Column>
             <Column field="state_number" style="min-width: 200px" header="Гос номер" frozen>
