@@ -308,9 +308,9 @@ onMounted(() => {
                                     <label for="deposit"
                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Залог
                                         (руб.)</label>
-                                    <div class="flex gap-2 justify-center items-center">
+                                    <div class="flex gap-2 justify-start items-center">
                                         <InputNumber id="deposit" v-model="state.deposit" :min="0"
-                                                     :useGrouping="false" fluid/>
+                                                     :useGrouping="false"/>
                                         <Icon size="32" color="green"
                                               v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
                                               @click="setDeposit"
