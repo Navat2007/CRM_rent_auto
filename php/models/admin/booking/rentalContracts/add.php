@@ -15,6 +15,7 @@ $address_give_out = htmlspecialchars($_POST["address_give_out"]);
 $address_take_back = htmlspecialchars($_POST["address_take_back"]);
 $start_date = htmlspecialchars($_POST["start_date"]);
 $end_date = htmlspecialchars($_POST["end_date"]);
+$deposit = htmlspecialchars($_POST["deposit"]);
 
 $sql = "SELECT * FROM booking WHERE car_id = '$carId' AND start_date >= '$start_date' AND end_date <= '$end_date'";
 $sqls[] = $sql;
@@ -28,8 +29,8 @@ if(pg_num_rows($result) > 0)
 
 if($error === 0){
     $sql = "
-        INSERT INTO booking (car_id, client_id, directory_territory_car_use_id, address_give_out, address_take_back, start_date, end_date, last_user_id) 
-        VALUES ('$carId', '$clientId', '$directory_territory_car_use_id', '$address_give_out', '$address_take_back', " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ", $user) 
+        INSERT INTO booking (car_id, client_id, directory_territory_car_use_id, address_give_out, address_take_back, start_date, end_date, deposit, last_user_id) 
+        VALUES ('$carId', '$clientId', '$directory_territory_car_use_id', '$address_give_out', '$address_take_back', " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ", '$deposit', $user) 
         RETURNING id";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);

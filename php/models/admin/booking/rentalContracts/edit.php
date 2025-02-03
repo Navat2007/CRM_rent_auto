@@ -16,6 +16,7 @@ $address_give_out = htmlspecialchars($_POST["address_give_out"]);
 $address_take_back = htmlspecialchars($_POST["address_take_back"]);
 $start_date = htmlspecialchars($_POST["start_date"]);
 $end_date = htmlspecialchars($_POST["end_date"]);
+$deposit = htmlspecialchars($_POST["deposit"]);
 
 $sql = "SELECT * FROM booking WHERE car_id = '$carId' AND start_date >= '$start_date' AND end_date <= '$end_date'";
 $sqls[] = $sql;
@@ -39,6 +40,7 @@ if($error === 0){
         address_take_back = '$address_take_back',         
         start_date = " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", 
         end_date = " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ",
+        deposit = '$deposit',
         last_user_id = '$user'
     WHERE 
         id = '$ID'";
