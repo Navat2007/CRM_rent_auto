@@ -8,7 +8,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 $address_string = htmlspecialchars($_POST["address_string"]);
 
 $token = "5e41e2cf830f27fb760384c894cfe9a9c7fef0d7";
-$url = "https://dadata.ru/api/suggest/address/";
+$url = "http://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address";
 $message = [
     "query" => $address_string
 ];
@@ -19,7 +19,7 @@ $curl = curl_init();
 curl_setopt($curl, CURLOPT_URL, $url);
 curl_setopt($curl, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/application/json',
+    'Accept: application/json',
     'Authorization: Token ' . $token,
 ]);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
