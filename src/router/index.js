@@ -801,6 +801,35 @@ const adminRoutes = [
             title: 'Территория использования',
         }
     },
+    {
+        path: '/Admin/directory/price_periods',
+        component: () => import('@pages/admin/directory/price_periods/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Ценовые периоды',
+        }
+    },
+    {
+        path: '/Admin/directory/price_periods/new',
+        component: () => import('@pages/admin/directory/price_periods/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Ценовые периоды',
+        }
+    },
+    {
+        path: '/Admin/directory/price_periods/:id',
+        component: () => import('@pages/admin/directory/price_periods/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Ценовые периоды',
+        }
+    },
 ];
 
 const routes = [...publicRoutes, ...adminRoutes,

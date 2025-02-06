@@ -164,6 +164,8 @@ $sts_issued_by_who = htmlspecialchars($_POST["sts_issued_by_who"]);
 $sts_issued_date = htmlspecialchars($_POST["sts_issued_date"]);
 $sts_expire_date = htmlspecialchars($_POST["sts_expire_date"]);
 
+$price_periods = $_POST["price_periods"];
+
 $error = 0;
 $error_text = "";
 $sqls = array();
@@ -321,6 +323,36 @@ if ($error === 0) {
                     WHERE 
                         id = '$ID'";
         pg_query($conn, $add_sql);
+    }
+    #endregion
+
+    #region Price periods
+    $sql = "DELETE FROM car_price_per_day WHERE car_id = '$ID'";
+    $sqls[] = $sql;
+    pg_query($conn, $sql);
+
+    if (count($price_periods) > 0){
+        for ($i = 0; $i < count($price_periods); $i++) {
+            $directory_price_period_id = $price_periods[$i]['id'];
+            $price = $price_periods[$i]['price'];
+
+            if($price != ''){
+                $sql = "INSERT INTO car_price_per_day (
+                car_id,
+                directory_price_period_id,
+                price,
+                last_user_id
+            ) 
+            VALUES (
+                '$ID',
+                '$directory_price_period_id',
+                '$price',
+                '$user' 
+            )";
+                $sqls[] = $sql;
+                pg_query($conn, $sql);
+            }
+        }
     }
     #endregion
 

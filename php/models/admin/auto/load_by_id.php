@@ -108,6 +108,27 @@ if(pg_num_rows($result) > 0)
         $row->sts_issued_by_who = htmlspecialchars_decode($row->sts_issued_by_who);
     }
 
+    #region Price periods
+    $sql = "
+    SELECT 
+        *
+    FROM 
+        car_price_per_day
+    WHERE 
+        car_id = '$id'";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
+
+    if(pg_num_rows($result) > 0) {
+        while ($price_period_row = pg_fetch_object($result)) {
+            $row->saved_price_periods[] = (object)[
+                'id' => (int)$price_period_row->directory_price_period_id,
+                'price' => (int)$price_period_row->price,
+            ];
+        }
+    }
+    #endregion
+
     #region PTS files
     $sql = "
     SELECT 

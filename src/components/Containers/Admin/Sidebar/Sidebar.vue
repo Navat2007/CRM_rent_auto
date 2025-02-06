@@ -95,6 +95,7 @@ const menuGroups = ref([
           {label: 'Авто: Привод', route: '/Admin/directory/car_wheel_drive', visible: false},
           {label: 'Авто: Размер колес', route: '/Admin/directory/car_wheel_size', visible: true},
           {label: 'Авто: Территория использования', route: '/Admin/directory/territory_car_use', visible: true},
+          {label: 'Авто: Ценовые периоды', route: '/Admin/directory/price_periods', visible: true},
           {label: 'Услуги при бронировании', route: '/Admin/directory/services', visible: true},
         ],
         visible: user.access?.directory && user.access.directory !== 0
