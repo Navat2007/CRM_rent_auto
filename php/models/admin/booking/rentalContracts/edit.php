@@ -17,6 +17,9 @@ $address_take_back = htmlspecialchars($_POST["address_take_back"]);
 $start_date = htmlspecialchars($_POST["start_date"]);
 $end_date = htmlspecialchars($_POST["end_date"]);
 $deposit = htmlspecialchars($_POST["deposit"]);
+$car_issued = htmlspecialchars($_POST["car_issued"]) === "true" ? 1 : 0;
+$car_returned = htmlspecialchars($_POST["car_returned"]) === "true" ? 1 : 0;
+$rental_days = htmlspecialchars($_POST["rental_days"]);
 
 $sql = "SELECT * FROM booking WHERE car_id = '$carId' AND start_date >= '$start_date' AND end_date <= '$end_date'";
 $sqls[] = $sql;
@@ -41,6 +44,9 @@ if($error === 0){
         start_date = " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", 
         end_date = " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ",
         deposit = '$deposit',
+        car_issued = '$car_issued',
+        car_returned = '$car_returned',
+        rental_days = '$rental_days',
         last_user_id = '$user'
     WHERE 
         id = '$ID'";

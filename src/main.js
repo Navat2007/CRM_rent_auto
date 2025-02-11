@@ -5,6 +5,7 @@ import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 import Tooltip from 'primevue/tooltip';
 import {definePreset} from "@primevue/themes";
+import ConfirmationService from 'primevue/confirmationservice';
 
 import App from '@/App.vue'
 import '@/style.css'
@@ -279,6 +280,7 @@ app.use(PrimeVue, {
         }
     }
 });
+app.use(ConfirmationService);
 
 app.directive('tooltip', Tooltip);
 

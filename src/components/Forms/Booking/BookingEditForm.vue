@@ -55,6 +55,10 @@ const loadingCarClasses = ref(true);
 const isCarClassesDrawerOpen = ref(false);
 const carClasses = ref([]);
 
+const dialogVisible = ref(false);
+const dialogHeader = ref('');
+const dialogText = ref('');
+
 const state = reactive({
     companyId: user.company_id,
     carId: 0,
@@ -65,6 +69,9 @@ const state = reactive({
     start_date: props.item.start_date ? moment(props.item.start_date).format('DD.MM.YYYY HH:mm') : null,
     end_date: props.item.end_date ? moment(props.item.end_date).format('DD.MM.YYYY HH:mm') : null,
     deposit: props.item.deposit,
+    car_issued: parseInt(props.item.car_issued) === 1,
+    car_returned: parseInt(props.item.car_returned) === 1,
+    rental_days: parseInt(props.item.rental_days),
 });
 const rules = computed(() => {
     return {
@@ -143,6 +150,17 @@ async function onDirectoryTerritoryUseAdd(id) {
     isTerritoryUseDrawerOpen.value = false;
 }
 
+const calculateEndDate = () => {
+    if (state.start_date === null) {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Нужно выбрать дату начала";
+        dialogVisible.value = true;
+        return;
+    }
+
+    state.end_date = moment(state.start_date, 'DD.MM.YYYY HH:mm').add(state.rental_days, 'days').format('DD.MM.YYYY HH:mm');
+}
+
 const setDeposit = () => {
     if (currentCar.value && currentCar.value.class_id) {
         const carClass = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
@@ -174,7 +192,9 @@ const searchAddress = debounce(async (data) => {
 watchEffect(() => {
     if (state.carId !== 0) {
         currentCar.value = cars.value.find(car => car.id === state.carId);
-        setDeposit();
+
+        if(currentCar.value)
+            setDeposit();
     } else {
         currentCar.value = null;
     }
@@ -202,6 +222,12 @@ watch(() => state.address_take_back, () => {
     }
 });
 
+watch(() => state.rental_days, () => {
+    if (state.start_date !== null) {
+        calculateEndDate();
+    }
+});
+
 onMounted(() => {
     fetchCars();
     fetchClients();
@@ -223,84 +249,134 @@ onMounted(() => {
                     <TabPanels>
                         <TabPanel value="0">
                             <div class="grid gap-4 sm:grid-cols-1">
-                                <!-- Авто -->
-                                <div>
-                                    <label for="position"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Авто*</label>
-                                    <Select
-                                        v-model="state.carId" :loading="loadingCars" :options="cars"
-                                        optionValue="id" placeholder="Выберите авто" showClear
-                                        filter filter-placeholder="Поиск по номеру, марке и модели"
-                                        :filter-fields="['state_number', 'brand', 'model']"
-                                        class="w-full"
-                                    >
-                                        <template #value="slotProps">
-                                            <div v-if="slotProps.value" class="flex items-center gap-4">
-                                                <div class="flex gap-1">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <div class="space-y-2">
+                                        <!-- Авто -->
+                                        <div>
+                                            <label for="position"
+                                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Авто*</label>
+                                            <Select
+                                                v-model="state.carId" :loading="loadingCars" :options="cars"
+                                                optionValue="id" placeholder="Выберите авто" showClear
+                                                filter filter-placeholder="Поиск по номеру, марке и модели"
+                                                :filter-fields="['state_number', 'brand', 'model']"
+                                                class="w-full"
+                                            >
+                                                <template #value="slotProps">
+                                                    <div v-if="slotProps.value" class="flex items-center gap-4">
+                                                        <div class="flex gap-1">
                                                     <span>{{
                                                             cars.find(car => car.id === slotProps.value).brand
                                                         }}</span>
-                                                    <span>{{
-                                                            cars.find(car => car.id === slotProps.value).model
-                                                        }}</span>
-                                                    <span>({{
-                                                            cars.find(car => car.id === slotProps.value).state_number
-                                                        }})</span>
-                                                </div>
-                                            </div>
-                                            <span v-else>
+                                                            <span>{{
+                                                                    cars.find(car => car.id === slotProps.value).model
+                                                                }}</span>
+                                                            <span>({{
+                                                                    cars.find(car => car.id === slotProps.value).state_number
+                                                                }})</span>
+                                                        </div>
+                                                    </div>
+                                                    <span v-else>
                           {{ slotProps.placeholder }}
                       </span>
-                                        </template>
-                                        <template #option="slotProps">
-                                            <div class="flex gap-4">
-                                                <div>
-                                                    <img v-if="slotProps.option.avatar" :alt="slotProps.option.label"
-                                                         :src="slotProps.option.avatar"
-                                                         class="w-24 h-full object-cover"
-                                                    />
-                                                    <img v-else :alt="slotProps.option.label"
-                                                         src="@/assets/images/car-placeholder2.png"
-                                                         class="w-24 h-full object-cover"
-                                                    />
-                                                </div>
-                                                <div class="flex flex-col gap-0.5">
-                                                    <span>Номер: {{ slotProps.option.state_number }} </span>
-                                                    <span>Марка: {{ slotProps.option.brand }}</span>
-                                                    <span>Модель {{ slotProps.option.model }}</span>
-                                                </div>
+                                                </template>
+                                                <template #option="slotProps">
+                                                    <div class="flex gap-4">
+                                                        <div>
+                                                            <img v-if="slotProps.option.avatar"
+                                                                 :alt="slotProps.option.label"
+                                                                 :src="slotProps.option.avatar"
+                                                                 class="w-24 h-full object-cover"
+                                                            />
+                                                            <img v-else :alt="slotProps.option.label"
+                                                                 src="@/assets/images/car-placeholder2.png"
+                                                                 class="w-24 h-full object-cover"
+                                                            />
+                                                        </div>
+                                                        <div class="flex flex-col gap-0.5">
+                                                            <span>Номер: {{ slotProps.option.state_number }} </span>
+                                                            <span>Марка: {{ slotProps.option.brand }}</span>
+                                                            <span>Модель {{ slotProps.option.model }}</span>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </Select>
+                                        </div>
+                                        <!-- Автомобиль выдан? -->
+                                        <div class="flex items-center justify-between space-y-2">
+                                            <label for="car_issued">Автомобиль выдан</label>
+                                            <ToggleSwitch inputId="car_issued" v-model="state.car_issued"/>
+                                        </div>
+                                        <!-- Начало -->
+                                        <div>
+                                            <label for="start_date"
+                                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Начало*</label>
+                                            <div>
+                                                <DateTimePickerWithMask :value="state.start_date"
+                                                                        :key="state.start_date"
+                                                                        @onChange="e => state.start_date = e"/>
                                             </div>
-                                        </template>
-                                    </Select>
-                                </div>
-                                <!-- Клиент -->
-                                <div>
-                                    <label for="position"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Клиент*</label>
-                                    <Select v-model="state.clientId" :loading="loadingClients" :options="clients"
-                                            optionLabel="full_name"
-                                            optionValue="id" placeholder="Выберите клиента" showClear filter
-                                            class="w-full">
-                                    </Select>
-                                </div>
-                                <!-- Начало -->
-                                <div>
-                                    <label for="start_date"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Начало*</label>
-                                    <div>
-                                        <DateTimePickerWithMask :value="state.start_date" :key="state.start_date"
-                                                                @onChange="e => state.start_date = e"/>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-center items-end gap-2">
+                                        <div class="flex flex-col items-center">
+                                            <label for="rental_days"
+                                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дней*</label>
+                                            <div class="flex gap-2 justify-start items-center">
+                                                <Button
+                                                    icon="pi pi-chevron-left" severity="contrast" variant="text" rounded
+                                                    @click="() => {
+                                                        if(state.rental_days > 1) {
+                                                            state.rental_days -= 1
+                                                        }
+                                                    }"
+                                                />
+                                                <InputNumber id="rental_days" v-model="state.rental_days"
+                                                             style="max-width: 52px;" :min="1" fluid/>
+                                                <Button
+                                                    icon="pi pi-chevron-right" severity="contrast" variant="text"
+                                                    rounded
+                                                    @click="() => {
+                                                        state.rental_days += 1
+                                                    }"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <!-- Клиент -->
+                                        <div>
+                                            <label for="position"
+                                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Клиент*</label>
+                                            <Select v-model="state.clientId" :loading="loadingClients"
+                                                    :options="clients"
+                                                    optionLabel="full_name"
+                                                    optionValue="id" placeholder="Выберите клиента" showClear filter
+                                                    class="w-full">
+                                            </Select>
+                                        </div>
+                                        <!-- Автомобиль возвращен? -->
+                                        <div class="flex items-center justify-between space-y-2">
+                                            <label for="car_returned">Автомобиль возвращен</label>
+                                            <ToggleSwitch inputId="car_returned" v-model="state.car_returned"/>
+                                        </div>
+                                        <!-- Возврат -->
+                                        <div>
+                                            <label for="end_date"
+                                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Возврат*</label>
+                                            <div class="flex gap-2 justify-start items-center">
+                                                <DateTimePickerWithMask :value="state.end_date" :key="state.end_date"
+                                                                        @onChange="e => state.end_date = e"/>
+                                                <Button
+                                                    icon="pi pi-replay" severity="contrast" variant="text" rounded
+                                                    v-tooltip.top="{ value: 'Выполнить расчет даты возврата'}"
+                                                    @click="calculateEndDate"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- Возврат -->
-                                <div>
-                                    <label for="end_date"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Возврат*</label>
-                                    <div>
-                                        <DateTimePickerWithMask :value="state.end_date" :key="state.end_date"
-                                                                @onChange="e => state.end_date = e"/>
-                                    </div>
-                                </div>
+
                                 <!-- Территория использования -->
                                 <div>
                                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Территория
@@ -385,12 +461,11 @@ onMounted(() => {
                                     <div class="flex gap-2 justify-start items-center">
                                         <InputNumber id="deposit" v-model="state.deposit" :min="0"
                                                      :useGrouping="false"/>
-                                        <Icon size="32" color="green"
-                                              v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
-                                              @click="setDeposit"
-                                        >
-                                            <RefreshOutlined/>
-                                        </Icon>
+                                        <Button
+                                            icon="pi pi-replay" severity="contrast" variant="text" rounded
+                                            v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
+                                            @click="setDeposit"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -417,4 +492,10 @@ onMounted(() => {
         :visible="isTerritoryUseDrawerOpen"
         @onAdd="onDirectoryTerritoryUseAdd" @onClose="isTerritoryUseDrawerOpen = false"
     />
+    <Dialog v-model:visible="dialogVisible" modal dismissable-mask base-z-index="20000" :header="dialogHeader"
+            :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <p class="m-0">
+            {{ dialogText }}
+        </p>
+    </Dialog>
 </template>

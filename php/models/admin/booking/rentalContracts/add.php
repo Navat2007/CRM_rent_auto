@@ -16,6 +16,9 @@ $address_take_back = htmlspecialchars($_POST["address_take_back"]);
 $start_date = htmlspecialchars($_POST["start_date"]);
 $end_date = htmlspecialchars($_POST["end_date"]);
 $deposit = htmlspecialchars($_POST["deposit"]);
+$car_issued = htmlspecialchars($_POST["car_issued"]) === "true" ? 1 : 0;
+$car_returned = htmlspecialchars($_POST["car_returned"]) === "true" ? 1 : 0;
+$rental_days = htmlspecialchars($_POST["rental_days"]);
 
 $sql = "SELECT * FROM booking WHERE car_id = '$carId' AND start_date >= '$start_date' AND end_date <= '$end_date'";
 $sqls[] = $sql;
@@ -29,8 +32,32 @@ if(pg_num_rows($result) > 0)
 
 if($error === 0){
     $sql = "
-        INSERT INTO booking (car_id, client_id, directory_territory_car_use_id, address_give_out, address_take_back, start_date, end_date, deposit, last_user_id) 
-        VALUES ('$carId', '$clientId', '$directory_territory_car_use_id', '$address_give_out', '$address_take_back', " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ", '$deposit', $user) 
+        INSERT INTO booking (
+                             car_id, 
+                             client_id, 
+                             directory_territory_car_use_id, 
+                             address_give_out, 
+                             address_take_back, 
+                             start_date, 
+                             end_date, 
+                             deposit, 
+                             car_issued,
+                             car_returned,
+                             rental_days,
+                             last_user_id) 
+        VALUES (
+                '$carId', 
+                '$clientId', 
+                '$directory_territory_car_use_id', 
+                '$address_give_out', 
+                '$address_take_back', 
+                " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", 
+                " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ", 
+                '$deposit', 
+                '$car_issued',
+                '$car_returned',
+                '$rental_days',
+                $user) 
         RETURNING id";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
