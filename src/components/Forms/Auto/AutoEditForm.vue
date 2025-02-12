@@ -248,11 +248,13 @@ async function fetchDirectoryPricePeriods() {
     state.price_periods = directoryPricePeriods.value.map((item) => {
         let price = null;
 
-        props.item.saved_price_periods.forEach((saved_item) => {
-            if(saved_item.id === item.id) {
-                price = saved_item.price;
-            }
-        });
+        if(props.item.saved_price_periods){
+            props.item.saved_price_periods.forEach((saved_item) => {
+                if(saved_item.id === item.id) {
+                    price = saved_item.price;
+                }
+            });
+        }
 
         return {
             id: item.id,
