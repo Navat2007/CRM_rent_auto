@@ -59,6 +59,31 @@ if(pg_num_rows($result) > 0)
         $row->state_number = htmlspecialchars_decode($row->state_number);
         $row->archive = (int)$row->archive == 0 ? 'Активен' : 'В архиве';
 
+        #region Price periods
+        $sql = "
+        SELECT 
+            dpp.id, dpp.name, dpp.days_from, dpp.days_until, cppd.price
+        FROM 
+            directory_price_periods as dpp
+        LEFT JOIN 
+            car_price_per_day as cppd ON cppd.directory_price_period_id = dpp.id AND cppd.car_id = '$row->id'
+        WHERE dpp.archive = 0";
+        $sqls[] = $sql;
+        $price_period_result = pg_query($conn, $sql);
+
+        if(pg_num_rows($price_period_result) > 0) {
+            while ($price_period_row = pg_fetch_object($price_period_result)) {
+                $row->saved_price_periods[] = (object)[
+                    'id' => (int)$price_period_row->id,
+                    'name' => htmlspecialchars_decode($price_period_row->name),
+                    'days_from' => (int)$price_period_row->days_from,
+                    'days_until' => (int)$price_period_row->days_until,
+                    'price' => (int)$price_period_row->price,
+                ];
+            }
+        }
+        #endregion
+
         $params[] = $row;
     }
 

@@ -1,6 +1,6 @@
 <script setup>
 import {computed, onMounted, reactive, ref, unref, watch, watchEffect} from "vue";
-import {debounce} from 'lodash';
+import {debounce, isNumber} from 'lodash';
 import {useAuthStore} from "@stores";
 import {useVuelidate} from '@vuelidate/core';
 import {helpers, minValue, required} from '@vuelidate/validators';
@@ -15,8 +15,6 @@ import Client from "@components/Cards/Client.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import DaDataService from "@services/DaDataService.js";
 import AddDirectoryDrawer from "@components/Drawers/Directory/AddDirectoryDrawer.vue";
-import {Icon} from "@vicons/utils";
-import {ChevronLeftOutlined, ChevronRightOutlined, RefreshOutlined} from "@vicons/material";
 
 const {user} = useAuthStore();
 
@@ -71,6 +69,10 @@ const state = reactive({
     car_issued: false,
     car_returned: false,
     rental_days: 1,
+    rental_rate: 0,
+    rental_rate_text: '',
+    rental_cost: 0,
+    note_rental_cost: '',
 });
 const rules = computed(() => {
     return {
@@ -168,6 +170,35 @@ const setDeposit = () => {
     }
 }
 
+const calculateTariff = () => {
+    let price = 0;
+    state.rental_rate_text = '';
+
+    currentCar.value.saved_price_periods.map(period => {
+        if(state.rental_days >= period.days_from && state.rental_days <= period.days_until){
+            if(isNumber(period.price))
+            {
+                price = period.price;
+                state.rental_rate_text = period.name;
+            }
+        }
+        else if(period.days_until === 0 && state.rental_days >= period.days_from){
+            price = period.price;
+            state.rental_rate_text = period.name;
+        }
+        else if(period.days_from === 0 && state.rental_days <= period.days_from){
+            price = period.price;
+            state.rental_rate_text = period.name;
+        }
+    })
+
+    state.rental_rate = price;
+}
+
+const calculateRentalCost = () => {
+    state.rental_cost = state.rental_rate * state.rental_days;
+}
+
 const searchAddress = debounce(async (data) => {
     if (isKeyboardInput.value && data.length >= 4) {
         loadingAddresses.value = true;
@@ -193,8 +224,10 @@ watchEffect(() => {
     if (state.carId !== 0) {
         currentCar.value = cars.value.find(car => car.id === state.carId);
 
-        if (currentCar.value)
+        if (currentCar.value) {
             setDeposit();
+            calculateTariff();
+        }
     } else {
         currentCar.value = null;
     }
@@ -226,6 +259,13 @@ watch(() => state.rental_days, () => {
     if (state.start_date !== null) {
         calculateEndDate();
     }
+
+    calculateTariff();
+    calculateRentalCost();
+});
+
+watch(() => state.rental_rate, () => {
+    calculateRentalCost();
 });
 
 onMounted(() => {
@@ -356,7 +396,7 @@ onMounted(() => {
                                             </Select>
                                         </div>
                                         <!-- Автомобиль возвращен? -->
-                                        <div class="flex items-center justify-between space-y-2">
+                                        <div class="flex text-center items-center justify-between space-y-2">
                                             <label for="car_returned">Автомобиль возвращен</label>
                                             <ToggleSwitch inputId="car_returned" v-model="state.car_returned"/>
                                         </div>
@@ -377,38 +417,84 @@ onMounted(() => {
                                     </div>
                                 </div>
 
-                                <!-- Территория использования -->
-                                <div>
-                                    <label for="position"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Территория
-                                        использования</label>
-                                    <Select v-model="state.directory_territory_car_use_id"
-                                            :loading="loadingTerritoryUse" :options="territories"
+                                <div class="grid gap-2" v-if="currentCar">
+                                    <Divider type="dashed"/>
+
+                                    <!-- Тариф -->
+                                    <div class="grid gap-2">
+                                        <div class="flex flex-col">
+                                            <label for="rental_rate"
+                                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Тариф</label>
+                                            <div class="flex items-center gap-2">
+                                                <InputNumber
+                                                    id="rental_rate" v-model="state.rental_rate" :min="0"
+                                                />
+                                                <Button
+                                                    icon="pi pi-replay" severity="contrast" variant="text" rounded
+                                                    v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
+                                                    @click="calculateTariff"
+                                                />
+                                                <span><i>{{state.rental_rate_text}}</i></span>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <!-- Стоимость проката -->
+                                            <div class="flex flex-col">
+                                                <label for="rental_cost"
+                                                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Стоимость проката</label>
+                                                <div class="flex items-center gap-2">
+                                                    <InputNumber
+                                                        id="rental_cost" v-model="state.rental_cost" disabled
+                                                    />
+                                                </div>
+                                            </div>
+                                            <!-- Примечание -->
+                                            <div class="flex flex-col">
+                                                <label for="note_rental_cost"
+                                                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Примечание</label>
+                                                <div class="flex items-center gap-2">
+                                                    <InputText
+                                                        id="note_rental_cost" v-model="state.note_rental_cost" fluid
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <Divider type="dashed"/>
+
+                                    <!-- Территория использования -->
+                                    <div>
+                                        <label for="position"
+                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Территория
+                                            использования</label>
+                                        <Select v-model="state.directory_territory_car_use_id"
+                                                :loading="loadingTerritoryUse" :options="territories"
+                                                optionLabel="name"
+                                                optionValue="id" placeholder="Выберите территорию использования" showClear
+                                                filter class="w-full">
+                                            <template v-if="user.access.directory === 2" #header>
+                                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
+                                                        outlined
+                                                        @click="isTerritoryUseDrawerOpen = true"/>
+                                            </template>
+                                        </Select>
+                                    </div>
+                                    <!-- Адрес выдачи -->
+                                    <div>
+                                        <label for="address_give_out"
+                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес
+                                            выдачи</label>
+                                        <Select
+                                            v-model="state.address_give_out"
+                                            :loading="loadingAddresses"
+                                            editable showClear
+                                            :options="addresses"
                                             optionLabel="name"
-                                            optionValue="id" placeholder="Выберите территорию использования" showClear
-                                            filter class="w-full">
-                                        <template v-if="user.access.directory === 2" #header>
-                                            <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
-                                                    outlined
-                                                    @click="isTerritoryUseDrawerOpen = true"/>
-                                        </template>
-                                    </Select>
-                                </div>
-                                <!-- Адрес выдачи -->
-                                <div>
-                                    <label for="address_give_out"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес
-                                        выдачи</label>
-                                    <Select
-                                        v-model="state.address_give_out"
-                                        :loading="loadingAddresses"
-                                        editable showClear
-                                        :options="addresses"
-                                        optionLabel="name"
-                                        optionValue="value"
-                                        placeholder="Введите адрес (поиск начинается с 4 символов)"
-                                        class="w-full"
-                                        @change="event => {
+                                            optionValue="value"
+                                            placeholder="Введите адрес (поиск начинается с 4 символов)"
+                                            class="w-full"
+                                            @change="event => {
                                             if(event.originalEvent.type === 'input'){
                                                 isKeyboardInput = true;
                                             }
@@ -416,23 +502,23 @@ onMounted(() => {
                                                 isKeyboardInput = false;
                                             }
                                         }"
-                                    />
-                                </div>
-                                <!-- Адрес приема -->
-                                <div>
-                                    <label for="address_take_back"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес
-                                        приема</label>
-                                    <Select
-                                        v-model="state.address_take_back"
-                                        :loading="loadingAddresses"
-                                        editable showClear
-                                        :options="addresses"
-                                        optionLabel="name"
-                                        optionValue="value"
-                                        placeholder="Введите адрес (поиск начинается с 4 символов)"
-                                        class="w-full"
-                                        @change="event => {
+                                        />
+                                    </div>
+                                    <!-- Адрес приема -->
+                                    <div>
+                                        <label for="address_take_back"
+                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес
+                                            приема</label>
+                                        <Select
+                                            v-model="state.address_take_back"
+                                            :loading="loadingAddresses"
+                                            editable showClear
+                                            :options="addresses"
+                                            optionLabel="name"
+                                            optionValue="value"
+                                            placeholder="Введите адрес (поиск начинается с 4 символов)"
+                                            class="w-full"
+                                            @change="event => {
                                             if(event.originalEvent.type === 'input'){
                                                 isKeyboardInput = true;
                                             }
@@ -440,7 +526,8 @@ onMounted(() => {
                                                 isKeyboardInput = false;
                                             }
                                         }"
-                                    />
+                                        />
+                                    </div>
                                 </div>
                                 <div class="flex flex-col gap-4 sm:grid-cols-2 grid-cols-1">
                                     <div v-if="currentCar">
