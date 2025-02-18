@@ -23,10 +23,14 @@ if(pg_num_rows($result) > 0)
     $row->id = (int)$row->id;
     $row->carId = (int)$row->car_id;
     $row->clientId = (int)$row->client_id;
-    $row->deposit = (int)$row->deposit;
+    $row->deposit = (float)$row->deposit;
+    $row->mileage_start = (float)$row->mileage_start;
+    $row->mileage_end = (float)$row->mileage_end;
+    $row->rental_days = (int)$row->rental_days;
     $row->directory_territory_car_use_id = (int)$row->directory_territory_car_use_id;
     $row->address_give_out = $row->address_give_out == null ? null : htmlspecialchars_decode($row->address_give_out);
     $row->address_take_back = $row->address_take_back == null ? null : htmlspecialchars_decode($row->address_take_back);
+    $row->note_rental_cost = $row->note_rental_cost == null ? null : htmlspecialchars_decode($row->note_rental_cost);
 
     $params = $row;
 

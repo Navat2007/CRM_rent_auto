@@ -10,6 +10,7 @@ $user = $authorization[1];
 $name = htmlspecialchars($_POST["name"]);
 $limit = htmlspecialchars($_POST["limit"]);
 $deposit = htmlspecialchars($_POST["deposit"]);
+$cost_extra_mileage = htmlspecialchars($_POST["cost_extra_mileage"]);
 $active = htmlspecialchars($_POST["active"]) === "true" ? 0 : 1;
 
 $sql = "SELECT * FROM directory_car_classes WHERE name = '$name'";
@@ -23,7 +24,7 @@ if(pg_num_rows($result) > 0)
 }
 
 if($error === 0){
-    $sql = "INSERT INTO directory_car_classes (name, \"limit\", deposit, archive, last_user_id) VALUES ('$name', '$limit', '$deposit', '$active', '$user') RETURNING id";
+    $sql = "INSERT INTO directory_car_classes (name, \"limit\", deposit, cost_extra_mileage, archive, last_user_id) VALUES ('$name', '$limit', '$deposit', '$cost_extra_mileage', '$active', '$user') RETURNING id";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
     $row = pg_fetch_object($result);

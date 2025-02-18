@@ -38,6 +38,7 @@ const emit = defineEmits(['onSubmit', 'onArchive', 'onDelete']);
 const loadingCars = ref(true);
 const cars = ref([]);
 const currentCar = ref(null);
+const currentCarClass = ref(null);
 
 const loadingClients = ref(true);
 const clients = ref([]);
@@ -76,6 +77,8 @@ const state = reactive({
     rental_rate_text: '',
     rental_cost: props.item.rental_cost,
     note_rental_cost: props.item.note_rental_cost,
+    mileage_start: props.item.mileage_start,
+    mileage_end: props.item.mileage_end,
 });
 const rules = computed(() => {
     return {
@@ -106,6 +109,27 @@ const rules = computed(() => {
     }
 });
 const v$ = useVuelidate(rules, state);
+
+const mileage = computed(() => {
+    if(state.mileage_start > state.mileage_end)
+        return 0;
+
+    return state.mileage_end - state.mileage_start;
+});
+const over_mileage = computed(() => {
+    if(currentCarClass.value && mileage.value > 0){
+        return mileage.value - (state.rental_days * parseFloat(currentCarClass.value.limit));
+    }
+
+    return 0;
+});
+const over_mileage_cost = computed(() => {
+    if(currentCarClass.value){
+        return over_mileage.value * parseFloat(currentCarClass.value.cost_extra_mileage);
+    }
+
+    return 0;
+});
 
 const onFormSubmit = async (e) => {
     const isFormCorrect = await unref(v$).$validate();
@@ -167,8 +191,8 @@ const calculateEndDate = () => {
 
 const setDeposit = () => {
     if (currentCar.value && currentCar.value.class_id) {
-        const carClass = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
-        state.deposit = carClass && carClass.deposit ? parseInt(carClass.deposit) : 0;
+        currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
+        state.deposit = currentCarClass.value && currentCarClass.value.deposit ? parseInt(currentCarClass.value.deposit) : 0;
     }
 }
 
@@ -290,9 +314,9 @@ onMounted(() => {
                 <form @submit.prevent="onFormSubmit" autocomplete="off">
                     <TabPanels>
                         <TabPanel value="0">
-                            <div class="grid gap-4 sm:grid-cols-1">
+                            <div class="flex flex-col gap-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    <div class="space-y-2">
+                                    <div class="space-y-2 flex flex-col justify-end">
                                         <!-- Авто -->
                                         <div>
                                             <label for="position"
@@ -302,25 +326,27 @@ onMounted(() => {
                                                 optionValue="id" placeholder="Выберите авто" showClear
                                                 filter filter-placeholder="Поиск по номеру, марке и модели"
                                                 :filter-fields="['state_number', 'brand', 'model']"
-                                                class="w-full"
+                                                class="w-full text-sm"
                                             >
                                                 <template #value="slotProps">
                                                     <div v-if="slotProps.value" class="flex items-center gap-4">
-                                                        <div class="flex gap-1">
-                                                    <span>{{
-                                                            cars.find(car => car.id === slotProps.value).brand
-                                                        }}</span>
-                                                            <span>{{
-                                                                    cars.find(car => car.id === slotProps.value).model
-                                                                }}</span>
+                                                        <div class="flex flex-col gap-1 whitespace-pre-wrap">
+                                                            <div class="flex gap-1">
+                                                                <span>{{
+                                                                        cars.find(car => car.id === slotProps.value).brand
+                                                                    }}</span>
+                                                                <span>{{
+                                                                        cars.find(car => car.id === slotProps.value).model
+                                                                    }}</span>
+                                                            </div>
                                                             <span>({{
                                                                     cars.find(car => car.id === slotProps.value).state_number
                                                                 }})</span>
                                                         </div>
                                                     </div>
                                                     <span v-else>
-                          {{ slotProps.placeholder }}
-                      </span>
+                                                        {{ slotProps.placeholder }}
+                                                    </span>
                                                 </template>
                                                 <template #option="slotProps">
                                                     <div class="flex gap-4">
@@ -350,7 +376,7 @@ onMounted(() => {
                                             <ToggleSwitch inputId="car_issued" v-model="state.car_issued"/>
                                         </div>
                                         <!-- Начало -->
-                                        <div>
+                                        <div class="flex flex-col justify-end">
                                             <label for="start_date"
                                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Начало*</label>
                                             <div>
@@ -385,7 +411,7 @@ onMounted(() => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="space-y-2">
+                                    <div class="space-y-2 flex flex-col justify-end">
                                         <!-- Клиент -->
                                         <div>
                                             <label for="position"
@@ -394,11 +420,15 @@ onMounted(() => {
                                                     :options="clients"
                                                     optionLabel="full_name"
                                                     optionValue="id" placeholder="Выберите клиента" showClear filter
-                                                    class="w-full">
+                                                    class="w-full"
+                                                    :pt="{
+                                                        label: 'text-sm text-wrap',
+                                                    }"
+                                            >
                                             </Select>
                                         </div>
                                         <!-- Автомобиль возвращен? -->
-                                        <div class="flex items-center justify-between space-y-2">
+                                        <div class="flex text-center items-center justify-between space-y-2">
                                             <label for="car_returned">Автомобиль возвращен</label>
                                             <ToggleSwitch inputId="car_returned" v-model="state.car_returned"/>
                                         </div>
@@ -436,14 +466,15 @@ onMounted(() => {
                                                     v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
                                                     @click="calculateTariff"
                                                 />
-                                                <span><i>{{state.rental_rate_text}}</i></span>
+                                                <span><i>{{ state.rental_rate_text }}</i></span>
                                             </div>
                                         </div>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             <!-- Стоимость проката -->
                                             <div class="flex flex-col">
                                                 <label for="rental_cost"
-                                                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Стоимость проката</label>
+                                                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Стоимость
+                                                    проката</label>
                                                 <div class="flex items-center gap-2">
                                                     <InputNumber
                                                         id="rental_cost" v-model="state.rental_cost" disabled
@@ -473,10 +504,12 @@ onMounted(() => {
                                         <Select v-model="state.directory_territory_car_use_id"
                                                 :loading="loadingTerritoryUse" :options="territories"
                                                 optionLabel="name"
-                                                optionValue="id" placeholder="Выберите территорию использования" showClear
+                                                optionValue="id" placeholder="Выберите территорию использования"
+                                                showClear
                                                 filter class="w-full">
                                             <template v-if="user.access.directory === 2" #header>
-                                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
+                                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
+                                                        label="Добавить"
                                                         outlined
                                                         @click="isTerritoryUseDrawerOpen = true"/>
                                             </template>
@@ -542,19 +575,111 @@ onMounted(() => {
                             </div>
                         </TabPanel>
                         <TabPanel value="1">
-                            <div class="grid gap-4 sm:grid-cols-1">
-                                <!-- Депозит -->
-                                <div>
-                                    <label for="deposit"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Залог
-                                        (руб.)</label>
-                                    <div class="flex gap-2 justify-start items-center">
-                                        <InputNumber id="deposit" v-model="state.deposit" :min="0"
-                                                     :useGrouping="false"/>
-                                        <Button
-                                            icon="pi pi-replay" severity="contrast" variant="text" rounded
-                                            v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
-                                            @click="setDeposit"
+                            <div class="grid gap-6 grid-cols-1">
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <!-- Депозит -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="deposit"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Залог (руб.)
+                                        </label>
+                                        <div class="flex gap-2 justify-start items-center">
+                                            <InputNumber id="deposit" v-model="state.deposit" :min="0" fluid/>
+                                            <Button
+                                                icon="pi pi-replay" severity="contrast" variant="text" rounded
+                                                v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
+                                                @click="setDeposit"
+                                            />
+                                        </div>
+                                    </div>
+                                    <!-- Лимит пробега в сутки (км) -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="limit"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Лимит пробега в сутки (км)
+                                        </label>
+                                        <InputNumber id="limit" :model-value="currentCarClass != null ? currentCarClass.limit : 0" disabled fluid/>
+                                    </div>
+                                    <!-- Стоимость 1 км перепробега (руб.) -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="limit"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Стоимость 1 км перепробега (руб.)
+                                        </label>
+                                        <InputNumber id="limit" :model-value="currentCarClass != null ? currentCarClass.cost_extra_mileage : 0" disabled fluid/>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <!-- Пробег начало (км) -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="mileage_start"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Пробег начало (км)
+                                        </label>
+                                        <InputNumber id="mileage_start" v-model="state.mileage_start" fluid/>
+                                    </div>
+                                    <!-- Пробег начало (км) -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="mileage_end"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Пробег конец (км)
+                                        </label>
+                                        <InputNumber id="mileage_end" v-model="state.mileage_end" fluid/>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <!-- Километраж (км) -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="mileage"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Километраж (км)
+                                        </label>
+                                        <InputNumber
+                                            id="mileage"
+                                            :model-value="mileage"
+                                            disabled fluid
+                                        />
+                                    </div>
+                                    <!-- Перепробег (км) -->
+                                    <div v-if="over_mileage > 0" class="flex flex-col justify-end">
+                                        <label
+                                            for="over_mileage"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Перепробег (км)
+                                        </label>
+                                        <InputNumber
+                                            id="over_mileage"
+                                            :model-value="over_mileage"
+                                            disabled fluid
+                                        />
+                                    </div>
+                                    <!-- За перепробег (руб.) -->
+                                    <div v-if="over_mileage > 0" class="flex flex-col justify-end">
+                                        <label
+                                            for="over_mileage_cost"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            За перепробег (руб.)
+                                        </label>
+                                        <InputNumber
+                                            id="over_mileage_cost"
+                                            :model-value="over_mileage_cost"
+                                            disabled fluid
                                         />
                                     </div>
                                 </div>

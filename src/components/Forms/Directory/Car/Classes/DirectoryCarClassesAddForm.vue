@@ -31,6 +31,7 @@ const state = reactive({
     name: "",
     limit: 0,
     deposit: 0,
+    cost_extra_mileage: 0,
     active: true
 });
 const rules = computed(() => {
@@ -60,29 +61,38 @@ const onFormSubmit = async (e) => {
         <template #title>{{ title }}</template>
         <template #content>
             <form @submit.prevent="onFormSubmit">
-                <div class="grid gap-4 mb-4 mt-2 sm:grid-cols-1">
+                <div class="grid gap-8 mb-4 mt-6 sm:grid-cols-1">
                     <!-- Название -->
                     <div>
-                        <FloatLabel variant="on">
+                        <FloatLabel variant="over">
                             <InputText id="name" v-model="state.name" fluid/>
                             <label for="name">Название*</label>
                         </FloatLabel>
                         <FormError :errors="v$.name.$errors"/>
                     </div>
-                    <!-- Лимит пробега в сутки -->
-                    <div>
-                        <FloatLabel variant="on">
-                            <InputNumber id="limit" min="0" v-model="state.limit" fluid/>
-                            <label for="limit">Лимит пробега в сутки (км)</label>
-                        </FloatLabel>
-                        <FormError :errors="v$.limit.$errors"/>
-                    </div>
-                    <!-- Депозит -->
-                    <div>
-                        <FloatLabel variant="on">
-                            <InputNumber id="deposit" min="0" v-model="state.deposit" fluid/>
-                            <label for="deposit">Залог (руб.)</label>
-                        </FloatLabel>
+                    <div class="grid gap-8 md:gap-2 grid-cols-1 sm:grid-cols-3">
+                        <!-- Лимит пробега в сутки -->
+                        <div>
+                            <FloatLabel variant="over">
+                                <InputNumber id="limit" min="0" v-model="state.limit" fluid/>
+                                <label for="limit">Лимит пробега в сутки</label>
+                            </FloatLabel>
+                            <FormError :errors="v$.limit.$errors"/>
+                        </div>
+                        <!-- Стоимость 1 км перепробега -->
+                        <div>
+                            <FloatLabel variant="over">
+                                <InputNumber id="cost_extra_mileage" min="0" v-model="state.cost_extra_mileage" fluid/>
+                                <label for="cost_extra_mileage">Стоимость 1 км перепробега (руб.)</label>
+                            </FloatLabel>
+                        </div>
+                        <!-- Депозит -->
+                        <div>
+                            <FloatLabel variant="over">
+                                <InputNumber id="deposit" min="0" v-model="state.deposit" fluid/>
+                                <label for="deposit">Залог (руб.)</label>
+                            </FloatLabel>
+                        </div>
                     </div>
                     <!-- Активен? -->
                     <div class="flex items-center">
@@ -101,7 +111,7 @@ const onFormSubmit = async (e) => {
     </Card>
     <div v-else>
         <form @submit.prevent="onFormSubmit">
-            <div class="grid gap-4 mb-4 mt-2 sm:grid-cols-1">
+            <div class="grid gap-8 mb-4 mt-6 sm:grid-cols-1">
                 <!-- Название -->
                 <div>
                     <label for="name"
@@ -114,20 +124,25 @@ const onFormSubmit = async (e) => {
                     >
                     <FormError :errors="v$.name.$errors"/>
                 </div>
-                <!-- Лимит пробега в сутки -->
-                <div>
-                    <FloatLabel variant="on">
+                <div class="grid gap-8 md:gap-4 grid-cols-1 sm:grid-cols-3">
+                    <!-- Лимит пробега в сутки -->
+                    <div class="flex flex-col justify-end">
+                        <label for="limit"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Лимит пробега в сутки</label>
                         <InputNumber id="limit" min="0" v-model="state.limit" fluid/>
-                        <label for="limit">Лимит пробега в сутки</label>
-                    </FloatLabel>
-                    <FormError :errors="v$.limit.$errors"/>
-                </div>
-                <!-- Депозит -->
-                <div>
-                    <FloatLabel variant="on">
+                    </div>
+                    <!-- Стоимость 1 км перепробега -->
+                    <div class="flex flex-col justify-end">
+                        <label for="cost_extra_mileage"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Стоимость 1 км перепробега</label>
+                        <InputNumber id="cost_extra_mileage" min="0" v-model="state.cost_extra_mileage" fluid/>
+                    </div>
+                    <!-- Депозит -->
+                    <div class="flex flex-col justify-end">
+                        <label for="deposit"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Залог (руб.)</label>
                         <InputNumber id="deposit" min="0" v-model="state.deposit" fluid/>
-                        <label for="deposit">Залог (руб.)</label>
-                    </FloatLabel>
+                    </div>
                 </div>
                 <!-- Активен? -->
                 <div class="flex items-center">

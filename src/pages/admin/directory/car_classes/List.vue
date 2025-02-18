@@ -27,10 +27,11 @@ const filters = ref({
     id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
     limit: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
     deposit: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+    cost_extra_mileage: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
     name: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.STARTS_WITH}]},
     archive: {operator: FilterOperator.OR, constraints: [{value: "Активен", matchMode: FilterMatchMode.EQUALS}]},
 });
-const filterFields = ref(['id', 'name', 'limit', 'deposit', 'archive']);
+const filterFields = ref(['id', 'name', 'limit', 'deposit', 'cost_extra_mileage', 'archive']);
 
 const handleAddButtonClick = () => {
     router.push(`/Admin/directory/${directoryUrl}/new`);
@@ -68,6 +69,11 @@ onMounted(() => {
                     </template>
                 </Column>
                 <Column field="limit" header="Лимит пробега в сутки" dataType="numeric" sortable>
+                    <template #filter="{ filterModel }">
+                        <InputNumber v-model="filterModel.value" placeholder="..."/>
+                    </template>
+                </Column>
+                <Column field="cost_extra_mileage" header="Стоимость 1 км перепробега" dataType="numeric" sortable>
                     <template #filter="{ filterModel }">
                         <InputNumber v-model="filterModel.value" placeholder="..."/>
                     </template>

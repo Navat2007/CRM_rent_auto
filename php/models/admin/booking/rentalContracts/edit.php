@@ -23,6 +23,8 @@ $rental_days = htmlspecialchars($_POST["rental_days"]);
 $rental_rate = htmlspecialchars($_POST["rental_rate"]);
 $rental_cost = htmlspecialchars($_POST["rental_cost"]);
 $note_rental_cost = htmlspecialchars($_POST["note_rental_cost"]);
+$mileage_start = htmlspecialchars($_POST["mileage_start"]);
+$mileage_end = htmlspecialchars($_POST["mileage_end"]);
 
 $sql = "SELECT * FROM booking WHERE car_id = '$carId' AND start_date >= '$start_date' AND end_date <= '$end_date'";
 $sqls[] = $sql;
@@ -53,6 +55,8 @@ if($error === 0){
         rental_rate = '$rental_rate',
         rental_cost = '$rental_cost',
         note_rental_cost = '$note_rental_cost',
+        mileage_start = '$mileage_start',
+        mileage_end = '$mileage_end',
         last_user_id = '$user'
     WHERE 
         id = '$ID'";

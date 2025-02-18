@@ -52,7 +52,7 @@ const onSuccess = () => {
 </script>
 
 <template>
-  <Drawer position="right" class="w-2/5"
+  <Drawer position="right" class="w-full md:w-2/5"
           v-bind:visible="visible"
           v-on:update:visible="() => emit('onClose')"
   >
