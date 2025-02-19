@@ -24,6 +24,7 @@ import ApiCloudService from "@services/ApiCloudService.js";
 import ApiCloud from "@components/Inputs/ApiCloud.vue";
 import Himera from "@components/Inputs/Himera.vue";
 import HimeraService from "@services/HimeraService.js";
+import SearchAddress from "@components/Inputs/SearchAddress.vue";
 
 const {user} = useAuthStore();
 
@@ -642,29 +643,15 @@ onMounted(async () => {
                                             >
                                         </div>
                                         <!-- Паспорт. Адрес регистрации -->
-                                        <div>
-                                            <label for="passport_registration_address"
-                                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес
-                                                регистрации</label>
-                                            <input
-                                                v-model="state.passport_registration_address"
-                                                type="text" id="passport_registration_address"
-                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                placeholder="..."
-                                            >
-                                        </div>
+                                        <SearchAddress :input="state.passport_registration_address" label="Адрес
+                                                регистрации" @onAddressResult="(address) => {
+                                            state.passport_registration_address = address;
+                                        }"/>
                                         <!-- Паспорт. Адрес фактический -->
-                                        <div>
-                                            <label for="passport_fact_address"
-                                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес
-                                                фактический</label>
-                                            <input
-                                                v-model="state.passport_fact_address"
-                                                type="text" id="passport_fact_address"
-                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                placeholder="..."
-                                            >
-                                        </div>
+                                        <SearchAddress :input="state.passport_fact_address" label="Адрес
+                                                фактический" @onAddressResult="(address) => {
+                                            state.passport_fact_address = address;
+                                        }"/>
                                         <Divider type="dashed" v-if="state.passport_ocr_upload_files.length > 0"/>
                                         <!-- Паспорт. Распознанные файлы -->
                                         <FileGallery v-if="state.passport_ocr_upload_files.length > 0"

@@ -11,6 +11,7 @@ import AutoService from "@services/AutoService.js";
 import ClientsService from "@services/ClientsService.js";
 import Car from "@components/Cards/Car.vue";
 import DateTimePickerWithMask from "@components/Inputs/DateTimePickerWithMask.vue";
+import SearchAddress from "@components/Inputs/SearchAddress.vue";
 import Client from "@components/Cards/Client.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import DaDataService from "@services/DaDataService.js";
@@ -44,10 +45,6 @@ const currentClient = ref(null);
 const loadingTerritoryUse = ref(true);
 const isTerritoryUseDrawerOpen = ref(false);
 const territories = ref([]);
-
-const loadingAddresses = ref(false);
-const addresses = ref([]);
-const isKeyboardInput = ref(false);
 
 const loadingCarClasses = ref(true);
 const isCarClassesDrawerOpen = ref(false);
@@ -220,27 +217,6 @@ const calculateRentalCost = () => {
     state.rental_cost = state.rental_rate * state.rental_days;
 }
 
-const searchAddress = debounce(async (data) => {
-    if (isKeyboardInput.value && data.length >= 4) {
-        loadingAddresses.value = true;
-
-        const result = await DaDataService.GetAddress(data);
-
-        if (result.suggestions && result.suggestions.length > 0) {
-            addresses.value = result.suggestions.map(suggestion => {
-                return {
-                    value: suggestion.value,
-                    name: suggestion.value
-                }
-            });
-        } else {
-            addresses.value = [];
-        }
-
-        loadingAddresses.value = false;
-    }
-}, 1000);
-
 watchEffect(() => {
     if (state.carId !== 0) {
         currentCar.value = cars.value.find(car => car.id === state.carId);
@@ -257,22 +233,6 @@ watchEffect(() => {
         currentClient.value = clients.value.find(client => client.id === state.clientId);
     } else {
         currentClient.value = null;
-    }
-});
-
-watch(() => state.address_give_out, () => {
-    if (state.address_give_out && state.address_give_out.length >= 4) {
-        searchAddress(state.address_give_out);
-    } else {
-        addresses.value = [];
-    }
-});
-
-watch(() => state.address_take_back, () => {
-    if (state.address_take_back && state.address_take_back.length >= 4) {
-        searchAddress(state.address_take_back);
-    } else {
-        addresses.value = [];
     }
 });
 
@@ -511,53 +471,13 @@ onMounted(() => {
                                         </Select>
                                     </div>
                                     <!-- Адрес выдачи -->
-                                    <div>
-                                        <label for="address_give_out"
-                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес
-                                            выдачи</label>
-                                        <Select
-                                            v-model="state.address_give_out"
-                                            :loading="loadingAddresses"
-                                            editable showClear
-                                            :options="addresses"
-                                            optionLabel="name"
-                                            optionValue="value"
-                                            placeholder="Введите адрес (поиск начинается с 4 символов)"
-                                            class="w-full"
-                                            @change="event => {
-                                            if(event.originalEvent.type === 'input'){
-                                                isKeyboardInput = true;
-                                            }
-                                            else {
-                                                isKeyboardInput = false;
-                                            }
-                                        }"
-                                        />
-                                    </div>
+                                    <SearchAddress :input="state.address_give_out" label="Адрес выдачи" @onAddressResult="(address) => {
+                                        state.address_give_out = address;
+                                    }"/>
                                     <!-- Адрес приема -->
-                                    <div>
-                                        <label for="address_take_back"
-                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Адрес
-                                            приема</label>
-                                        <Select
-                                            v-model="state.address_take_back"
-                                            :loading="loadingAddresses"
-                                            editable showClear
-                                            :options="addresses"
-                                            optionLabel="name"
-                                            optionValue="value"
-                                            placeholder="Введите адрес (поиск начинается с 4 символов)"
-                                            class="w-full"
-                                            @change="event => {
-                                            if(event.originalEvent.type === 'input'){
-                                                isKeyboardInput = true;
-                                            }
-                                            else {
-                                                isKeyboardInput = false;
-                                            }
-                                        }"
-                                        />
-                                    </div>
+                                    <SearchAddress :input="state.address_take_back" label="Адрес приема" @onAddressResult="(address) => {
+                                        state.address_take_back = address;
+                                    }"/>
                                 </div>
                                 <div class="flex flex-col gap-4 sm:grid-cols-2 grid-cols-1">
                                     <div v-if="currentCar">
