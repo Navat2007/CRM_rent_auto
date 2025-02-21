@@ -14,7 +14,7 @@ $params = array();
 
 $sql = "
     SELECT 
-        car.id, car.state_number, car.car_photo_avatar as avatar, car.archive,
+        car.id, car.state_number, car.car_photo_avatar as avatar, car.archive, car.mileage,
         brand.name as brand, model.name as model, class.name as class, car.directory_car_classes_id as class_id,
         generation.name as generation, configuration.name as configuration, fuel_type.name as fuel_type,
         status.name as status
@@ -47,6 +47,7 @@ if(pg_num_rows($result) > 0)
     while ($row = pg_fetch_object($result))
     {
         $row->id = (int)$row->id;
+        $row->mileage = (float)$row->mileage;
         $row->avatar = $row->avatar == null ? "" : ("https://" . $_SERVER['HTTP_HOST'] . $row->avatar);
         $row->brand = $row->brand == null ? null : htmlspecialchars_decode($row->brand);
         $row->model = $row->model == null ? null : htmlspecialchars_decode($row->model);

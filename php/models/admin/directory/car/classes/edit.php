@@ -46,6 +46,14 @@ if($error === 0){
     WHERE id = '$id'";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);
+
+    $sql = "
+    DELETE FROM 
+        directory_car_classes_service_price     
+    WHERE 
+        directory_car_classes_id = '$id'";
+    $sqls[] = $sql;
+    $result = pg_query($conn, $sql);
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

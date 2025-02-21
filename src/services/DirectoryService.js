@@ -175,6 +175,20 @@ class DirectoryService {
         return result;
     }
 
+    static async getCarClassServicePriceByClassId(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = null;
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/car/classes_service_price/load_for_class.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
     // Car models
     static async addCarModel(data) {
         let form = new FormData();

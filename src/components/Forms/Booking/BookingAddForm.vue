@@ -63,7 +63,7 @@ const state = reactive({
     address_take_back: '',
     start_date: null,
     end_date: null,
-    deposit: 0,
+    deposit: null,
     car_issued: false,
     car_returned: false,
     rental_days: 1,
@@ -71,8 +71,8 @@ const state = reactive({
     rental_rate_text: '',
     rental_cost: 0,
     note_rental_cost: '',
-    mileage_start: 0,
-    mileage_end: 0,
+    mileage_start: null,
+    mileage_end: null,
 });
 const rules = computed(() => {
     return {
@@ -191,6 +191,31 @@ const setDeposit = () => {
     }
 }
 
+const saveMileage = () => {
+    if (!currentCar.value) {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Нужно выбрать автомобиль";
+        dialogVisible.value = true;
+        return;
+    }
+
+    if (state.mileage_end === null || state.mileage_end === 0 || state.mileage_end === '') {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Нужно ввести пробег на момент приема";
+        dialogVisible.value = true;
+        return;
+    }
+
+    if (state.mileage_end === currentCar.value.mileage) {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Пробег совпадает с пробегом на автомобиле";
+        dialogVisible.value = true;
+        return;
+    }
+
+    AutoService.updateMileage({id: currentCar.value.id, mileage: state.mileage_end})
+}
+
 const calculateTariff = () => {
     let price = 0;
     state.rental_rate_text = '';
@@ -220,6 +245,7 @@ const calculateRentalCost = () => {
 watchEffect(() => {
     if (state.carId !== 0) {
         currentCar.value = cars.value.find(car => car.id === state.carId);
+        state.mileage_start = currentCar.value.mileage;
 
         if (currentCar.value) {
             setDeposit();
@@ -501,7 +527,7 @@ onMounted(() => {
                                             Залог (руб.)
                                         </label>
                                         <div class="flex gap-2 justify-start items-center">
-                                            <InputNumber id="deposit" v-model="state.deposit" :min="0" fluid/>
+                                            <InputNumber id="deposit" v-model="state.deposit"  :min="0" fluid/>
                                             <Button
                                                 icon="pi pi-replay" severity="contrast" variant="text" rounded
                                                 v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
@@ -542,7 +568,7 @@ onMounted(() => {
                                         </label>
                                         <InputNumber id="mileage_start" v-model="state.mileage_start" fluid/>
                                     </div>
-                                    <!-- Пробег начало (км) -->
+                                    <!-- Пробег конец (км) -->
                                     <div class="flex flex-col justify-end">
                                         <label
                                             for="mileage_end"
@@ -550,11 +576,15 @@ onMounted(() => {
                                         >
                                             Пробег конец (км)
                                         </label>
-                                        <InputNumber id="mileage_end" v-model="state.mileage_end" fluid/>
+                                        <div class="flex gap-2 justify-start items-center">
+                                            <InputNumber id="mileage_end" v-model="state.mileage_end" fluid/>
+                                            <Button
+                                                icon="pi pi-save" severity="contrast" variant="text" rounded
+                                                v-tooltip.top="{ value: 'Сохранить пробег'}"
+                                                @click="saveMileage"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div class="flex flex-col sm:flex-row gap-4">
                                     <!-- Километраж (км) -->
                                     <div class="flex flex-col justify-end">
                                         <label

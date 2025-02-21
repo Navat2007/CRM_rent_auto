@@ -66,7 +66,7 @@ const state = reactive({
     address_take_back: props.item.address_take_back,
     start_date: props.item.start_date ? moment(props.item.start_date).format('DD.MM.YYYY HH:mm') : null,
     end_date: props.item.end_date ? moment(props.item.end_date).format('DD.MM.YYYY HH:mm') : null,
-    deposit: props.item.deposit,
+    deposit: props.item.deposit === 0 ? null : props.item.deposit,
     car_issued: parseInt(props.item.car_issued) === 1,
     car_returned: parseInt(props.item.car_returned) === 1,
     rental_days: parseInt(props.item.rental_days),
@@ -74,8 +74,8 @@ const state = reactive({
     rental_rate_text: '',
     rental_cost: props.item.rental_cost,
     note_rental_cost: props.item.note_rental_cost,
-    mileage_start: props.item.mileage_start,
-    mileage_end: props.item.mileage_end,
+    mileage_start: props.item.mileage_start === 0 ? null : props.item.mileage_start,
+    mileage_end: props.item.mileage_end === 0 ? null : props.item.mileage_end,
 });
 const rules = computed(() => {
     return {
@@ -100,6 +100,12 @@ const rules = computed(() => {
             required: helpers.withMessage("Нужно выбрать дату возврата", required),
             minValue: helpers.withMessage("Дата возврата должна быть после даты начала", value => {
                 return moment(value, 'DD.MM.YYYY HH:mm').isAfter(moment(state.start_date, 'DD.MM.YYYY HH:mm'))
+            }),
+            $lazy: true
+        },
+        mileage_end: {
+            minValue: helpers.withMessage("Пробег на момент приема должен быть больше или равен пробегу на момент выдачи", value => {
+                return value >= state.mileage_start;
             }),
             $lazy: true
         },
@@ -193,6 +199,31 @@ const setDeposit = () => {
     }
 }
 
+const saveMileage = () => {
+    if (!currentCar.value) {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Нужно выбрать автомобиль";
+        dialogVisible.value = true;
+        return;
+    }
+
+    if (state.mileage_end === null || state.mileage_end === 0 || state.mileage_end === '') {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Нужно ввести пробег на момент приема";
+        dialogVisible.value = true;
+        return;
+    }
+
+    if (state.mileage_end === currentCar.value.mileage) {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Пробег совпадает с пробегом на автомобиле";
+        dialogVisible.value = true;
+        return;
+    }
+
+    AutoService.updateMileage({id: currentCar.value.id, mileage: state.mileage_end})
+}
+
 const calculateTariff = () => {
     let price = 0;
     state.rental_rate_text = '';
@@ -227,7 +258,6 @@ watchEffect(() => {
         currentCar.value = cars.value.find(car => car.id === state.carId);
 
         if(currentCar.value) {
-            setDeposit();
             calculateTariff();
         }
     } else {
@@ -547,7 +577,7 @@ onMounted(() => {
                                         </label>
                                         <InputNumber id="mileage_start" v-model="state.mileage_start" fluid/>
                                     </div>
-                                    <!-- Пробег начало (км) -->
+                                    <!-- Пробег конец (км) -->
                                     <div class="flex flex-col justify-end">
                                         <label
                                             for="mileage_end"
@@ -555,11 +585,15 @@ onMounted(() => {
                                         >
                                             Пробег конец (км)
                                         </label>
-                                        <InputNumber id="mileage_end" v-model="state.mileage_end" fluid/>
+                                        <div class="flex gap-2 justify-start items-center">
+                                            <InputNumber id="mileage_end" v-model="state.mileage_end" fluid/>
+                                            <Button
+                                                icon="pi pi-save" severity="contrast" variant="text" rounded
+                                                v-tooltip.top="{ value: 'Сохранить пробег'}"
+                                                @click="saveMileage"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div class="flex flex-col sm:flex-row gap-4">
                                     <!-- Километраж (км) -->
                                     <div class="flex flex-col justify-end">
                                         <label

@@ -80,6 +80,13 @@ class AutoService {
 
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/${this.directory}/update_status.php`, form);
     }
+
+    static async updateMileage(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/${this.directory}/update_mileage.php`, form);
+    }
 }
 
 export default AutoService

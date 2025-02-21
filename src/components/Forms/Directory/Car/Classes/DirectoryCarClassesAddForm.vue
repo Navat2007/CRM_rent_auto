@@ -1,10 +1,11 @@
 <script setup>
 import Divider from "primevue/divider";
 import {useAuthStore} from "@stores";
-import {computed, reactive, unref} from "vue";
+import {computed, onMounted, reactive, ref, unref} from "vue";
 import {helpers, required} from "@vuelidate/validators";
 import {useVuelidate} from "@vuelidate/core";
 import FormError from "@components/Inputs/FormError.vue";
+import DirectoryService from "@services/DirectoryService.js";
 
 const {user} = useAuthStore();
 
@@ -47,6 +48,10 @@ const rules = computed(() => {
 });
 const v$ = useVuelidate(rules, state);
 
+const loadingCarClassServices = ref(true);
+const isCarClassServicesDrawerOpen = ref(false);
+const carClassServices = ref([]);
+
 const onFormSubmit = async (e) => {
     const isFormCorrect = await unref(v$).$validate();
 
@@ -54,6 +59,23 @@ const onFormSubmit = async (e) => {
         emit('onSubmit', state);
     }
 };
+
+async function fetchCarClassServices() {
+    carClassServices.value = await DirectoryService.getAll({directory: 'directory_services', company_id: user.company_id});
+    loadingCarClassServices.value = false;
+
+    state.class_services = carClassServices.value.map((item) => {
+        return {
+            id: item.id,
+            name: item.name,
+            price: null
+        }
+    });
+}
+
+onMounted(() => {
+    fetchCarClassServices();
+});
 </script>
 
 <template>
@@ -94,6 +116,28 @@ const onFormSubmit = async (e) => {
                             </FloatLabel>
                         </div>
                     </div>
+
+                    <Panel header="Стоимость услуг" toggleable collapsed>
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs bg-gray-200 text-gray-700 uppercase  dark:text-gray-200">
+                            <tr>
+                                <th scope="col" class="py-3 px-2">Услуга</th>
+                                <th scope="col" class="py-3 px-2">Стоимость</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr
+                                v-for="(item, index) in state.class_services" :key="item"
+                                class="bg-white dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+                                :class="{'border-b': index !== state.class_services.length - 1}"
+                            >
+                                <th scope="row" class="py-4 px-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ item.name }}</th>
+                                <td><InputNumber v-model="item.price" min="0" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </Panel>
+
                     <!-- Активен? -->
                     <div class="flex items-center">
                         <input id="active" type="checkbox"
