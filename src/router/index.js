@@ -830,6 +830,64 @@ const adminRoutes = [
             title: 'Ценовые периоды',
         }
     },
+    {
+        path: '/Admin/directory/operation_types',
+        component: () => import('@pages/admin/directory/operation_types/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Тип операции',
+        }
+    },
+    {
+        path: '/Admin/directory/operation_types/new',
+        component: () => import('@pages/admin/directory/operation_types/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Тип операции',
+        }
+    },
+    {
+        path: '/Admin/directory/operation_types/:id',
+        component: () => import('@pages/admin/directory/operation_types/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Тип операции',
+        }
+    },
+    {
+        path: '/Admin/directory/payment_types',
+        component: () => import('@pages/admin/directory/payment_types/List.vue'),
+        exact: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Виды оплаты',
+        }
+    },
+    {
+        path: '/Admin/directory/payment_types/new',
+        component: () => import('@pages/admin/directory/payment_types/Add.vue'),
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Виды оплаты',
+        }
+    },
+    {
+        path: '/Admin/directory/payment_types/:id',
+        component: () => import('@pages/admin/directory/payment_types/Edit.vue'),
+        props: true,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Виды оплаты',
+        }
+    },
 ];
 
 const routes = [...publicRoutes, ...adminRoutes,

@@ -61,7 +61,8 @@ const onFormSubmit = async (e) => {
 };
 
 async function fetchCarClassServices() {
-    carClassServices.value = await DirectoryService.getAll({directory: 'directory_services', company_id: user.company_id});
+    carClassServices.value = (await DirectoryService.getAll({directory: 'directory_services', company_id: user.company_id}))
+        .filter(person => person.archive === "Активен");
     loadingCarClassServices.value = false;
 
     state.class_services = carClassServices.value.map((item) => {

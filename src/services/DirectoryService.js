@@ -117,6 +117,36 @@ class DirectoryService {
         return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/services/edit.php`, form);
     }
 
+    // Operation Types
+    static async addOperationType(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/operation_types/add.php`, form);
+    }
+
+    static async editOperationType(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/operation_types/edit.php`, form);
+    }
+
+    // Payment Types
+    static async addPaymentType(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/payment_types/add.php`, form);
+    }
+
+    static async editPaymentType(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        return await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/directory/payment_types/edit.php`, form);
+    }
+
     // Car classes
     static async addCarClass(data) {
         let form = new FormData();

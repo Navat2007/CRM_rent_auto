@@ -97,6 +97,8 @@ const menuGroups = ref([
           {label: 'Авто: Территория использования', route: '/Admin/directory/territory_car_use', visible: true},
           {label: 'Авто: Ценовые периоды', route: '/Admin/directory/price_periods', visible: true},
           {label: 'Услуги при бронировании', route: '/Admin/directory/services', visible: true},
+          {label: 'Тип операции', route: '/Admin/directory/operation_types', visible: true},
+          {label: 'Виды оплаты', route: '/Admin/directory/payment_types', visible: true},
         ],
         visible: user.access?.directory && user.access.directory !== 0
       }

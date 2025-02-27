@@ -73,6 +73,7 @@ const state = reactive({
     note_rental_cost: '',
     mileage_start: null,
     mileage_end: null,
+    payments: [],
 });
 const rules = computed(() => {
     return {
@@ -105,20 +106,20 @@ const rules = computed(() => {
 const v$ = useVuelidate(rules, state);
 
 const mileage = computed(() => {
-    if(state.mileage_start > state.mileage_end)
+    if (state.mileage_start > state.mileage_end)
         return 0;
 
     return state.mileage_end - state.mileage_start;
 });
 const over_mileage = computed(() => {
-    if(currentCarClass.value && mileage.value > 0){
+    if (currentCarClass.value && mileage.value > 0) {
         return mileage.value - (state.rental_days * parseFloat(currentCarClass.value.limit));
     }
 
     return 0;
 });
 const over_mileage_cost = computed(() => {
-    if(currentCarClass.value){
+    if (currentCarClass.value) {
         return over_mileage.value * parseFloat(currentCarClass.value.cost_extra_mileage);
     }
 
@@ -186,7 +187,6 @@ const setDeposit = () => {
     }
 
     if (currentCar.value && currentCar.value.class_id) {
-        currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
         state.deposit = currentCarClass.value && currentCarClass.value.deposit ? parseInt(currentCarClass.value.deposit) : 0;
     }
 }
@@ -242,12 +242,22 @@ const calculateRentalCost = () => {
     state.rental_cost = state.rental_rate * state.rental_days;
 }
 
+const handleAddOperationButtonClick = () => {
+    if (!currentCar.value) {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Нужно выбрать автомобиль";
+        dialogVisible.value = true;
+        return;
+    }
+}
+
 watchEffect(() => {
     if (state.carId !== 0) {
         currentCar.value = cars.value.find(car => car.id === state.carId);
         state.mileage_start = currentCar.value.mileage;
 
         if (currentCar.value) {
+            currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
             setDeposit();
             calculateTariff();
         }
@@ -497,11 +507,13 @@ onMounted(() => {
                                         </Select>
                                     </div>
                                     <!-- Адрес выдачи -->
-                                    <SearchAddress :input="state.address_give_out" label="Адрес выдачи" @onAddressResult="(address) => {
+                                    <SearchAddress :input="state.address_give_out" label="Адрес выдачи"
+                                                   @onAddressResult="(address) => {
                                         state.address_give_out = address;
                                     }"/>
                                     <!-- Адрес приема -->
-                                    <SearchAddress :input="state.address_take_back" label="Адрес приема" @onAddressResult="(address) => {
+                                    <SearchAddress :input="state.address_take_back" label="Адрес приема"
+                                                   @onAddressResult="(address) => {
                                         state.address_take_back = address;
                                     }"/>
                                 </div>
@@ -527,7 +539,7 @@ onMounted(() => {
                                             Залог (руб.)
                                         </label>
                                         <div class="flex gap-2 justify-start items-center">
-                                            <InputNumber id="deposit" v-model="state.deposit"  :min="0" fluid/>
+                                            <InputNumber id="deposit" v-model="state.deposit" :min="0" fluid/>
                                             <Button
                                                 icon="pi pi-replay" severity="contrast" variant="text" rounded
                                                 v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
@@ -543,7 +555,9 @@ onMounted(() => {
                                         >
                                             Лимит пробега в сутки (км)
                                         </label>
-                                        <InputNumber id="limit" :model-value="currentCarClass != null ? currentCarClass.limit : 0" disabled fluid/>
+                                        <InputNumber id="limit"
+                                                     :model-value="currentCarClass != null ? currentCarClass.limit : 0"
+                                                     disabled fluid/>
                                     </div>
                                     <!-- Стоимость 1 км перепробега (руб.) -->
                                     <div class="flex flex-col justify-end">
@@ -553,7 +567,9 @@ onMounted(() => {
                                         >
                                             Стоимость 1 км перепробега (руб.)
                                         </label>
-                                        <InputNumber id="limit" :model-value="currentCarClass != null ? currentCarClass.cost_extra_mileage : 0" disabled fluid/>
+                                        <InputNumber id="limit"
+                                                     :model-value="currentCarClass != null ? currentCarClass.cost_extra_mileage : 0"
+                                                     disabled fluid/>
                                     </div>
                                 </div>
 
@@ -628,6 +644,22 @@ onMounted(() => {
                                         />
                                     </div>
                                 </div>
+
+                                <div class="mt-8">
+                                    <Button type="button" icon="pi pi-plus" label="Добавить" outlined
+                                            @click="handleAddOperationButtonClick"/>
+                                    <DataTable :value="state.payments" tableStyle="min-width: 50rem">
+                                        <Column field="code" header="Дата"></Column>
+                                        <Column field="name" header="Операция"></Column>
+                                        <Column field="category" header="Период с"></Column>
+                                        <Column field="quantity" header="по дату"></Column>
+                                        <Column field="quantity" header="Кол-во"></Column>
+                                        <Column field="quantity" header="Начислено"></Column>
+                                        <Column field="quantity" header="Оплачено"></Column>
+                                        <Column field="quantity" header="Вид оплаты"></Column>
+                                        <Column field="quantity" header="Услуга"></Column>
+                                    </DataTable>
+                                </div>
                             </div>
                         </TabPanel>
                     </TabPanels>
@@ -649,7 +681,11 @@ onMounted(() => {
         @onAdd="onDirectoryTerritoryUseAdd" @onClose="isTerritoryUseDrawerOpen = false"
     />
     <Dialog v-model:visible="dialogVisible" modal dismissable-mask base-z-index="20000" :header="dialogHeader"
-            :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            :style="{ width: '40vw' }" :breakpoints="{ '1199px': '60vw', '575px': '90vw' }">
+        <template #header>
+            <span class='text-red-500 text-2xl'>{{ dialogHeader }}</span>
+        </template>
+
         <p class="m-0">
             {{ dialogText }}
         </p>

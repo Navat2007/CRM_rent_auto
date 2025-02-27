@@ -194,7 +194,6 @@ const calculateEndDate = () => {
 
 const setDeposit = () => {
     if (currentCar.value && currentCar.value.class_id) {
-        currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
         state.deposit = currentCarClass.value && currentCarClass.value.deposit ? parseInt(currentCarClass.value.deposit) : 0;
     }
 }
@@ -258,6 +257,7 @@ watchEffect(() => {
         currentCar.value = cars.value.find(car => car.id === state.carId);
 
         if(currentCar.value) {
+            currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
             calculateTariff();
         }
     } else {
