@@ -8,70 +8,55 @@ require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
 $user = $authorization[1];
 $companyId = htmlspecialchars($_POST["companyId"]);
-$carId = htmlspecialchars($_POST["carId"]);
-$clientId = htmlspecialchars($_POST["clientId"]);
-$directory_territory_car_use_id = htmlspecialchars($_POST["directory_territory_car_use_id"]);
-$address_give_out = htmlspecialchars($_POST["address_give_out"]);
-$address_take_back = htmlspecialchars($_POST["address_take_back"]);
-$start_date = htmlspecialchars($_POST["start_date"]);
-$end_date = htmlspecialchars($_POST["end_date"]);
-$deposit = htmlspecialchars($_POST["deposit"]);
-$car_issued = htmlspecialchars($_POST["car_issued"]) === "true" ? 1 : 0;
-$car_returned = htmlspecialchars($_POST["car_returned"]) === "true" ? 1 : 0;
-$rental_days = htmlspecialchars($_POST["rental_days"]);
-$rental_rate = htmlspecialchars($_POST["rental_rate"]);
-$rental_cost = htmlspecialchars($_POST["rental_cost"]);
-$note_rental_cost = htmlspecialchars($_POST["note_rental_cost"]);
-$mileage_start = htmlspecialchars($_POST["mileage_start"]);
-$mileage_end = htmlspecialchars($_POST["mileage_end"]);
+$booking_id = htmlspecialchars($_POST["booking_id"]);
+$date = htmlspecialchars($_POST["date"]);
+$directory_operation_types_id = htmlspecialchars($_POST["directory_operation_types_id"]);
+$directory_payment_types_id = htmlspecialchars($_POST["directory_payment_types_id"]);
+$period_from = htmlspecialchars($_POST["period_from"]);
+$period_to = htmlspecialchars($_POST["period_to"]);
+$directory_services_id = htmlspecialchars($_POST["directory_services_id"]);
+$directory_services_name = htmlspecialchars($_POST["directory_services_name"]);
+$tariff = htmlspecialchars($_POST["tariff"]);
+$quantity = htmlspecialchars($_POST["quantity"]);
+$accrued = htmlspecialchars($_POST["accrued"]);
+$paid = htmlspecialchars($_POST["paid"]);
+$is_income = htmlspecialchars($_POST["is_income"]) === "true" ? 1 : 0;
 
-$sql = "SELECT * FROM booking WHERE car_id = '$carId' AND start_date >= '$start_date' AND end_date <= '$end_date'";
-$sqls[] = $sql;
-$result = pg_query($conn, $sql);
-
-if(pg_num_rows($result) > 0)
-{
-    //$error = 1;
-    //$error_text = "Данный автомобиль уже забронирован на данный период";
-}
-
-if($error === 0){
+if ($error === 0) {
     $sql = "
-        INSERT INTO booking (
-                             car_id, 
-                             client_id, 
-                             directory_territory_car_use_id, 
-                             address_give_out, 
-                             address_take_back, 
-                             start_date, 
-                             end_date, 
-                             deposit, 
-                             car_issued,
-                             car_returned,
-                             rental_days,
-                             rental_rate,
-                             rental_cost,
-                             note_rental_cost,
-                             mileage_start,
-                             mileage_end,
-                             last_user_id) 
+        INSERT INTO booking_accruals_and_payments 
+        (
+            booking_id,
+            operation_datetime,
+            directory_operation_types_id,
+            directory_payment_types_id,
+            period_from,
+            period_to,
+            directory_services_id,
+            directory_services_name,
+            tariff,
+            quantity,
+            accrued,
+            paid,
+            is_income,
+            create_user_id,
+            last_user_id
+        ) 
         VALUES (
-                '$carId', 
-                '$clientId', 
-                '$directory_territory_car_use_id', 
-                '$address_give_out', 
-                '$address_take_back', 
-                " . (empty($start_date) ? 'NULL' : "'" . $start_date . "'") . ", 
-                " . (empty($end_date) ? 'NULL' : "'" . $end_date . "'") . ", 
-                '$deposit', 
-                '$car_issued',
-                '$car_returned',
-                '$rental_days',
-                '$rental_rate',
-                '$rental_cost',
-                '$note_rental_cost',
-                '$mileage_start',
-                '$mileage_end',
+                '$booking_id', 
+                '$date', 
+                '$directory_operation_types_id', 
+                '$directory_payment_types_id', 
+                " . (empty($period_from) ? 'NULL' : "'" . $period_from . "'") . ", 
+                " . (empty($period_to) ? 'NULL' : "'" . $period_to . "'") . ", 
+                '$directory_services_id', 
+                '$directory_services_name',
+                '$tariff',
+                '$quantity',
+                '$accrued',
+                '$paid',
+                '$is_income',
+                $user,
                 $user) 
         RETURNING id";
     $sqls[] = $sql;

@@ -17,7 +17,7 @@ $error_text = "";
 $sqls = array();
 $params = null;
 
-$sql = "DELETE FROM booking WHERE id = '$ID'";
+$sql = "DELETE FROM booking_accruals_and_payments WHERE id = '$ID'";
 pg_query($conn, $sql);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

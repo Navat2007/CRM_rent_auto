@@ -1,8 +1,14 @@
 <script setup>
 import Divider from "primevue/divider";
 import {useAuthStore} from "@stores";
-import {computed, reactive, unref} from "vue";
+import {computed, onMounted, reactive, ref, unref, watch} from "vue";
 import {useVuelidate} from "@vuelidate/core";
+import DateTimePickerWithMask from "@components/Inputs/DateTimePickerWithMask.vue";
+import Select from "primevue/select";
+import {isNumber} from "lodash";
+import DirectoryService from "@services/DirectoryService.js";
+import {helpers, minValue, required} from "@vuelidate/validators";
+import moment from "moment/moment.js";
 
 const props = defineProps({
     sending: {
@@ -14,7 +20,11 @@ const props = defineProps({
         type: Object,
         required: false,
         default: null
-    }
+    },
+    carState:{
+        type: Object,
+        required: true
+    },
 });
 const emit = defineEmits(['onSubmit', 'onDelete']);
 
@@ -22,30 +32,75 @@ const {user} = useAuthStore();
 
 const state = reactive({
     companyId: user.company_id,
-    carId: 0,
-    clientId: 0,
-    directory_territory_car_use_id: 0,
-    address_give_out: props.item.address_give_out,
-    address_take_back: props.item.address_take_back,
-    start_date: props.item.start_date ? moment(props.item.start_date).format('DD.MM.YYYY HH:mm') : null,
-    end_date: props.item.end_date ? moment(props.item.end_date).format('DD.MM.YYYY HH:mm') : null,
-    deposit: props.item.deposit === 0 ? null : props.item.deposit,
-    car_issued: parseInt(props.item.car_issued) === 1,
-    car_returned: parseInt(props.item.car_returned) === 1,
-    rental_days: parseInt(props.item.rental_days),
-    rental_rate: props.item.rental_rate,
-    rental_rate_text: '',
-    rental_cost: props.item.rental_cost,
-    note_rental_cost: props.item.note_rental_cost,
-    mileage_start: props.item.mileage_start === 0 ? null : props.item.mileage_start,
-    mileage_end: props.item.mileage_end === 0 ? null : props.item.mileage_end,
+    carId: props.carState.carId,
+    carClassId: props.carState.carClassId,
+    date: props.item.operation_datetime ? moment(props.item.operation_datetime).format('DD.MM.YYYY HH:mm') : null,
+    directory_operation_types_id: parseInt(props.item.directory_operation_types_id),
+    directory_payment_types_id: parseInt(props.item.directory_payment_types_id),
+    is_income: parseInt(props.item.is_income) === 1 ? "true" : "false",
+    period_from: props.item.period_from ? moment(props.item.period_from).format('DD.MM.YYYY HH:mm') : null,
+    period_to: props.item.period_to ? moment(props.item.period_to).format('DD.MM.YYYY HH:mm') : null,
+    directory_services_id: parseInt(props.item.directory_services_id),
+    directory_services_name: props.item.directory_services_name,
+    tariff: props.item.tariff && parseInt(props.item.tariff) > 0 ? parseInt(props.item.tariff) : null,
+    quantity: parseInt(props.item.quantity),
+    accrued: props.item.accrued && parseInt(props.item.accrued) > 0 ? parseInt(props.item.accrued) : null,
+    paid: props.item.paid && parseInt(props.item.paid) > 0 ? parseInt(props.item.paid) : null,
 });
 const rules = computed(() => {
     return {
-
+        directory_operation_types_id: {
+            required: helpers.withMessage("Нужно выбрать тип операции", required),
+            minValue: helpers.withMessage("Нужно выбрать тип операции", minValue(1)),
+            $lazy: true
+        },
+        directory_payment_types_id: {
+            required: helpers.withMessage("Нужно выбрать вид оплаты", required),
+            minValue: helpers.withMessage("Нужно выбрать вид оплаты", minValue(1)),
+            $lazy: true
+        },
     }
 });
 const v$ = useVuelidate(rules, state);
+
+const loadingOperationTypes = ref(true);
+const isOperationTypesDrawerOpen = ref(false);
+const operationTypes = ref([]);
+
+const loadingPaymentTypes = ref(true);
+const isPaymentTypesDrawerOpen = ref(false);
+const paymentTypes = ref([]);
+
+const loadingCarClassServicePrices = ref(true);
+const isCarClassServicePricesDrawerOpen = ref(false);
+const carClassServicePrices = ref([]);
+
+const loadingServices = ref(true);
+const isServicesDrawerOpen = ref(false);
+const services = ref([]);
+
+const setIsIncomeByOperationType = () => {
+    if(state.directory_operation_types_id !== 0){
+        const operationType = operationTypes.value.find(item => item.id === state.directory_operation_types_id);
+        state.is_income = parseInt(operationType.is_income) === 1 ? 'true' : 'false';
+    }
+}
+const setTariff = () => {
+    state.tariff = null;
+
+    const servicePrice = carClassServicePrices.value.find(item => item.id === state.directory_services_id);
+
+    if(servicePrice && servicePrice.price > 0){
+        state.tariff = servicePrice.price;
+    }
+}
+const setAccrued = () => {
+    state.accrued = null;
+
+    if(state.tariff && isNumber(state.tariff)){
+        state.accrued = state.tariff * state.quantity;
+    }
+}
 
 const onFormSubmit = async (e) => {
     const isFormCorrect = await unref(v$).$validate();
@@ -54,6 +109,83 @@ const onFormSubmit = async (e) => {
         emit('onSubmit', state);
     }
 };
+async function onDirectoryOperationTypesAdd(id) {
+    loadingOperationTypes.value = true;
+    await fetchOperationTypes();
+    state.directory_operation_types_id = id;
+    isOperationTypesDrawerOpen.value = false;
+}
+async function onDirectoryPaymentTypesAdd(id) {
+    loadingPaymentTypes.value = true;
+    await fetchPaymentTypes();
+    state.directory_payment_types_id = id;
+    isPaymentTypesDrawerOpen.value = false;
+}
+
+async function fetchOperationTypes() {
+    const result = await DirectoryService.getAll({
+        directory: 'directory_operation_types',
+        company_id: user.company_id
+    });
+
+    operationTypes.value = result
+        .map(item => {
+            item.name = item.name + (parseInt(item.is_income) === 1 ? ' (доход)' : ' (расход)');
+
+            return item;
+        })
+        .filter(item => item.archive === "Активен");
+
+    loadingOperationTypes.value = false;
+}
+async function fetchPaymentTypes() {
+    paymentTypes.value = (await DirectoryService.getAll({
+        directory: 'directory_payment_types',
+        company_id: user.company_id
+    })).filter(item => item.archive === "Активен");
+    loadingPaymentTypes.value = false;
+}
+async function fetchServices() {
+    services.value = (await DirectoryService.getAll({directory: 'directory_services', company_id: user.company_id}))
+        .filter(item => item.archive === "Активен");
+    loadingServices.value = false;
+}
+async function fetchCarClassServicePrices() {
+    const result = await DirectoryService.getCarClassServicePriceByClassId({id: state.carClassId, company_id: user.company_id});
+
+    carClassServicePrices.value = result;
+    loadingCarClassServicePrices.value = false;
+}
+
+watch(() => state.directory_operation_types_id, () => {
+    setIsIncomeByOperationType();
+});
+
+watch(() => state.directory_services_name, () => {
+    if(isNumber(state.directory_services_name)){
+        state.directory_services_id = state.directory_services_name;
+        state.directory_services_name = services.value.find(item => item.id === state.directory_services_name).name;
+    }
+    else if(!services.value.find(item => item.name === state.directory_services_name)){
+        state.directory_services_id = 0;
+    }
+    else if(state.directory_services_name === "" || state.directory_services_name === null){
+        state.directory_services_id = 0;
+    }
+});
+
+watch(() => state.directory_services_id, () => {
+    if(state.directory_services_id > 0){
+        setTariff();
+    }
+});
+
+onMounted(() => {
+    fetchOperationTypes();
+    fetchPaymentTypes();
+    fetchServices();
+    fetchCarClassServicePrices();
+});
 </script>
 
 <template>
@@ -61,119 +193,182 @@ const onFormSubmit = async (e) => {
         <template #content>
             <form @submit.prevent="onFormSubmit" autocomplete="off">
                 <div class="grid gap-6 grid-cols-1">
+                    <!-- Дата -->
+                    <div class="w-full sm:w-80">
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата*</label>
+                        <div>
+                            <DateTimePickerWithMask :value="state.date"
+                                                    :key="state.date"
+                                                    @onChange="e => state.date = e"/>
+                        </div>
+                    </div>
+                    <!-- Тип операции / Вид оплаты -->
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <!-- Депозит -->
+                        <!-- Тип операции -->
+                        <div class="w-full">
+                            <label for="position"
+                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Тип операции*</label>
+                            <Select v-model="state.directory_operation_types_id"
+                                    :loading="loadingOperationTypes" :options="operationTypes"
+                                    optionLabel="name"
+                                    optionValue="id" placeholder="Выберите тип операции"
+                                    showClear
+                                    filter class="w-full">
+                                <template v-if="user.access.directory === 2" #header>
+                                    <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
+                                            label="Добавить"
+                                            outlined
+                                            @click="isOperationTypesDrawerOpen = true"/>
+                                </template>
+                            </Select>
+                        </div>
+                        <!-- Вид оплаты -->
+                        <div class="w-full">
+                            <label for="position"
+                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Вид оплаты*</label>
+                            <Select v-model="state.directory_payment_types_id"
+                                    :loading="loadingPaymentTypes" :options="paymentTypes"
+                                    optionLabel="name"
+                                    optionValue="id" placeholder="Выберите тип операции"
+                                    showClear
+                                    filter class="w-full">
+                                <template v-if="user.access.directory === 2" #header>
+                                    <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
+                                            label="Добавить"
+                                            outlined
+                                            @click="isPaymentTypesDrawerOpen = true"/>
+                                </template>
+                            </Select>
+                        </div>
+                    </div>
+                    <!-- Доходная или расходная -->
+                    <div class="flex flex-wrap gap-4 justify-center sm:justify-start">
+                        <div class="flex items-center gap-2">
+                            <RadioButton v-model="state.is_income" inputId="is_income1" name="income" value="true" />
+                            <label for="is_income1">Доход</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <RadioButton v-model="state.is_income" inputId="is_income2" name="expence" value="false" />
+                            <label for="is_income2">Расход</label>
+                        </div>
+                        <Button
+                            icon="pi pi-replay" severity="contrast" variant="text" rounded
+                            v-tooltip.top="{ value: 'Заполнить в соответствии с Типом операции'}"
+                            @click="setIsIncomeByOperationType"
+                        />
+                    </div>
+                    <!-- Период -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="w-full">
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Период с</label>
+                            <div>
+                                <DateTimePickerWithMask :value="state.period_from"
+                                                        :key="state.period_from"
+                                                        @onChange="e => state.period_from = e"/>
+                            </div>
+                        </div>
+                        <div class="w-full">
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">по</label>
+                            <div>
+                                <DateTimePickerWithMask :value="state.period_to"
+                                                        :key="state.period_to"
+                                                        @onChange="e => state.period_to = e"/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Услуга / Тариф / Кол-во -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <!-- Услуга -->
+                        <div class="w-full">
+                            <label for="position"
+                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Услуга</label>
+                            <Select v-model="state.directory_services_name"
+                                    :loading="loadingServices" :options="services"
+                                    optionLabel="name"
+                                    optionValue="id" placeholder="Выберите услугу или введите название"
+                                    showClear editable
+                                    filter class="w-full">
+                            </Select>
+                        </div>
+                        <!-- Тариф -->
                         <div class="flex flex-col justify-end">
                             <label
                                 for="deposit"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                                Залог (руб.)
+                                Тариф
                             </label>
                             <div class="flex gap-2 justify-start items-center">
-                                <InputNumber id="deposit" v-model="state.deposit" :min="0" fluid/>
+                                <InputNumber id="deposit" v-model="state.tariff" :min="0" fluid/>
+                                <Button
+                                    icon="pi pi-replay" severity="contrast" variant="text" rounded
+                                    v-tooltip.top="{ value: 'Заполнить в соответствии со стоимостью Услуги'}"
+                                    @click="setTariff"
+                                />
+                            </div>
+                        </div>
+                        <!-- Кол-во -->
+                        <div class="flex justify-center items-end gap-2">
+                            <div class="flex flex-col items-center">
+                                <label for="rental_days"
+                                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Кол-во</label>
+                                <div class="flex gap-2 justify-start items-center">
+                                    <Button
+                                        icon="pi pi-chevron-left" severity="contrast" variant="text" rounded
+                                        @click="() => {
+                                        if(state.quantity > 1) {
+                                            state.quantity -= 1
+                                        }
+                                    }"
+                                    />
+                                    <InputNumber id="rental_days" v-model="state.quantity"
+                                                 style="max-width: 52px;" :min="1" fluid/>
+                                    <Button
+                                        icon="pi pi-chevron-right" severity="contrast" variant="text"
+                                        rounded
+                                        @click="() => {
+                                        state.quantity += 1
+                                    }"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Начислено / Оплачено -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-between">
+                        <!-- Начислено -->
+                        <div class="flex flex-col justify-end">
+                            <label
+                                for="deposit"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                                Начислено
+                            </label>
+                            <div class="flex gap-2 justify-start items-center">
+                                <InputNumber id="deposit" v-model="state.accrued" :min="0" fluid/>
                                 <Button
                                     icon="pi pi-replay" severity="contrast" variant="text" rounded
                                     v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
-                                    @click="setDeposit"
+                                    @click="setAccrued"
                                 />
                             </div>
                         </div>
-                        <!-- Лимит пробега в сутки (км) -->
-                        <div class="flex flex-col justify-end">
-                            <label
-                                for="limit"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Лимит пробега в сутки (км)
-                            </label>
-                            <InputNumber id="limit"
-                                         :model-value="currentCarClass != null ? currentCarClass.limit : 0"
-                                         disabled fluid/>
-                        </div>
-                        <!-- Стоимость 1 км перепробега (руб.) -->
-                        <div class="flex flex-col justify-end">
-                            <label
-                                for="limit"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Стоимость 1 км перепробега (руб.)
-                            </label>
-                            <InputNumber id="limit"
-                                         :model-value="currentCarClass != null ? currentCarClass.cost_extra_mileage : 0"
-                                         disabled fluid/>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <!-- Пробег начало (км) -->
-                        <div class="flex flex-col justify-end">
-                            <label
-                                for="mileage_start"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Пробег начало (км)
-                            </label>
-                            <InputNumber id="mileage_start" v-model="state.mileage_start" fluid/>
-                        </div>
-                        <!-- Пробег конец (км) -->
-                        <div class="flex flex-col justify-end">
-                            <label
-                                for="mileage_end"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Пробег конец (км)
-                            </label>
-                            <div class="flex gap-2 justify-start items-center">
-                                <InputNumber id="mileage_end" v-model="state.mileage_end" fluid/>
-                                <Button
-                                    icon="pi pi-save" severity="contrast" variant="text" rounded
-                                    v-tooltip.top="{ value: 'Сохранить пробег'}"
-                                    @click="saveMileage"
-                                />
-                            </div>
-                        </div>
-                        <!-- Километраж (км) -->
-                        <div class="flex flex-col justify-end">
-                            <label
-                                for="mileage"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Километраж (км)
-                            </label>
-                            <InputNumber
-                                id="mileage"
-                                :model-value="mileage"
-                                disabled fluid
+                        <div class="flex justify-center items-end gap-2">
+                            <Button
+                                icon="pi pi-arrow-right" severity="contrast" variant="text" rounded
+                                v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
+                                @click="() => {state.paid = state.accrued}"
                             />
                         </div>
-                        <!-- Перепробег (км) -->
-                        <div v-if="over_mileage > 0" class="flex flex-col justify-end">
+                        <!-- Оплачено -->
+                        <div class="flex flex-col justify-end">
                             <label
-                                for="over_mileage"
+                                for="deposit"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                                Перепробег (км)
+                                Оплачено
                             </label>
-                            <InputNumber
-                                id="over_mileage"
-                                :model-value="over_mileage"
-                                disabled fluid
-                            />
-                        </div>
-                        <!-- За перепробег (руб.) -->
-                        <div v-if="over_mileage > 0" class="flex flex-col justify-end">
-                            <label
-                                for="over_mileage_cost"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                За перепробег (руб.)
-                            </label>
-                            <InputNumber
-                                id="over_mileage_cost"
-                                :model-value="over_mileage_cost"
-                                disabled fluid
-                            />
+                            <InputNumber id="deposit" v-model="state.paid" :min="0" fluid/>
                         </div>
                     </div>
                 </div>

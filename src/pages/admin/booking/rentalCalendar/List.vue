@@ -214,29 +214,43 @@ onMounted(fetchData);
             <template #empty>
                 По выбранным фильтрам не найдено автомобилей
             </template>
-            <Column field="id" header="ID авто" frozen>
+            <Column field="id" header="ID авто" frozen
+                    :pt="{
+                    bodyCell: 'p-0',
+                }"
+            >
                 <template #body="slotProps">
                     <div
                         :class="currentHoverCar && parseInt(currentHoverCar.id) === parseInt(slotProps.data.id) ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
+                        class="px-2"
                     >
                         {{slotProps.data.id}}
                     </div>
                 </template>
             </Column>
-            <Column field="state_number" style="min-width: 200px" header="Гос номер" frozen>
+            <Column field="state_number" style="min-width: 200px" header="Гос номер" frozen
+                    :pt="{
+                    bodyCell: 'p-0',
+                }"
+            >
                 <template #body="slotProps">
                     <div
                         :class="currentHoverCar && parseInt(currentHoverCar.id) === parseInt(slotProps.data.id) ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
+                        class="px-2"
                     >
                         {{slotProps.data.state_number}}
                     </div>
                 </template>
             </Column>
-            <Column header="Авто" frozen>
+            <Column header="Авто" frozen
+                    :pt="{
+                    bodyCell: 'p-0',
+                }"
+            >
                 <template #body="slotProps">
                     <div
                         :class="currentHoverCar && parseInt(currentHoverCar.id) === parseInt(slotProps.data.id) ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
-                        class="flex flex-row gap-1 whitespace-nowrap"
+                        class="flex flex-row gap-1 whitespace-nowrap px-2"
                     >
                         <span>{{ slotProps.data.brand }}</span>
                         <span>{{ slotProps.data.model }}</span>
@@ -247,12 +261,13 @@ onMounted(fetchData);
                 v-for="(day,index) in days" ref="day"
                 :pt="{
                     bodyCell: 'p-0 border border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800',
+                    headerCell: 'p-0',
                 }"
             >
                 <template #header="slotProps">
                     <div
                         :class="currentHoverDay === day ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
-                        class="flex items-center justify-center text-center p-1"
+                        class="flex items-center justify-center text-center px-4 h-full"
                     >
                         {{ day.title + (day.weekend ? '*' : '') }}
                     </div>

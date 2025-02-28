@@ -17,6 +17,7 @@ import Select from "primevue/select";
 import SearchAddress from "@components/Inputs/SearchAddress.vue";
 import PopUpBookingOperation from "@components/Popups/PopUpBookingOperation.vue";
 import BookingOperationsService from "@services/BookingOperationsService.js";
+import BookingCalendarCell from "@components/Table/Cells/BookingCalendarCell.vue";
 
 const {user} = useAuthStore();
 
@@ -63,6 +64,7 @@ const dialogText = ref('');
 const state = reactive({
     companyId: user.company_id,
     carId: 0,
+    carClassId: 0,
     clientId: 0,
     directory_territory_car_use_id: 0,
     address_give_out: props.item.address_give_out,
@@ -280,13 +282,21 @@ const handleEditOperationButtonClick = (item) => {
         return;
     }
 
-    operationItem.value = item;
+    operationItem.value = item.data;
     isOperationPopUpOpen.value = true;
 }
 
 const onOperationDone = () => {
     isOperationPopUpOpen.value = false;
+    fetchOperations();
 }
+
+const rowClass = (data) => {
+    return [
+        { 'bg-green-200': parseInt(data.is_income) === 1 },
+        { 'bg-red-200': parseInt(data.is_income) === 0 },
+    ];
+};
 
 watchEffect(() => {
     if (state.carId !== 0) {
@@ -294,10 +304,12 @@ watchEffect(() => {
 
         if (currentCar.value) {
             currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
+            state.carClassId = currentCar.value.class_id;
             calculateTariff();
         }
     } else {
         currentCar.value = null;
+        state.carClassId = null;
     }
 
     if (state.clientId !== 0) {
@@ -686,18 +698,38 @@ onMounted(() => {
                                             @click="handleAddOperationButtonClick"/>
                                     <DataTable
                                         :value="operations" tableStyle="min-width: 50rem"
-                                        :loading="loadingOperations"
-                                        @onRowClick="handleEditOperationButtonClick"
+                                        :loading="loadingOperations" :rowClass="rowClass"
+                                        @row-click="handleEditOperationButtonClick"
                                     >
-                                        <Column field="code" header="Дата"></Column>
-                                        <Column field="name" header="Операция"></Column>
-                                        <Column field="category" header="Период с"></Column>
-                                        <Column field="quantity" header="по дату"></Column>
-                                        <Column field="quantity" header="Кол-во"></Column>
-                                        <Column field="quantity" header="Начислено"></Column>
-                                        <Column field="quantity" header="Оплачено"></Column>
-                                        <Column field="quantity" header="Вид оплаты"></Column>
-                                        <Column field="quantity" header="Услуга"></Column>
+                                        <Column field="operation_datetime" header="Дата" sortable>
+                                            <template #body="{data}">
+                                                {{ data.operation_datetime ? moment(data.operation_datetime).format('DD.MM.YYYY HH:mm') : null}}
+                                            </template>
+                                        </Column>
+                                        <Column field="directory_operation_types_name" header="Операция" sortable></Column>
+                                        <Column field="period_from" header="Период с" sortable>
+                                            <template #body="{data}">
+                                                {{ data.period_from ? moment(data.period_from).format('DD.MM.YYYY HH:mm') : null }}
+                                            </template>
+                                        </Column>
+                                        <Column field="period_to" header="по дату" sortable>
+                                            <template #body="{data}">
+                                                {{ data.period_to ? moment(data.period_to).format('DD.MM.YYYY HH:mm') : null}}
+                                            </template>
+                                        </Column>
+                                        <Column field="quantity" header="Кол-во" sortable></Column>
+                                        <Column field="accrued" header="Начислено" sortable>
+                                            <template #body="{data}">
+                                                {{ data.accrued && parseFloat(data.accrued) > 0 ? data.accrued : null }}
+                                            </template>
+                                        </Column>
+                                        <Column field="paid" header="Оплачено" sortable>
+                                            <template #body="{data}">
+                                                {{ data.paid && parseFloat(data.paid) > 0 ? data.paid : null }}
+                                            </template>
+                                        </Column>
+                                        <Column field="directory_payment_types_name" header="Вид оплаты" sortable></Column>
+                                        <Column field="directory_services_name" header="Услуга" sortable></Column>
                                     </DataTable>
                                 </div>
                             </div>
@@ -721,7 +753,7 @@ onMounted(() => {
     </Card>
 
     <PopUpBookingOperation
-        :item="operationItem" :visible="isOperationPopUpOpen"
+        :item="operationItem" :visible="isOperationPopUpOpen" :carState="state"
         @onClose="isOperationPopUpOpen = false" @onDone="onOperationDone"
     />
     <AddDirectoryDrawer

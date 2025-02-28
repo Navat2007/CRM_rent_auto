@@ -16,10 +16,13 @@ $params = array();
 
 $sql = "
     SELECT 
-        *
+        baap.*, dot.name as directory_operation_types_name,
+        dpt.name as directory_payment_types_name
     FROM 
-        booking_accruals_and_payments as booking
-    WHERE booking_id = '$ID'";
+        booking_accruals_and_payments as baap
+    LEFT JOIN directory_operation_types as dot ON baap.directory_operation_types_id = dot.id
+    LEFT JOIN directory_payment_types as dpt ON baap.directory_payment_types_id = dpt.id    
+    WHERE baap.booking_id = '$ID' ORDER BY baap.operation_datetime DESC";
 $sqls[] = $sql;
 $result = pg_query($conn, $sql);
 

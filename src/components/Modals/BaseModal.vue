@@ -101,7 +101,7 @@ onClickOutside(target, () => {
 
 <style scoped>
 .background {
-    @apply fixed z-999999 inset-0 bg-black bg-opacity-25 backdrop-blur-sm w-screen h-screen flex justify-center items-center;
+    @apply fixed z-9999 inset-0 bg-black bg-opacity-25 backdrop-blur-sm w-screen h-screen flex justify-center items-center;
 }
 
 .modal {
