@@ -242,15 +242,6 @@ const calculateRentalCost = () => {
     state.rental_cost = state.rental_rate * state.rental_days;
 }
 
-const handleAddOperationButtonClick = () => {
-    if (!currentCar.value) {
-        dialogHeader.value = "Ошибка";
-        dialogText.value = "Нужно выбрать автомобиль";
-        dialogVisible.value = true;
-        return;
-    }
-}
-
 watchEffect(() => {
     if (state.carId !== 0) {
         currentCar.value = cars.value.find(car => car.id === state.carId);
@@ -643,22 +634,6 @@ onMounted(() => {
                                             disabled fluid
                                         />
                                     </div>
-                                </div>
-
-                                <div class="mt-8">
-                                    <Button type="button" icon="pi pi-plus" label="Добавить" outlined
-                                            @click="handleAddOperationButtonClick"/>
-                                    <DataTable :value="state.payments" tableStyle="min-width: 50rem">
-                                        <Column field="code" header="Дата"></Column>
-                                        <Column field="name" header="Операция"></Column>
-                                        <Column field="category" header="Период с"></Column>
-                                        <Column field="quantity" header="по дату"></Column>
-                                        <Column field="quantity" header="Кол-во"></Column>
-                                        <Column field="quantity" header="Начислено"></Column>
-                                        <Column field="quantity" header="Оплачено"></Column>
-                                        <Column field="quantity" header="Вид оплаты"></Column>
-                                        <Column field="quantity" header="Услуга"></Column>
-                                    </DataTable>
                                 </div>
                             </div>
                         </TabPanel>

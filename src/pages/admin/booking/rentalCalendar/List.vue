@@ -33,6 +33,9 @@ const filterFree = ref(false);
 const filterBooking = ref(false);
 const filterUnfree = ref(false);
 
+const currentHoverDay = ref(null);
+const currentHoverCar = ref(null);
+
 const handleCellClick = (item) => {
     selectedContract.value = item;
     drawer.value = true;
@@ -206,52 +209,69 @@ onMounted(fetchData);
         <DataTable
             :value="filteredItems" size="small" tableStyle="min-width: 50rem"
             :loading="loading || calculate"
-            scrollable scrollHeight="495px"
+            scrollable scrollHeight="730px"
         >
             <template #empty>
                 По выбранным фильтрам не найдено автомобилей
             </template>
             <Column field="id" header="ID авто" frozen>
+                <template #body="slotProps">
+                    <div
+                        :class="currentHoverCar && parseInt(currentHoverCar.id) === parseInt(slotProps.data.id) ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
+                    >
+                        {{slotProps.data.id}}
+                    </div>
+                </template>
             </Column>
             <Column field="state_number" style="min-width: 200px" header="Гос номер" frozen>
+                <template #body="slotProps">
+                    <div
+                        :class="currentHoverCar && parseInt(currentHoverCar.id) === parseInt(slotProps.data.id) ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
+                    >
+                        {{slotProps.data.state_number}}
+                    </div>
+                </template>
             </Column>
             <Column header="Авто" frozen>
                 <template #body="slotProps">
-                    <div class="flex flex-row gap-1 whitespace-nowrap">
+                    <div
+                        :class="currentHoverCar && parseInt(currentHoverCar.id) === parseInt(slotProps.data.id) ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
+                        class="flex flex-row gap-1 whitespace-nowrap"
+                    >
                         <span>{{ slotProps.data.brand }}</span>
                         <span>{{ slotProps.data.model }}</span>
                     </div>
                 </template>
             </Column>
             <Column
-                v-for="day in days"
+                v-for="(day,index) in days" ref="day"
                 :pt="{
-                    bodyCell: 'p-0 border border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    bodyCell: 'p-0 border border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800',
                 }"
             >
                 <template #header="slotProps">
-                    {{ day.title + (day.weekend ? '*' : '') }}
+                    <div
+                        :class="currentHoverDay === day ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
+                        class="flex items-center justify-center text-center p-1"
+                    >
+                        {{ day.title + (day.weekend ? '*' : '') }}
+                    </div>
                 </template>
                 <template #body="{data}">
-                    <BookingCalendarCell
-                        :item="getContractComponent(data, day)"
-                        :day="day"
-                        :month="moment(date.value).month() + 1"
-                        :year="moment(date.value).year()"
-                        @onSelect="handleCellClick"
-                    />
+                    <div @mouseenter="() => {
+                        currentHoverCar = data;
+                        currentHoverDay = day;
+                    }">
+                        <BookingCalendarCell
+                            :item="getContractComponent(data, day)"
+                            :day="day"
+                            :month="moment(date.value).month() + 1"
+                            :year="moment(date.value).year()"
+                            @onSelect="handleCellClick"
+                        />
+                    </div>
                 </template>
             </Column>
-            <!--      <Column field="summary" header="Сумма">-->
-            <!--      </Column>-->
-            <!--      <Column field="tariff" header="Тариф">-->
-            <!--      </Column>-->
-            <!--      <Column field="balance" header="Баланс">-->
-            <!--      </Column>-->
-            <!--      <Column field="object" header="Объект">-->
-            <!--      </Column>-->
-            <!--      <Column field="client" header="Клиент">-->
-            <!--      </Column>-->
         </DataTable>
     </PageContainer>
 

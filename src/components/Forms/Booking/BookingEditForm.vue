@@ -12,13 +12,11 @@ import DateTimePickerWithMask from "@components/Inputs/DateTimePickerWithMask.vu
 import Client from "@components/Cards/Client.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import AddDirectoryDrawer from "@components/Drawers/Directory/AddDirectoryDrawer.vue";
-import FormError from "@components/Inputs/FormError.vue";
-import {Icon} from "@vicons/utils";
-import {RefreshOutlined} from "@vicons/material";
-import {debounce, isNumber} from "lodash";
-import DaDataService from "@services/DaDataService.js";
+import {isNumber} from "lodash";
 import Select from "primevue/select";
 import SearchAddress from "@components/Inputs/SearchAddress.vue";
+import PopUpBookingOperation from "@components/Popups/PopUpBookingOperation.vue";
+import BookingOperationsService from "@services/BookingOperationsService.js";
 
 const {user} = useAuthStore();
 
@@ -52,6 +50,11 @@ const territories = ref([]);
 const loadingCarClasses = ref(true);
 const isCarClassesDrawerOpen = ref(false);
 const carClasses = ref([]);
+
+const loadingOperations = ref(true);
+const isOperationPopUpOpen = ref(false);
+const operationItem = ref(null);
+const operations = ref([]);
 
 const dialogVisible = ref(false);
 const dialogHeader = ref('');
@@ -103,31 +106,31 @@ const rules = computed(() => {
             }),
             $lazy: true
         },
-        mileage_end: {
-            minValue: helpers.withMessage("Пробег на момент приема должен быть больше или равен пробегу на момент выдачи", value => {
-                return value >= state.mileage_start;
-            }),
-            $lazy: true
-        },
+        // mileage_end: {
+        //     minValue: helpers.withMessage("Пробег на момент приема должен быть больше или равен пробегу на момент выдачи", value => {
+        //         return value >= state.mileage_start;
+        //     }),
+        //     $lazy: true
+        // },
     }
 });
 const v$ = useVuelidate(rules, state);
 
 const mileage = computed(() => {
-    if(state.mileage_start > state.mileage_end)
+    if (state.mileage_start > state.mileage_end)
         return 0;
 
     return state.mileage_end - state.mileage_start;
 });
 const over_mileage = computed(() => {
-    if(currentCarClass.value && mileage.value > 0){
+    if (currentCarClass.value && mileage.value > 0) {
         return mileage.value - (state.rental_days * parseFloat(currentCarClass.value.limit));
     }
 
     return 0;
 });
 const over_mileage_cost = computed(() => {
-    if(currentCarClass.value){
+    if (currentCarClass.value) {
         return over_mileage.value * parseFloat(currentCarClass.value.cost_extra_mileage);
     }
 
@@ -172,6 +175,14 @@ async function fetchCarClasses() {
         company_id: user.company_id
     })).filter(item => item.archive === "Активен");
     loadingCarClasses.value = false;
+}
+
+async function fetchOperations() {
+    operations.value = (await BookingOperationsService.getAll({
+        id: props.item.id,
+        company_id: user.company_id
+    }));
+    loadingOperations.value = false;
 }
 
 async function onDirectoryTerritoryUseAdd(id) {
@@ -228,18 +239,15 @@ const calculateTariff = () => {
     state.rental_rate_text = '';
 
     currentCar.value.saved_price_periods.map(period => {
-        if(state.rental_days >= period.days_from && state.rental_days <= period.days_until){
-            if(isNumber(period.price))
-            {
+        if (state.rental_days >= period.days_from && state.rental_days <= period.days_until) {
+            if (isNumber(period.price)) {
                 price = period.price;
                 state.rental_rate_text = period.name;
             }
-        }
-        else if(period.days_until === 0 && state.rental_days >= period.days_from){
+        } else if (period.days_until === 0 && state.rental_days >= period.days_from) {
             price = period.price;
             state.rental_rate_text = period.name;
-        }
-        else if(period.days_from === 0 && state.rental_days <= period.days_from){
+        } else if (period.days_from === 0 && state.rental_days <= period.days_from) {
             price = period.price;
             state.rental_rate_text = period.name;
         }
@@ -252,11 +260,39 @@ const calculateRentalCost = () => {
     state.rental_cost = state.rental_rate * state.rental_days;
 }
 
+const handleAddOperationButtonClick = () => {
+    if (!currentCar.value) {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Нужно выбрать автомобиль";
+        dialogVisible.value = true;
+        return;
+    }
+
+    operationItem.value = null;
+    isOperationPopUpOpen.value = true;
+}
+
+const handleEditOperationButtonClick = (item) => {
+    if (!currentCar.value) {
+        dialogHeader.value = "Ошибка";
+        dialogText.value = "Нужно выбрать автомобиль";
+        dialogVisible.value = true;
+        return;
+    }
+
+    operationItem.value = item;
+    isOperationPopUpOpen.value = true;
+}
+
+const onOperationDone = () => {
+    isOperationPopUpOpen.value = false;
+}
+
 watchEffect(() => {
     if (state.carId !== 0) {
         currentCar.value = cars.value.find(car => car.id === state.carId);
 
-        if(currentCar.value) {
+        if (currentCar.value) {
             currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
             calculateTariff();
         }
@@ -289,6 +325,7 @@ onMounted(() => {
     fetchClients();
     fetchTerritoryUse();
     fetchCarClasses();
+    fetchOperations();
 });
 </script>
 
@@ -506,11 +543,13 @@ onMounted(() => {
                                         </Select>
                                     </div>
                                     <!-- Адрес выдачи -->
-                                    <SearchAddress :input="state.address_give_out" label="Адрес выдачи" @onAddressResult="(address) => {
+                                    <SearchAddress :input="state.address_give_out" label="Адрес выдачи"
+                                                   @onAddressResult="(address) => {
                                         state.address_give_out = address;
                                     }"/>
                                     <!-- Адрес приема -->
-                                    <SearchAddress :input="state.address_take_back" label="Адрес приема" @onAddressResult="(address) => {
+                                    <SearchAddress :input="state.address_take_back" label="Адрес приема"
+                                                   @onAddressResult="(address) => {
                                         state.address_take_back = address;
                                     }"/>
                                 </div>
@@ -552,7 +591,9 @@ onMounted(() => {
                                         >
                                             Лимит пробега в сутки (км)
                                         </label>
-                                        <InputNumber id="limit" :model-value="currentCarClass != null ? currentCarClass.limit : 0" disabled fluid/>
+                                        <InputNumber id="limit"
+                                                     :model-value="currentCarClass != null ? currentCarClass.limit : 0"
+                                                     disabled fluid/>
                                     </div>
                                     <!-- Стоимость 1 км перепробега (руб.) -->
                                     <div class="flex flex-col justify-end">
@@ -562,7 +603,9 @@ onMounted(() => {
                                         >
                                             Стоимость 1 км перепробега (руб.)
                                         </label>
-                                        <InputNumber id="limit" :model-value="currentCarClass != null ? currentCarClass.cost_extra_mileage : 0" disabled fluid/>
+                                        <InputNumber id="limit"
+                                                     :model-value="currentCarClass != null ? currentCarClass.cost_extra_mileage : 0"
+                                                     disabled fluid/>
                                     </div>
                                 </div>
 
@@ -637,6 +680,26 @@ onMounted(() => {
                                         />
                                     </div>
                                 </div>
+
+                                <div class="mt-8">
+                                    <Button class="mb-2" type="button" icon="pi pi-plus" label="Добавить" outlined
+                                            @click="handleAddOperationButtonClick"/>
+                                    <DataTable
+                                        :value="operations" tableStyle="min-width: 50rem"
+                                        :loading="loadingOperations"
+                                        @onRowClick="handleEditOperationButtonClick"
+                                    >
+                                        <Column field="code" header="Дата"></Column>
+                                        <Column field="name" header="Операция"></Column>
+                                        <Column field="category" header="Период с"></Column>
+                                        <Column field="quantity" header="по дату"></Column>
+                                        <Column field="quantity" header="Кол-во"></Column>
+                                        <Column field="quantity" header="Начислено"></Column>
+                                        <Column field="quantity" header="Оплачено"></Column>
+                                        <Column field="quantity" header="Вид оплаты"></Column>
+                                        <Column field="quantity" header="Услуга"></Column>
+                                    </DataTable>
+                                </div>
                             </div>
                         </TabPanel>
                     </TabPanels>
@@ -656,6 +719,11 @@ onMounted(() => {
             </Tabs>
         </template>
     </Card>
+
+    <PopUpBookingOperation
+        :item="operationItem" :visible="isOperationPopUpOpen"
+        @onClose="isOperationPopUpOpen = false" @onDone="onOperationDone"
+    />
     <AddDirectoryDrawer
         title="Добавление территории использования" directory="directory_territory_car_use"
         :visible="isTerritoryUseDrawerOpen"
