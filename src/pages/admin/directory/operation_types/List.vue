@@ -24,14 +24,16 @@ const breadcrumbs = ref([
 ]);
 const statuses = ref(['Активен', 'В архиве']);
 const incomeStatuses = ref(['Доход', 'Расход']);
+const userForStatuses = ref(['Оплата аренды', 'Оплата залога', 'Возврат залога']);
 const filters = ref({
     id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
     is_income: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+    used_for: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
     order: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
     name: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.STARTS_WITH}]},
     archive: {operator: FilterOperator.OR, constraints: [{value: "Активен", matchMode: FilterMatchMode.EQUALS}]},
 });
-const filterFields = ref(['id', 'name', 'is_income', 'order', 'archive']);
+const filterFields = ref(['id', 'name', 'is_income', 'used_for', 'order', 'archive']);
 
 const handleAddButtonClick = () => {
     router.push(`/Admin/directory/${directoryUrl}/new`);
@@ -44,6 +46,25 @@ async function fetchData() {
     items.value = (await DirectoryService.getAll({directory: 'directory_' + directoryUrl, company_id: user.company_id}))
         .map((item) => {
             item.is_income = parseInt(item.is_income) === 1 ? "Доход" : "Расход";
+
+            switch (item.used_for) {
+                case 'none':
+                    item.used_for = null;
+                    break;
+
+                case 'pay_rent':
+                    item.used_for = 'Оплата аренды';
+                    break;
+
+                case 'pay_deposit':
+                    item.used_for = 'Оплата залога';
+                    break;
+
+                case 'return_deposit':
+                    item.used_for = 'Возврат залога';
+                    break;
+            }
+
             return item;
         });
 
@@ -82,6 +103,13 @@ onMounted(() => {
                 <Column field="is_income" header="Доход/Расход" dataType="numeric" sortable>
                     <template #filter="{ filterModel }">
                         <Dropdown v-model="filterModel.value" :options="incomeStatuses" placeholder="Все"
+                                  class="p-column-filter"
+                                  showClear/>
+                    </template>
+                </Column>
+                <Column field="used_for" header="Используется для" dataType="numeric" sortable>
+                    <template #filter="{ filterModel }">
+                        <Dropdown v-model="filterModel.value" :options="userForStatuses" placeholder="Все"
                                   class="p-column-filter"
                                   showClear/>
                     </template>

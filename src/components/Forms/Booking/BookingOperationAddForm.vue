@@ -18,6 +18,11 @@ const props = defineProps({
         required: false,
         default: false
     },
+    item: {
+        type: Object,
+        required: false,
+        default: null
+    },
     carState:{
         type: Object,
         required: true
@@ -32,16 +37,16 @@ const state = reactive({
     carId: props.carState.carId,
     carClassId: props.carState.carClassId,
     date: moment().format('DD.MM.YYYY HH:mm'),
-    directory_operation_types_id: 0,
+    directory_operation_types_id: props.item && props.item.directory_operation_types_id ? props.item.directory_operation_types_id : 0,
     directory_payment_types_id: 0,
     is_income: "true",
-    period_from: null,
-    period_to: null,
+    period_from: props.item && props.item.period_from ? props.item.period_from : null,
+    period_to: props.item && props.item.period_to ? props.item.period_to : null,
     directory_services_id: 0,
-    directory_services_name: "",
-    tariff: null,
-    quantity: 1,
-    accrued: null,
+    directory_services_name: props.item && props.item.directory_services_name ? props.item.directory_services_name : "",
+    tariff: props.item && props.item.tariff ? props.item.tariff : null,
+    quantity: props.item && props.item.quantity ? props.item.quantity : 1,
+    accrued: props.item && props.item.accrued ? props.item.accrued : null,
     paid: null,
 });
 const rules = computed(() => {
@@ -83,7 +88,7 @@ const setIsIncomeByOperationType = () => {
     }
 }
 const setTariff = () => {
-    state.tariff = null;
+    state.tariff = props.item && props.item.tariff ? props.item.tariff : null;
 
     const servicePrice = carClassServicePrices.value.find(item => item.id === state.directory_services_id);
 

@@ -11,6 +11,7 @@ $id = isset($_POST["id"]) ? (int)htmlspecialchars($_POST["id"]) : die("Не пе
 $name = htmlspecialchars($_POST["name"]);
 $order = htmlspecialchars($_POST["order"]);
 $is_income = htmlspecialchars($_POST["is_income"]) === "true" ? 1 : 0;
+$used_for = htmlspecialchars($_POST["used_for"]);
 $active = htmlspecialchars($_POST["active"]) === "true" ? 0 : 1;
 
 $sql = "SELECT * FROM directory_operation_types WHERE id = '$id'";
@@ -39,6 +40,7 @@ if($error === 0){
         name = '$name', 
         \"order\" = '$order', 
         is_income = '$is_income',
+        used_for = '$used_for',
         archive = '$active', 
         last_user_id = '$user'
     WHERE 

@@ -24,6 +24,11 @@ const props = defineProps({
         required: false,
         default: null
     },
+    addItem: {
+        type: Object,
+        required: false,
+        default: null
+    },
     carState:{
         type: Object,
         required: true
@@ -109,7 +114,7 @@ const onSuccess = () => {
         :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
         pt:mask:class="backdrop-blur-sm"
     >
-        <BookingOperationAddForm v-if="item === null" :carState="carState" @onSubmit="handleDone" :sending="sending" :card="false" title=""/>
+        <BookingOperationAddForm v-if="item === null" :item="addItem" :carState="carState" @onSubmit="handleDone" :sending="sending" :card="false" title=""/>
         <BookingOperationEditForm v-else :carState="carState" @onSubmit="handleDone" @onDelete="isDeleteModalOpen = true"
                                   :item="item" :sending="sending" :card="false" title=""/>
     </Dialog>

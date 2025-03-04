@@ -31,6 +31,7 @@ const state = reactive({
     name: "",
     order: 0,
     is_income: "true",
+    used_for: "none",
     active: true
 });
 const rules = computed(() => {
@@ -78,16 +79,41 @@ const onFormSubmit = async (e) => {
                         <FormError :errors="v$.order.$errors"/>
                     </div>
                     <!-- Доходная или расходная -->
-                    <div class="flex flex-wrap gap-4">
-                        <div class="flex items-center gap-2">
-                            <RadioButton v-model="state.is_income" inputId="is_income1" name="income" value="true" />
-                            <label for="is_income1">Доход</label>
+                    <Fieldset legend="Доходная или расходная операция">
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex items-center gap-2">
+                                <RadioButton v-model="state.is_income" inputId="is_income1" name="income" value="true"/>
+                                <label for="is_income1">Доход</label>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <RadioButton v-model="state.is_income" inputId="is_income2" name="expence"
+                                             value="false"/>
+                                <label for="is_income2">Расход</label>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <RadioButton v-model="state.is_income" inputId="is_income2" name="expence" value="false" />
-                            <label for="is_income2">Расход</label>
+                    </Fieldset>
+                    <!-- Используется для -->
+                    <Fieldset legend="Используется для">
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex items-center gap-2">
+                                <RadioButton v-model="state.used_for" inputId="used_for1" name="none" value="none"/>
+                                <label for="used_for1">Не используется</label>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <RadioButton v-model="state.used_for" inputId="used_for2" name="pay_rent" value="pay_rent"/>
+                                <label for="used_for2">Оплата аренды</label>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <RadioButton v-model="state.used_for" inputId="used_for3" name="pay_deposit" value="pay_deposit"/>
+                                <label for="used_for3">Оплата залога</label>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <RadioButton v-model="state.used_for" inputId="used_for4" name="return_deposit"
+                                             value="return_deposit"/>
+                                <label for="used_for4">Возврат залога</label>
+                            </div>
                         </div>
-                    </div>
+                    </Fieldset>
                     <!-- Активен? -->
                     <div class="flex items-center">
                         <input id="active" type="checkbox"
@@ -129,11 +155,11 @@ const onFormSubmit = async (e) => {
                 <!-- Доходная или расходная -->
                 <div class="flex flex-wrap gap-4">
                     <div class="flex items-center gap-2">
-                        <RadioButton v-model="state.is_income" inputId="is_income1" name="income" value="true" />
+                        <RadioButton v-model="state.is_income" inputId="is_income1" name="income" value="true"/>
                         <label for="is_income1">Доход</label>
                     </div>
                     <div class="flex items-center gap-2">
-                        <RadioButton v-model="state.is_income" inputId="is_income2" name="expence" value="false" />
+                        <RadioButton v-model="state.is_income" inputId="is_income2" name="expence" value="false"/>
                         <label for="is_income2">Расход</label>
                     </div>
                 </div>

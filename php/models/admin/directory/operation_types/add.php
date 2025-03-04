@@ -10,6 +10,7 @@ $user = $authorization[1];
 $name = htmlspecialchars($_POST["name"]);
 $order = htmlspecialchars($_POST["order"]);
 $is_income = htmlspecialchars($_POST["is_income"]) === "true" ? 1 : 0;
+$used_for = htmlspecialchars($_POST["used_for"]);
 $active = htmlspecialchars($_POST["active"]) === "true" ? 0 : 1;
 
 $sql = "SELECT * FROM directory_operation_types WHERE name = '$name'";
@@ -29,6 +30,7 @@ if($error === 0){
             name, 
             \"order\", 
             is_income,
+            used_for,
             archive, 
             last_user_id
         ) 
@@ -36,6 +38,7 @@ if($error === 0){
         ('$name', 
          '$order', 
          '$is_income',
+         '$used_for',
          '$active', 
          '$user') 
     RETURNING id";

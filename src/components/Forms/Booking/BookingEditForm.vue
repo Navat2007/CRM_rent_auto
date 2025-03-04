@@ -55,7 +55,12 @@ const carClasses = ref([]);
 const loadingOperations = ref(true);
 const isOperationPopUpOpen = ref(false);
 const operationItem = ref(null);
+const operationAddItem = ref(null);
 const operations = ref([]);
+
+const loadingOperationTypes = ref(true);
+const isOperationTypesDrawerOpen = ref(false);
+const operationTypes = ref([]);
 
 const dialogVisible = ref(false);
 const dialogHeader = ref('');
@@ -187,6 +192,18 @@ async function fetchOperations() {
     loadingOperations.value = false;
 }
 
+async function fetchOperationTypes() {
+    const result = await DirectoryService.getAll({
+        directory: 'directory_operation_types',
+        company_id: user.company_id
+    });
+
+    operationTypes.value = result
+        .filter(item => item.archive === "Активен");
+
+    loadingOperationTypes.value = false;
+}
+
 async function onDirectoryTerritoryUseAdd(id) {
     loadingTerritoryUse.value = true;
     await fetchTerritoryUse();
@@ -262,7 +279,7 @@ const calculateRentalCost = () => {
     state.rental_cost = state.rental_rate * state.rental_days;
 }
 
-const handleAddOperationButtonClick = () => {
+const handleAddOperationButtonClick = (template) => {
     if (!currentCar.value) {
         dialogHeader.value = "Ошибка";
         dialogText.value = "Нужно выбрать автомобиль";
@@ -271,6 +288,27 @@ const handleAddOperationButtonClick = () => {
     }
 
     operationItem.value = null;
+
+    switch (template){
+        case 'pay_rent':
+            const directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'pay_rent')?.id;
+
+            operationAddItem.value = {
+                directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
+                period_from: state.start_date,
+                period_to: state.end_date,
+                directory_services_name: 'За прокат по договору №' + props.item.id,
+                tariff: state.rental_rate,
+                quantity: state.rental_days,
+                accrued: state.rental_cost,
+            };
+            break;
+
+        default:
+            operationAddItem.value = null;
+            break;
+    }
+
     isOperationPopUpOpen.value = true;
 }
 
@@ -338,6 +376,7 @@ onMounted(() => {
     fetchTerritoryUse();
     fetchCarClasses();
     fetchOperations();
+    fetchOperationTypes();
 });
 </script>
 
@@ -694,8 +733,14 @@ onMounted(() => {
                                 </div>
 
                                 <div class="mt-8">
-                                    <Button class="mb-2" type="button" icon="pi pi-plus" label="Добавить" outlined
-                                            @click="handleAddOperationButtonClick"/>
+                                    <div class="flex flex-col sm:flex-row gap-2">
+                                        <Button class="mb-2" type="button" icon="pi pi-plus" label="Добавить" outlined
+                                                @click="handleAddOperationButtonClick"/>
+                                        <Button class="mb-2" type="button" label="Оплата аренды" outlined
+                                                @click="() => {
+                                                    handleAddOperationButtonClick('pay_rent')
+                                                }"/>
+                                    </div>
                                     <DataTable
                                         :value="operations" tableStyle="min-width: 50rem"
                                         :loading="loadingOperations" :rowClass="rowClass"
@@ -753,7 +798,7 @@ onMounted(() => {
     </Card>
 
     <PopUpBookingOperation
-        :item="operationItem" :visible="isOperationPopUpOpen" :carState="state"
+        :item="operationItem" :add-item="operationAddItem" :visible="isOperationPopUpOpen" :carState="state"
         @onClose="isOperationPopUpOpen = false" @onDone="onOperationDone"
     />
     <AddDirectoryDrawer
