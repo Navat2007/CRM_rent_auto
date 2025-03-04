@@ -37,6 +37,7 @@ const emit = defineEmits(['onSubmit', 'onArchive', 'onDelete']);
 
 const loadingCars = ref(true);
 const cars = ref([]);
+const firstCarLoaded = ref(true);
 const currentCar = ref(null);
 const currentCarClass = ref(null);
 
@@ -275,6 +276,22 @@ const calculateTariff = () => {
     state.rental_rate = price;
 }
 
+const setTariffText = () => {
+    state.rental_rate_text = '';
+
+    currentCar.value.saved_price_periods.map(period => {
+        if (state.rental_days >= period.days_from && state.rental_days <= period.days_until) {
+            if (isNumber(period.price)) {
+                state.rental_rate_text = period.name;
+            }
+        } else if (period.days_until === 0 && state.rental_days >= period.days_from) {
+            state.rental_rate_text = period.name;
+        } else if (period.days_from === 0 && state.rental_days <= period.days_from) {
+            state.rental_rate_text = period.name;
+        }
+    })
+}
+
 const calculateRentalCost = () => {
     state.rental_cost = state.rental_rate * state.rental_days;
 }
@@ -343,7 +360,16 @@ watchEffect(() => {
         if (currentCar.value) {
             currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
             state.carClassId = currentCar.value.class_id;
-            calculateTariff();
+
+            if(firstCarLoaded.value) {
+                setTariffText();
+            }
+            else
+            {
+                calculateTariff();
+            }
+
+            firstCarLoaded.value = false;
         }
     } else {
         currentCar.value = null;

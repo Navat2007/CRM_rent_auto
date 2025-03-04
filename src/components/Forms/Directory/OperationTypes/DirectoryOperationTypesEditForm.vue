@@ -30,7 +30,7 @@ const state = reactive({
     name: props.item.name,
     order: parseInt(props.item.order),
     is_income: parseInt(props.item.is_income) === 1 ? "true" : "false",
-    used_for: "none",
+    used_for: props.item.used_for,
     active: props.item.active,
 });
 const rules = computed(() => {
