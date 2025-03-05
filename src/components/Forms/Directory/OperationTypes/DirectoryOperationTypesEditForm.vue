@@ -113,6 +113,11 @@ console.log(props.item);
                                              value="return_deposit"/>
                                 <label for="used_for4">Возврат залога</label>
                             </div>
+                            <div class="flex items-center gap-2">
+                                <RadioButton v-model="state.used_for" inputId="used_for5" name="pay_over_mileage"
+                                             value="pay_over_mileage"/>
+                                <label for="used_for5">Оплата перепробега</label>
+                            </div>
                         </div>
                     </Fieldset>
                     <!-- Активен? -->

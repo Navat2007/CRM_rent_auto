@@ -63,6 +63,10 @@ async function fetchData() {
                 case 'return_deposit':
                     item.used_for = 'Возврат залога';
                     break;
+
+                case 'pay_over_mileage':
+                    item.used_for = 'Оплата перепробега';
+                    break;
             }
 
             return item;

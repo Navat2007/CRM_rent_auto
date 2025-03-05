@@ -37,7 +37,7 @@ const state = reactive({
     carId: props.carState.carId,
     carClassId: props.carState.carClassId,
     date: moment().format('DD.MM.YYYY HH:mm'),
-    directory_operation_types_id: props.item && props.item.directory_operation_types_id ? props.item.directory_operation_types_id : 0,
+    directory_operation_types_id: 0,
     directory_payment_types_id: 0,
     is_income: "true",
     period_from: props.item && props.item.period_from ? props.item.period_from : null,
@@ -47,7 +47,7 @@ const state = reactive({
     tariff: props.item && props.item.tariff ? props.item.tariff : null,
     quantity: props.item && props.item.quantity ? props.item.quantity : 1,
     accrued: props.item && props.item.accrued ? props.item.accrued : null,
-    paid: null,
+    paid: props.item && props.item.paid ? props.item.paid : null,
 });
 const rules = computed(() => {
     return {
@@ -182,11 +182,15 @@ watch(() => state.directory_services_id, () => {
     }
 });
 
-onMounted(() => {
-    fetchOperationTypes();
-    fetchPaymentTypes();
-    fetchServices();
-    fetchCarClassServicePrices();
+onMounted(async () => {
+    await fetchOperationTypes();
+    await fetchPaymentTypes();
+    await fetchServices();
+    await fetchCarClassServicePrices();
+
+    if(props.item && props.item.directory_operation_types_id){
+        state.directory_operation_types_id = props.item.directory_operation_types_id;
+    }
 });
 </script>
 
@@ -309,11 +313,11 @@ onMounted(() => {
                         </div>
                     </div>
                     <!-- Кол-во -->
-                    <div class="flex justify-center items-end gap-2">
+                    <div class="flex justify-center items-end">
                         <div class="flex flex-col items-center">
                             <label for="rental_days"
                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Кол-во</label>
-                            <div class="flex gap-2 justify-start items-center">
+                            <div class="flex justify-start items-center">
                                 <Button
                                     icon="pi pi-chevron-left" severity="contrast" variant="text" rounded
                                     @click="() => {
@@ -322,7 +326,7 @@ onMounted(() => {
                                         }
                                     }"
                                 />
-                                <InputNumber id="rental_days" v-model="state.quantity"
+                                <InputNumber class="min-w-20" id="rental_days" v-model="state.quantity"
                                              style="max-width: 52px;" :min="1" fluid/>
                                 <Button
                                     icon="pi pi-chevron-right" severity="contrast" variant="text"

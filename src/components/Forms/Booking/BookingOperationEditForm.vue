@@ -9,6 +9,8 @@ import {isNumber} from "lodash";
 import DirectoryService from "@services/DirectoryService.js";
 import {helpers, minValue, required} from "@vuelidate/validators";
 import moment from "moment/moment.js";
+import AddOperationTypeDrawer from "@components/Drawers/Directory/AddOperationTypeDrawer.vue";
+import AddPaymentTypeDrawer from "@components/Drawers/Directory/AddPaymentTypeDrawer.vue";
 
 const props = defineProps({
     sending: {
@@ -189,200 +191,207 @@ onMounted(() => {
 </script>
 
 <template>
-    <Card class="xl:w-8/12 w-full">
-        <template #content>
-            <form @submit.prevent="onFormSubmit" autocomplete="off">
-                <div class="grid gap-6 grid-cols-1">
-                    <!-- Дата -->
-                    <div class="w-full sm:w-80">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата*</label>
+    <div>
+        <form @submit.prevent="onFormSubmit" autocomplete="off">
+            <div class="grid gap-6 grid-cols-1">
+                <!-- Дата -->
+                <div class="w-full sm:w-80">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата*</label>
+                    <div>
+                        <DateTimePickerWithMask :value="state.date"
+                                                :key="state.date"
+                                                @onChange="e => state.date = e"/>
+                    </div>
+                </div>
+                <!-- Тип операции / Вид оплаты -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <!-- Тип операции -->
+                    <div class="w-full">
+                        <label for="position"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Тип операции*</label>
+                        <Select v-model="state.directory_operation_types_id"
+                                :loading="loadingOperationTypes" :options="operationTypes"
+                                optionLabel="name"
+                                optionValue="id" placeholder="Выберите тип операции"
+                                showClear
+                                filter class="w-full">
+                            <template v-if="user.access.directory === 2" #header>
+                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
+                                        label="Добавить"
+                                        outlined
+                                        @click="isOperationTypesDrawerOpen = true"/>
+                            </template>
+                        </Select>
+                    </div>
+                    <!-- Вид оплаты -->
+                    <div class="w-full">
+                        <label for="position"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Вид оплаты*</label>
+                        <Select v-model="state.directory_payment_types_id"
+                                :loading="loadingPaymentTypes" :options="paymentTypes"
+                                optionLabel="name"
+                                optionValue="id" placeholder="Выберите тип операции"
+                                showClear
+                                filter class="w-full">
+                            <template v-if="user.access.directory === 2" #header>
+                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
+                                        label="Добавить"
+                                        outlined
+                                        @click="isPaymentTypesDrawerOpen = true"/>
+                            </template>
+                        </Select>
+                    </div>
+                </div>
+                <!-- Доходная или расходная -->
+                <div class="flex flex-wrap gap-4 justify-center sm:justify-start">
+                    <div class="flex items-center gap-2">
+                        <RadioButton v-model="state.is_income" inputId="is_income1" name="income" value="true" />
+                        <label for="is_income1">Доход</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <RadioButton v-model="state.is_income" inputId="is_income2" name="expence" value="false" />
+                        <label for="is_income2">Расход</label>
+                    </div>
+                    <Button
+                        icon="pi pi-replay" severity="contrast" variant="text" rounded
+                        v-tooltip.top="{ value: 'Заполнить в соответствии с Типом операции'}"
+                        @click="setIsIncomeByOperationType"
+                    />
+                </div>
+                <!-- Период -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="w-full">
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Период с</label>
                         <div>
-                            <DateTimePickerWithMask :value="state.date"
-                                                    :key="state.date"
-                                                    @onChange="e => state.date = e"/>
+                            <DateTimePickerWithMask :value="state.period_from"
+                                                    :key="state.period_from"
+                                                    @onChange="e => state.period_from = e"/>
                         </div>
                     </div>
-                    <!-- Тип операции / Вид оплаты -->
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <!-- Тип операции -->
-                        <div class="w-full">
-                            <label for="position"
-                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Тип операции*</label>
-                            <Select v-model="state.directory_operation_types_id"
-                                    :loading="loadingOperationTypes" :options="operationTypes"
-                                    optionLabel="name"
-                                    optionValue="id" placeholder="Выберите тип операции"
-                                    showClear
-                                    filter class="w-full">
-                                <template v-if="user.access.directory === 2" #header>
-                                    <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
-                                            label="Добавить"
-                                            outlined
-                                            @click="isOperationTypesDrawerOpen = true"/>
-                                </template>
-                            </Select>
-                        </div>
-                        <!-- Вид оплаты -->
-                        <div class="w-full">
-                            <label for="position"
-                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Вид оплаты*</label>
-                            <Select v-model="state.directory_payment_types_id"
-                                    :loading="loadingPaymentTypes" :options="paymentTypes"
-                                    optionLabel="name"
-                                    optionValue="id" placeholder="Выберите тип операции"
-                                    showClear
-                                    filter class="w-full">
-                                <template v-if="user.access.directory === 2" #header>
-                                    <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
-                                            label="Добавить"
-                                            outlined
-                                            @click="isPaymentTypesDrawerOpen = true"/>
-                                </template>
-                            </Select>
+                    <div class="w-full">
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">по</label>
+                        <div>
+                            <DateTimePickerWithMask :value="state.period_to"
+                                                    :key="state.period_to"
+                                                    @onChange="e => state.period_to = e"/>
                         </div>
                     </div>
-                    <!-- Доходная или расходная -->
-                    <div class="flex flex-wrap gap-4 justify-center sm:justify-start">
-                        <div class="flex items-center gap-2">
-                            <RadioButton v-model="state.is_income" inputId="is_income1" name="income" value="true" />
-                            <label for="is_income1">Доход</label>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <RadioButton v-model="state.is_income" inputId="is_income2" name="expence" value="false" />
-                            <label for="is_income2">Расход</label>
-                        </div>
-                        <Button
-                            icon="pi pi-replay" severity="contrast" variant="text" rounded
-                            v-tooltip.top="{ value: 'Заполнить в соответствии с Типом операции'}"
-                            @click="setIsIncomeByOperationType"
-                        />
+                </div>
+                <!-- Услуга / Тариф / Кол-во -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <!-- Услуга -->
+                    <div class="w-full">
+                        <label for="position"
+                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Услуга</label>
+                        <Select v-model="state.directory_services_name"
+                                :loading="loadingServices" :options="services"
+                                optionLabel="name"
+                                optionValue="id" placeholder="Выберите услугу или введите название"
+                                showClear editable
+                                filter class="w-full">
+                        </Select>
                     </div>
-                    <!-- Период -->
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <div class="w-full">
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Период с</label>
-                            <div>
-                                <DateTimePickerWithMask :value="state.period_from"
-                                                        :key="state.period_from"
-                                                        @onChange="e => state.period_from = e"/>
-                            </div>
-                        </div>
-                        <div class="w-full">
-                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">по</label>
-                            <div>
-                                <DateTimePickerWithMask :value="state.period_to"
-                                                        :key="state.period_to"
-                                                        @onChange="e => state.period_to = e"/>
-                            </div>
+                    <!-- Тариф -->
+                    <div class="flex flex-col justify-end">
+                        <label
+                            for="deposit"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        >
+                            Тариф
+                        </label>
+                        <div class="flex gap-2 justify-start items-center">
+                            <InputNumber id="deposit" v-model="state.tariff" :min="0" fluid/>
+                            <Button
+                                icon="pi pi-replay" severity="contrast" variant="text" rounded
+                                v-tooltip.top="{ value: 'Заполнить в соответствии со стоимостью Услуги'}"
+                                @click="setTariff"
+                            />
                         </div>
                     </div>
-                    <!-- Услуга / Тариф / Кол-во -->
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <!-- Услуга -->
-                        <div class="w-full">
-                            <label for="position"
-                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Услуга</label>
-                            <Select v-model="state.directory_services_name"
-                                    :loading="loadingServices" :options="services"
-                                    optionLabel="name"
-                                    optionValue="id" placeholder="Выберите услугу или введите название"
-                                    showClear editable
-                                    filter class="w-full">
-                            </Select>
-                        </div>
-                        <!-- Тариф -->
-                        <div class="flex flex-col justify-end">
-                            <label
-                                for="deposit"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Тариф
-                            </label>
-                            <div class="flex gap-2 justify-start items-center">
-                                <InputNumber id="deposit" v-model="state.tariff" :min="0" fluid/>
+                    <!-- Кол-во -->
+                    <div class="flex justify-center items-end gap-2">
+                        <div class="flex flex-col items-center">
+                            <label for="rental_days"
+                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Кол-во</label>
+                            <div class="flex justify-start items-center">
                                 <Button
-                                    icon="pi pi-replay" severity="contrast" variant="text" rounded
-                                    v-tooltip.top="{ value: 'Заполнить в соответствии со стоимостью Услуги'}"
-                                    @click="setTariff"
-                                />
-                            </div>
-                        </div>
-                        <!-- Кол-во -->
-                        <div class="flex justify-center items-end gap-2">
-                            <div class="flex flex-col items-center">
-                                <label for="rental_days"
-                                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Кол-во</label>
-                                <div class="flex gap-2 justify-start items-center">
-                                    <Button
-                                        icon="pi pi-chevron-left" severity="contrast" variant="text" rounded
-                                        @click="() => {
+                                    icon="pi pi-chevron-left" severity="contrast" variant="text" rounded
+                                    @click="() => {
                                         if(state.quantity > 1) {
                                             state.quantity -= 1
                                         }
                                     }"
-                                    />
-                                    <InputNumber id="rental_days" v-model="state.quantity"
-                                                 style="max-width: 52px;" :min="1" fluid/>
-                                    <Button
-                                        icon="pi pi-chevron-right" severity="contrast" variant="text"
-                                        rounded
-                                        @click="() => {
+                                />
+                                <InputNumber id="rental_days" class="min-w-20" v-model="state.quantity"
+                                             style="max-width: 52px;" :min="1" fluid/>
+                                <Button
+                                    icon="pi pi-chevron-right" severity="contrast" variant="text"
+                                    rounded
+                                    @click="() => {
                                         state.quantity += 1
                                     }"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Начислено / Оплачено -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-between">
-                        <!-- Начислено -->
-                        <div class="flex flex-col justify-end">
-                            <label
-                                for="deposit"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Начислено
-                            </label>
-                            <div class="flex gap-2 justify-start items-center">
-                                <InputNumber id="deposit" v-model="state.accrued" :min="0" fluid/>
-                                <Button
-                                    icon="pi pi-replay" severity="contrast" variant="text" rounded
-                                    v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
-                                    @click="setAccrued"
                                 />
                             </div>
                         </div>
-                        <div class="flex justify-center items-end gap-2">
-                            <Button
-                                icon="pi pi-arrow-right" severity="contrast" variant="text" rounded
-                                v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
-                                @click="() => {state.paid = state.accrued}"
-                            />
-                        </div>
-                        <!-- Оплачено -->
-                        <div class="flex flex-col justify-end">
-                            <label
-                                for="deposit"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                                Оплачено
-                            </label>
-                            <InputNumber id="deposit" v-model="state.paid" :min="0" fluid/>
-                        </div>
                     </div>
                 </div>
-                <Divider v-if="user.access.booking === 2" type="dashed"/>
-                <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500 mb-4">
-                    {{ error.$message }}
-                </p>
-                <div v-if="user.access.booking === 2">
-                    <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
-                    <Button icon="pi pi-trash" label="Удалить" class="ml-4" severity="danger"
-                            :loading="sending"
-                            @click="emit('onDelete');" outlined/>
+                <!-- Начислено / Оплачено -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-between">
+                    <!-- Начислено -->
+                    <div class="flex flex-col justify-end">
+                        <label
+                            for="deposit"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        >
+                            Начислено
+                        </label>
+                        <div class="flex gap-2 justify-start items-center">
+                            <InputNumber id="deposit" v-model="state.accrued" :min="0" fluid/>
+                            <Button
+                                icon="pi pi-replay" severity="contrast" variant="text" rounded
+                                v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
+                                @click="setAccrued"
+                            />
+                        </div>
+                    </div>
+                    <div class="flex justify-center items-end gap-2">
+                        <Button
+                            icon="pi pi-arrow-right" severity="contrast" variant="text" rounded
+                            v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
+                            @click="() => {state.paid = state.accrued}"
+                        />
+                    </div>
+                    <!-- Оплачено -->
+                    <div class="flex flex-col justify-end">
+                        <label
+                            for="deposit"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        >
+                            Оплачено
+                        </label>
+                        <InputNumber id="deposit" v-model="state.paid" :min="0" fluid/>
+                    </div>
                 </div>
-            </form>
-        </template>
-    </Card>
+            </div>
+            <Divider v-if="user.access.booking === 2" type="dashed"/>
+            <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500 mb-4">
+                {{ error.$message }}
+            </p>
+            <div v-if="user.access.booking === 2">
+                <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
+                <Button icon="pi pi-trash" label="Удалить" class="ml-4" severity="danger"
+                        :loading="sending"
+                        @click="emit('onDelete');" outlined/>
+            </div>
+        </form>
+    </div>
+
+    <AddOperationTypeDrawer
+        :visible="isOperationTypesDrawerOpen"
+        @onAdd="onDirectoryOperationTypesAdd" @onClose="isOperationTypesDrawerOpen = false"
+    />
+    <AddPaymentTypeDrawer
+        :visible="isPaymentTypesDrawerOpen"
+        @onAdd="onDirectoryPaymentTypesAdd" @onClose="isPaymentTypesDrawerOpen = false"
+    />
 </template>

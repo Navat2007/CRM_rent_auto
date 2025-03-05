@@ -37,7 +37,6 @@ const emit = defineEmits(['onSubmit', 'onArchive', 'onDelete']);
 
 const loadingCars = ref(true);
 const cars = ref([]);
-const firstCarLoaded = ref(true);
 const currentCar = ref(null);
 const currentCarClass = ref(null);
 
@@ -156,15 +155,11 @@ const onFormSubmit = async (e) => {
 async function fetchCars() {
     cars.value = (await AutoService.getAllForBooking(user.company_id)).filter(item => item.archive === "Активен");
     loadingCars.value = false;
-
-    state.carId = props.item.carId;
 }
 
 async function fetchClients() {
     clients.value = (await ClientsService.getAllForBooking(user.company_id)).filter(item => item.status === "Активен");
     loadingClients.value = false;
-
-    state.clientId = props.item.clientId;
 }
 
 async function fetchTerritoryUse() {
@@ -305,10 +300,11 @@ const handleAddOperationButtonClick = (template) => {
     }
 
     operationItem.value = null;
+    let directory_operation_types_id = undefined;
 
-    switch (template){
+    switch (template) {
         case 'pay_rent':
-            const directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'pay_rent')?.id;
+            directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'pay_rent')?.id;
 
             operationAddItem.value = {
                 directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
@@ -318,6 +314,51 @@ const handleAddOperationButtonClick = (template) => {
                 tariff: state.rental_rate,
                 quantity: state.rental_days,
                 accrued: state.rental_cost,
+            };
+            break;
+
+        case 'pay_deposit':
+            directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'pay_deposit')?.id;
+
+            operationAddItem.value = {
+                directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
+                period_from: state.start_date,
+                period_to: state.end_date,
+                directory_services_name: 'Залог',
+                tariff: state.deposit,
+                quantity: 1,
+                accrued: state.deposit,
+                paid: state.deposit
+            };
+            break;
+
+        case 'return_deposit':
+            directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'return_deposit')?.id;
+
+            operationAddItem.value = {
+                directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
+                period_from: state.start_date,
+                period_to: state.end_date,
+                directory_services_name: 'Возврат залога',
+                tariff: state.deposit,
+                quantity: 1,
+                accrued: state.deposit,
+                paid: state.deposit
+            };
+            break;
+
+        case 'pay_over_mileage':
+            directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'pay_over_mileage')?.id;
+
+            operationAddItem.value = {
+                directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
+                period_from: state.start_date,
+                period_to: state.end_date,
+                directory_services_name: 'Оплата перепробега',
+                tariff: parseFloat(currentCarClass.value.cost_extra_mileage),
+                quantity: over_mileage.value,
+                accrued: over_mileage_cost.value,
+                paid: over_mileage_cost.value
             };
             break;
 
@@ -348,8 +389,8 @@ const onOperationDone = () => {
 
 const rowClass = (data) => {
     return [
-        { 'bg-green-200': parseInt(data.is_income) === 1 },
-        { 'bg-red-200': parseInt(data.is_income) === 0 },
+        {'bg-green-200': parseInt(data.is_income) === 1},
+        {'bg-red-200': parseInt(data.is_income) === 0},
     ];
 };
 
@@ -361,15 +402,7 @@ watchEffect(() => {
             currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
             state.carClassId = currentCar.value.class_id;
 
-            if(firstCarLoaded.value) {
-                setTariffText();
-            }
-            else
-            {
-                calculateTariff();
-            }
-
-            firstCarLoaded.value = false;
+            calculateTariff();
         }
     } else {
         currentCar.value = null;
@@ -396,13 +429,20 @@ watch(() => state.rental_rate, () => {
     calculateRentalCost();
 });
 
-onMounted(() => {
-    fetchCars();
-    fetchClients();
-    fetchTerritoryUse();
-    fetchCarClasses();
-    fetchOperations();
-    fetchOperationTypes();
+onMounted(async () => {
+    await fetchCars();
+    await fetchClients();
+    await fetchTerritoryUse();
+    await fetchCarClasses();
+    await fetchOperations();
+    await fetchOperationTypes();
+
+    state.carId = props.item.carId;
+    state.clientId = props.item.clientId;
+
+    setTimeout(() => {
+        state.rental_rate = props.item.rental_rate
+    }, 10);
 });
 </script>
 
@@ -766,6 +806,18 @@ onMounted(() => {
                                                 @click="() => {
                                                     handleAddOperationButtonClick('pay_rent')
                                                 }"/>
+                                        <Button class="mb-2" type="button" label="Оплата залога" outlined
+                                                @click="() => {
+                                                    handleAddOperationButtonClick('pay_deposit')
+                                                }"/>
+                                        <Button class="mb-2" type="button" label="Возврат залога" outlined
+                                                @click="() => {
+                                                    handleAddOperationButtonClick('return_deposit')
+                                                }"/>
+                                        <Button class="mb-2" type="button" label="Оплата перепробега" outlined
+                                                @click="() => {
+                                                    handleAddOperationButtonClick('pay_over_mileage')
+                                                }"/>
                                     </div>
                                     <DataTable
                                         :value="operations" tableStyle="min-width: 50rem"
@@ -774,18 +826,21 @@ onMounted(() => {
                                     >
                                         <Column field="operation_datetime" header="Дата" sortable>
                                             <template #body="{data}">
-                                                {{ data.operation_datetime ? moment(data.operation_datetime).format('DD.MM.YYYY HH:mm') : null}}
+                                                {{ data.operation_datetime ? moment(data.operation_datetime).format('DD.MM.YYYY HH:mm') : null }}
                                             </template>
                                         </Column>
-                                        <Column field="directory_operation_types_name" header="Операция" sortable></Column>
+                                        <Column field="directory_operation_types_name" header="Операция"
+                                                sortable></Column>
                                         <Column field="period_from" header="Период с" sortable>
                                             <template #body="{data}">
-                                                {{ data.period_from ? moment(data.period_from).format('DD.MM.YYYY HH:mm') : null }}
+                                                {{
+                                                    data.period_from ? moment(data.period_from).format('DD.MM.YYYY HH:mm') : null
+                                                }}
                                             </template>
                                         </Column>
                                         <Column field="period_to" header="по дату" sortable>
                                             <template #body="{data}">
-                                                {{ data.period_to ? moment(data.period_to).format('DD.MM.YYYY HH:mm') : null}}
+                                                {{ data.period_to ? moment(data.period_to).format('DD.MM.YYYY HH:mm') : null }}
                                             </template>
                                         </Column>
                                         <Column field="quantity" header="Кол-во" sortable></Column>
@@ -799,7 +854,8 @@ onMounted(() => {
                                                 {{ data.paid && parseFloat(data.paid) > 0 ? data.paid : null }}
                                             </template>
                                         </Column>
-                                        <Column field="directory_payment_types_name" header="Вид оплаты" sortable></Column>
+                                        <Column field="directory_payment_types_name" header="Вид оплаты"
+                                                sortable></Column>
                                         <Column field="directory_services_name" header="Услуга" sortable></Column>
                                     </DataTable>
                                 </div>
