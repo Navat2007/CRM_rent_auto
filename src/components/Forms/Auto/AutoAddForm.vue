@@ -431,48 +431,58 @@ onMounted(() => {
                                     <AvatarSelect :value="state.avatar" @onSelect="e => state.avatar = e.files[0]"
                                                   @onDelete="state.avatar = null"/>
                                 </div>
-                                <!-- Гос номер -->
-                                <div>
-                                    <label for="state_number"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Гос
-                                        номер</label>
-                                    <InputText id="state_number" v-model="state.state_number" fluid/>
-                                </div>
-                                <!--  Класс авто -->
-                                <div>
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Класс
-                                        авто</label>
-                                    <Select v-model="state.directory_car_classes_id" :loading="loadingDirectoryClasses"
-                                            :options="directoryClasses"
-                                            optionLabel="name"
-                                            optionValue="id" placeholder="Выберите класс авто" showClear filter
-                                            class="w-full">
-                                        <template v-if="user.access.auto === 2" #header>
-                                            <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
-                                                    outlined
-                                                    @click="isDirectoryClassesAddDrawerOpen = true"/>
-                                        </template>
-                                    </Select>
-                                </div>
-                                <!-- Год выпуска -->
-                                <div>
-                                    <label for="release_year"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Год
-                                        выпуска</label>
-                                    <InputNumber id="release_year" v-model="state.release_year" :min="1900"
-                                                 :max="moment().year()"
-                                                 :useGrouping="false" fluid/>
-                                </div>
-                                <!--  Марка авто -->
-                                <div>
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Марка
-                                        авто</label>
-                                    <Select v-model="state.directory_car_brands_id" :loading="loadingDirectoryBrands"
-                                            :options="directoryBrands"
-                                            optionLabel="name" optionValue="id" placeholder="Выберите марку авто"
-                                            showClear filter
-                                            class="w-full"
-                                            @change="(e) => {
+
+                                <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+                                    <!-- Гос номер -->
+                                    <div>
+                                        <label for="state_number"
+                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Гос
+                                            номер</label>
+                                        <InputText id="state_number" v-model="state.state_number" fluid/>
+                                    </div>
+                                    <!--  Класс авто -->
+                                    <div>
+                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Класс
+                                            авто</label>
+                                        <Select v-model="state.directory_car_classes_id" :loading="loadingDirectoryClasses"
+                                                :options="directoryClasses"
+                                                optionLabel="name"
+                                                optionValue="id" placeholder="Выберите класс авто" showClear filter
+                                                class="w-full">
+                                            <template v-if="user.access.auto === 2" #header>
+                                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
+                                                        outlined
+                                                        @click="isDirectoryClassesAddDrawerOpen = true"/>
+                                            </template>
+                                        </Select>
+                                    </div>
+                                    <!-- Пробег -->
+                                    <div>
+                                        <label for="mileage"
+                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Пробег</label>
+                                        <InputNumber id="mileage" v-model="state.mileage" :min="0" fluid/>
+                                    </div>
+                                    <!-- Статус авто -->
+                                    <div>
+                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Статус
+                                            авто</label>
+                                        <Select v-model="state.directory_car_statuses_id"
+                                                :loading="loadingDirectoryStatuses"
+                                                :options="directoryStatuses"
+                                                optionLabel="name"
+                                                optionValue="id" filter class="w-full">
+                                        </Select>
+                                    </div>
+                                    <!--  Марка авто -->
+                                    <div>
+                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Марка
+                                            авто</label>
+                                        <Select v-model="state.directory_car_brands_id" :loading="loadingDirectoryBrands"
+                                                :options="directoryBrands"
+                                                optionLabel="name" optionValue="id" placeholder="Выберите марку авто"
+                                                showClear filter
+                                                class="w-full"
+                                                @change="(e) => {
                             if(e.value === null)
                               state.directory_car_brands_id = 0;
 
@@ -480,110 +490,103 @@ onMounted(() => {
                             state.directory_car_generations_id = 0;
                             state.directory_car_configurations_id = 0;
                           }"
-                                    >
-                                        <template v-if="user.access.auto === 2" #header>
-                                            <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
-                                                    outlined
-                                                    @click="isDirectoryBrandsAddDrawerOpen = true"/>
-                                        </template>
-                                    </Select>
-                                </div>
-                                <!--  Модель авто -->
-                                <div v-if="state.directory_car_brands_id !== 0">
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Модель
-                                        авто</label>
-                                    <Select v-model="state.directory_car_models_id" :loading="loadingDirectoryModels"
-                                            :options="directoryModels.filter(item => parseInt(item.directory_car_brands_id) === state.directory_car_brands_id)"
-                                            optionLabel="name" optionValue="id" placeholder="Выберите модель авто"
-                                            showClear filter
-                                            class="w-full"
-                                            @change="(e) => {
+                                        >
+                                            <template v-if="user.access.auto === 2" #header>
+                                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
+                                                        outlined
+                                                        @click="isDirectoryBrandsAddDrawerOpen = true"/>
+                                            </template>
+                                        </Select>
+                                    </div>
+                                    <!--  Модель авто -->
+                                    <div v-if="state.directory_car_brands_id !== 0">
+                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Модель
+                                            авто</label>
+                                        <Select v-model="state.directory_car_models_id" :loading="loadingDirectoryModels"
+                                                :options="directoryModels.filter(item => parseInt(item.directory_car_brands_id) === state.directory_car_brands_id)"
+                                                optionLabel="name" optionValue="id" placeholder="Выберите модель авто"
+                                                showClear filter
+                                                class="w-full"
+                                                @change="(e) => {
                             if(e.value === null)
                               state.directory_car_models_id = 0;
 
                             state.directory_car_generations_id = 0;
                             state.directory_car_configurations_id = 0;
                           }"
-                                    >
-                                        <template v-if="user.access.auto === 2" #header>
-                                            <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
-                                                    outlined
-                                                    @click="isDirectoryModelsAddDrawerOpen = true"/>
-                                        </template>
-                                    </Select>
-                                </div>
-                                <!--  Поколение авто -->
-                                <div v-if="state.directory_car_models_id !== 0">
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Поколение
-                                        авто</label>
-                                    <Select v-model="state.directory_car_generations_id"
-                                            :loading="loadingDirectoryGenerations"
-                                            :options="directoryGenerations.filter(item => parseInt(item.directory_car_models_id) === state.directory_car_models_id)"
-                                            optionLabel="name"
-                                            optionValue="id" placeholder="Выберите поколение авто" showClear filter
-                                            class="w-full">
-                                        <template v-if="user.access.auto === 2" #header>
-                                            <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
-                                                    outlined
-                                                    @click="isDirectoryGenerationsAddDrawerOpen = true"/>
-                                        </template>
-                                    </Select>
-                                </div>
-                                <!--  Комплектация авто -->
-                                <div v-if="state.directory_car_models_id !== 0">
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Комплектация
-                                        авто</label>
-                                    <Select v-model="state.directory_car_configurations_id"
-                                            :loading="loadingDirectoryConfigurations"
-                                            :options="directoryConfigurations.filter(item => parseInt(item.directory_car_models_id) === state.directory_car_models_id)"
-                                            optionLabel="name"
-                                            optionValue="id" placeholder="Выберите комплектацию авто" showClear filter
-                                            class="w-full">
-                                        <template v-if="user.access.auto === 2" #header>
-                                            <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
-                                                    outlined
-                                                    @click="isDirectoryConfigurationsAddDrawerOpen = true"/>
-                                        </template>
-                                    </Select>
-                                </div>
-                                <!-- Дата поступления в парк -->
-                                <div>
-                                    <label for="date_park_enter"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата
-                                        поступления в
-                                        парк</label>
-                                    <div>
-                                        <DatePickerWithMask :value="state.date_park_enter" :key="state.date_park_enter"
-                                                            @onChange="e => state.date_park_enter = e"/>
+                                        >
+                                            <template v-if="user.access.auto === 2" #header>
+                                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
+                                                        outlined
+                                                        @click="isDirectoryModelsAddDrawerOpen = true"/>
+                                            </template>
+                                        </Select>
                                     </div>
-                                </div>
-                                <!-- Дата исключения из парка -->
-                                <div>
-                                    <label for="date_park_exit"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата
-                                        исключения из
-                                        парка</label>
-                                    <div>
-                                        <DatePickerWithMask :value="state.date_park_exit" :key="state.date_park_exit"
-                                                            @onChange="e => state.date_park_exit = e"/>
+                                    <!--  Поколение авто -->
+                                    <div v-if="state.directory_car_models_id !== 0">
+                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Поколение
+                                            авто</label>
+                                        <Select v-model="state.directory_car_generations_id"
+                                                :loading="loadingDirectoryGenerations"
+                                                :options="directoryGenerations.filter(item => parseInt(item.directory_car_models_id) === state.directory_car_models_id)"
+                                                optionLabel="name"
+                                                optionValue="id" placeholder="Выберите поколение авто" showClear filter
+                                                class="w-full">
+                                            <template v-if="user.access.auto === 2" #header>
+                                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
+                                                        outlined
+                                                        @click="isDirectoryGenerationsAddDrawerOpen = true"/>
+                                            </template>
+                                        </Select>
                                     </div>
-                                </div>
-                                <!-- Пробег -->
-                                <div>
-                                    <label for="mileage"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Пробег</label>
-                                    <InputNumber id="mileage" v-model="state.mileage" :min="0" fluid/>
-                                </div>
-                                <!-- Статус авто -->
-                                <div>
-                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Статус
-                                        авто</label>
-                                    <Select v-model="state.directory_car_statuses_id"
-                                            :loading="loadingDirectoryStatuses"
-                                            :options="directoryStatuses"
-                                            optionLabel="name"
-                                            optionValue="id" filter class="w-full">
-                                    </Select>
+                                    <!--  Комплектация авто -->
+                                    <div v-if="state.directory_car_models_id !== 0">
+                                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Комплектация
+                                            авто</label>
+                                        <Select v-model="state.directory_car_configurations_id"
+                                                :loading="loadingDirectoryConfigurations"
+                                                :options="directoryConfigurations.filter(item => parseInt(item.directory_car_models_id) === state.directory_car_models_id)"
+                                                optionLabel="name"
+                                                optionValue="id" placeholder="Выберите комплектацию авто" showClear filter
+                                                class="w-full">
+                                            <template v-if="user.access.auto === 2" #header>
+                                                <Button class="mt-4 ml-4" type="button" icon="pi pi-plus" label="Добавить"
+                                                        outlined
+                                                        @click="isDirectoryConfigurationsAddDrawerOpen = true"/>
+                                            </template>
+                                        </Select>
+                                    </div>
+                                    <!-- Год выпуска -->
+                                    <div>
+                                        <label for="release_year"
+                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Год
+                                            выпуска</label>
+                                        <InputNumber id="release_year" v-model="state.release_year" :min="1900"
+                                                     :max="moment().year()"
+                                                     :useGrouping="false" fluid/>
+                                    </div>
+                                    <!-- Дата поступления в парк -->
+                                    <div>
+                                        <label for="date_park_enter"
+                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата
+                                            поступления в
+                                            парк</label>
+                                        <div>
+                                            <DatePickerWithMask :value="state.date_park_enter" :key="state.date_park_enter"
+                                                                @onChange="e => state.date_park_enter = e"/>
+                                        </div>
+                                    </div>
+                                    <!-- Дата исключения из парка -->
+                                    <div>
+                                        <label for="date_park_exit"
+                                               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Дата
+                                            исключения из
+                                            парка</label>
+                                        <div>
+                                            <DatePickerWithMask :value="state.date_park_exit" :key="state.date_park_exit"
+                                                                @onChange="e => state.date_park_exit = e"/>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <Divider type="dashed"/>
