@@ -55,7 +55,7 @@ const props = defineProps({
 const emit = defineEmits(['onRowClick']);
 
 const table = ref();
-const key = ref('');
+const key = ref(props.title + "_table");
 const tableSaveKey = ref(props.title + "_table");
 const finalFilters = ref();
 const skeletonItems = ref(new Array(10));
@@ -112,9 +112,6 @@ const onFilterEvent = (event) => {
 }
 
 initFilters();
-
-// console.log(props.items);
-// console.log(finalFilters);
 </script>
 
 <template>
@@ -152,7 +149,7 @@ initFilters();
                 ref="table" :key="key" :value="items" @row-click="handleRowClick"
                 stateStorage="local" :stateKey="tableSaveKey" size="small"
                 showGridlines stripedRows :paginator="items.length > pageSize" :rows="pageSize"
-                :rowsPerPageOptions="[10, 20, 50]"
+                :rowsPerPageOptions="[10, 15, 20, 50]"
                 columnResizeMode="expand" reorderableColumns
                 :sortOrder="1" removableSort rowHover
                 :filterDisplay="filterDisplay" v-model:filters="finalFilters" :globalFilterFields="filterFields"

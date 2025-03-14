@@ -16,6 +16,7 @@ import AddDirectoryDrawer from "@components/Drawers/Directory/AddDirectoryDrawer
 import LegalPersonsService from "@services/LegalPersonsService.js";
 import ClientsService from "@services/ClientsService.js";
 import {helpers, minValue, required} from "@vuelidate/validators";
+import BookingService from "@services/BookingService.js";
 
 const {user} = useAuthStore();
 
@@ -100,6 +101,9 @@ const loadingLegalPersons = ref(true);
 
 const clients = ref([]);
 const loadingClients = ref(true);
+
+const booking = ref(null);
+const loadingBooking = ref(true);
 
 const conditions = ref([
     {label: 'Неизвестно', value: 0},
@@ -286,6 +290,15 @@ async function fetchClients() {
     loadingClients.value = false;
 }
 
+async function fetchBooking() {
+    booking.value = (await BookingService.getBookingByCarId({id: props.item.id}))
+
+    if(booking.value.length === 0)
+        booking.value = null;
+
+    loadingBooking.value = false;
+}
+
 async function onDirectoryClassAdd(id) {
     loadingDirectoryClasses.value = true;
     await fetchDirectory('directory_car_classes', directoryClasses, loadingDirectoryClasses);
@@ -391,6 +404,14 @@ async function onDirectoryCarTiresTypeAdd(id) {
     isDirectoryCarTiresTypeAddDrawerOpen.value = false;
 }
 
+const openBooking = (id) => {
+    window.open('/Admin/booking/rentalContracts/' + id, '_blank');
+}
+
+const openClient = (id) => {
+    window.open('/Admin/clients/' + id, '_blank');
+}
+
 onMounted(() => {
     fetchDirectory('directory_car_statuses', directoryStatuses, loadingDirectoryStatuses);
     fetchDirectory('directory_car_classes', directoryClasses, loadingDirectoryClasses);
@@ -411,6 +432,7 @@ onMounted(() => {
     fetchDirectoryPricePeriods();
     fetchLegalPersons();
     fetchClients();
+    fetchBooking();
 });
 </script>
 
@@ -1104,6 +1126,31 @@ onMounted(() => {
                                         </div>
                                     </div>
                                 </Panel>
+
+                                <div v-if="!loadingBooking" class="flex flex-col sm:flex-row gap-4">
+                                    <span>Активный договор проката:</span>
+                                    <div v-if="booking" class="flex flex-col gap-1">
+                                        <div>
+                                            <span class="font-bold">Договор:</span>
+                                            <span class="text-blue-700 cursor-pointer" @click="openBooking(booking.id)">
+                                                №{{booking.id}} от {{moment(booking.start_date).format('DD.MM.YYYY')}}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-bold">У кого: </span>
+                                            <span class="text-blue-700 cursor-pointer" @click="openClient(booking.id)">
+                                                {{booking.fio}}
+                                            </span>
+                                            <span class="font-bold">
+                                                , {{booking.phone}}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="font-bold">Возврат: {{moment(booking.end_date).format('DD.MM.YYYY')}}</span>
+                                        </div>
+                                    </div>
+                                    <span v-else>отсутствует</span>
+                                </div>
 
                                 <Divider type="dashed"/>
 

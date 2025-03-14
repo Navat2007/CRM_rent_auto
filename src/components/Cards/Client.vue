@@ -97,6 +97,7 @@ const openWindow = () => {
       pt:body="sm:flex-auto sm:w-1/2" pt:content="sm:mb-auto">
     <template #content>
       <div class="flex flex-wrap gap-2">
+        <div v-if="item.full_name" class="flex gap-1"><span>ФИО:</span><span class="font-bold">{{item.full_name}}</span></div>
         <div v-if="item.email" class="flex gap-1"><span>Email:</span><span class="font-bold">{{item.email}}</span></div>
         <div v-if="item.phone" class="flex gap-1"><span>Телефон:</span><span class="font-bold">{{item.phone}}</span></div>
         <div v-if="item.birth_date" class="flex gap-1">

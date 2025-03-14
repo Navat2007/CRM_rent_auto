@@ -87,6 +87,20 @@ class BookingService {
 
         return result;
     }
+
+    static async getBookingByCarId(data) {
+        let form = new FormData();
+        buildFormData(form, data);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/${this.directory}/load_by_car_id.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
 }
 
 export default BookingService
