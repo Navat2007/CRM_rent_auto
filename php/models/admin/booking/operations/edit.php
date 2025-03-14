@@ -2,9 +2,13 @@
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Origin, Authorization, Content-Type, X-Auth-Token');
 
+ini_set('display_errors',1);
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+
 require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/params.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
+require 'calculate.php';
 
 $ID = htmlspecialchars($_POST["id"]);
 $user = $authorization[1];
@@ -45,6 +49,8 @@ if($error === 0){
         id = '$ID'";
     $sqls[] = $sql;
     pg_query($conn, $sql);
+
+    (new OperationsCalculate($conn))->calculate($booking_id);
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

@@ -5,6 +5,7 @@ header('Access-Control-Allow-Headers: Origin, Authorization, Content-Type, X-Aut
 require $_SERVER['DOCUMENT_ROOT'] . '/php/include.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/params.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
+require 'calculate.php';
 
 $user = $authorization[1];
 $companyId = htmlspecialchars($_POST["companyId"]);
@@ -67,6 +68,8 @@ if ($error === 0) {
     $params[] = (object)[
         'id' => $lastID,
     ];
+
+    (new OperationsCalculate($conn))->calculate($booking_id);
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/php/answer.php';

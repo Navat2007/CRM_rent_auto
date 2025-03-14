@@ -18,6 +18,7 @@ import SearchAddress from "@components/Inputs/SearchAddress.vue";
 import PopUpBookingOperation from "@components/Popups/PopUpBookingOperation.vue";
 import BookingOperationsService from "@services/BookingOperationsService.js";
 import BookingCalendarCell from "@components/Table/Cells/BookingCalendarCell.vue";
+import BookingService from "@services/BookingService.js";
 
 const {user} = useAuthStore();
 
@@ -66,6 +67,8 @@ const dialogVisible = ref(false);
 const dialogHeader = ref('');
 const dialogText = ref('');
 
+const loadingTotals = ref(false);
+
 const state = reactive({
     companyId: user.company_id,
     carId: 0,
@@ -86,6 +89,9 @@ const state = reactive({
     note_rental_cost: props.item.note_rental_cost,
     mileage_start: props.item.mileage_start === 0 ? null : props.item.mileage_start,
     mileage_end: props.item.mileage_end === 0 ? null : props.item.mileage_end,
+    accrued_total: props.item.accrued_total,
+    paid_total: props.item.paid_total,
+    balance: props.item.balance,
 });
 const rules = computed(() => {
     return {
@@ -198,6 +204,19 @@ async function fetchOperationTypes() {
         .filter(item => item.archive === "Активен");
 
     loadingOperationTypes.value = false;
+}
+
+async function fetchTotals() {
+    const result = await BookingService.getTotals({
+        id: props.item.id,
+        company_id: user.company_id
+    });
+
+    state.accrued_total = result.accrued_total;
+    state.paid_total = result.paid_total;
+    state.balance = result.balance;
+
+    loadingTotals.value = false;
 }
 
 async function onDirectoryTerritoryUseAdd(id) {
@@ -385,6 +404,7 @@ const handleEditOperationButtonClick = (item) => {
 const onOperationDone = () => {
     isOperationPopUpOpen.value = false;
     fetchOperations();
+    fetchTotals();
 }
 
 const rowClass = (data) => {
@@ -436,6 +456,7 @@ onMounted(async () => {
     await fetchCarClasses();
     await fetchOperations();
     await fetchOperationTypes();
+    await fetchTotals();
 
     state.carId = props.item.carId;
     state.clientId = props.item.clientId;
@@ -798,7 +819,54 @@ onMounted(async () => {
                                     </div>
                                 </div>
 
-                                <div class="mt-8">
+                                <div class="flex flex-col sm:flex-row gap-4">
+                                    <!-- Начислено -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="accrued_total"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Начислено
+                                        </label>
+                                        <InputNumber
+                                            id="accrued_total"
+                                            :model-value="state.accrued_total"
+                                            disabled fluid
+                                        />
+                                    </div>
+                                    <!-- Оплачено -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="paid_total"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Оплачено
+                                        </label>
+                                        <InputNumber
+                                            id="paid_total"
+                                            :model-value="state.paid_total"
+                                            disabled fluid
+                                        />
+                                    </div>
+                                    <!-- Баланс -->
+                                    <div class="flex flex-col justify-end">
+                                        <label
+                                            for="balance"
+                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        >
+                                            Баланс
+                                        </label>
+                                        <InputNumber
+                                            id="balance"
+                                            :model-value="state.balance"
+                                            disabled fluid
+                                        />
+                                    </div>
+                                </div>
+
+                                <Divider type="dashed"/>
+
+                                <div class="">
                                     <div class="flex flex-col sm:flex-row gap-2">
                                         <Button class="mb-2" type="button" icon="pi pi-plus" label="Добавить" outlined
                                                 @click="handleAddOperationButtonClick"/>

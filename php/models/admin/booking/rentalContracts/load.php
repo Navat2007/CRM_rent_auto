@@ -15,6 +15,8 @@ $params = array();
 $sql = "
     SELECT 
         booking.id, booking.start_date, booking.end_date,
+        booking.rental_days, booking.accrued_total, booking.paid_total,
+        booking.deposit_booking_total, booking.balance,
         car.state_number, dcm.name as model, dcb.name as brand, dcc.name as class,
         ui.full_name as fio
     FROM 
