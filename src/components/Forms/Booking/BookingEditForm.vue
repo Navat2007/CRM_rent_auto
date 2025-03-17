@@ -19,6 +19,7 @@ import PopUpBookingOperation from "@components/Popups/PopUpBookingOperation.vue"
 import BookingOperationsService from "@services/BookingOperationsService.js";
 import BookingCalendarCell from "@components/Table/Cells/BookingCalendarCell.vue";
 import BookingService from "@services/BookingService.js";
+import AddClientDrawer from "@components/Drawers/Directory/AddClientDrawer.vue";
 
 const {user} = useAuthStore();
 
@@ -42,6 +43,7 @@ const currentCar = ref(null);
 const currentCarClass = ref(null);
 
 const loadingClients = ref(true);
+const isClientAddDrawerOpen = ref(false);
 const clients = ref([]);
 const currentClient = ref(null);
 
@@ -224,6 +226,13 @@ async function onDirectoryTerritoryUseAdd(id) {
     await fetchTerritoryUse();
     state.directory_territory_car_use_id = id;
     isTerritoryUseDrawerOpen.value = false;
+}
+
+async function onClientAdd(id) {
+    loadingClients.value = true;
+    await fetchClients();
+    state.clientId = id;
+    loadingClients.value = false;
 }
 
 const calculateEndDate = () => {
@@ -590,6 +599,12 @@ onMounted(async () => {
                                                         label: 'text-sm text-wrap',
                                                     }"
                                             >
+                                                <template v-if="user.access.clients === 2" #header>
+                                                    <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
+                                                            label="Добавить"
+                                                            outlined
+                                                            @click="isClientAddDrawerOpen = true"/>
+                                                </template>
                                             </Select>
                                         </div>
                                         <!-- Автомобиль возвращен? -->
@@ -950,6 +965,10 @@ onMounted(async () => {
     <PopUpBookingOperation
         :item="operationItem" :add-item="operationAddItem" :visible="isOperationPopUpOpen" :carState="state"
         @onClose="isOperationPopUpOpen = false" @onDone="onOperationDone"
+    />
+    <AddClientDrawer
+        :visible="isClientAddDrawerOpen"
+        @onAdd="onClientAdd" @onClose="isClientAddDrawerOpen = false"
     />
     <AddDirectoryDrawer
         title="Добавление территории использования" directory="directory_territory_car_use"

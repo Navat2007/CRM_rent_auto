@@ -1138,7 +1138,7 @@ onMounted(() => {
                                         </div>
                                         <div>
                                             <span class="font-bold">У кого: </span>
-                                            <span class="text-blue-700 cursor-pointer" @click="openClient(booking.id)">
+                                            <span class="text-blue-700 cursor-pointer" @click="openClient(booking.client_id)">
                                                 {{booking.fio}}
                                             </span>
                                             <span class="font-bold">
@@ -1146,7 +1146,7 @@ onMounted(() => {
                                             </span>
                                         </div>
                                         <div>
-                                            <span class="font-bold">Возврат: {{moment(booking.end_date).format('DD.MM.YYYY')}}</span>
+                                            <span class="font-bold">Возврат: {{moment(booking.end_date).format('DD.MM.YYYY HH:mm')}}</span>
                                         </div>
                                     </div>
                                     <span v-else>отсутствует</span>

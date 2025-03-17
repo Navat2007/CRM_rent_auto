@@ -8,8 +8,6 @@ import {useAuthStore} from "/src/store/";
 const expireDays = 30;
 const authStore = useAuthStore();
 
-console.log(authStore.user);
-
 axios.interceptors.response.use((response) => {
   if (response.data !== undefined && response.data !== null && typeof response.data !== 'object') {
     if(response?.data?.includes('Warning') || response?.data?.includes('Deprecated')) {

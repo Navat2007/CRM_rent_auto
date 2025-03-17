@@ -16,6 +16,7 @@ import Client from "@components/Cards/Client.vue";
 import DirectoryService from "@services/DirectoryService.js";
 import DaDataService from "@services/DaDataService.js";
 import AddDirectoryDrawer from "@components/Drawers/Directory/AddDirectoryDrawer.vue";
+import AddClientDrawer from "@components/Drawers/Directory/AddClientDrawer.vue";
 
 const {user} = useAuthStore();
 
@@ -39,6 +40,7 @@ const currentCar = ref(null);
 const currentCarClass = ref(null);
 
 const loadingClients = ref(true);
+const isClientAddDrawerOpen = ref(false);
 const clients = ref([]);
 const currentClient = ref(null);
 
@@ -165,6 +167,13 @@ async function onDirectoryTerritoryUseAdd(id) {
     await fetchTerritoryUse();
     state.directory_territory_car_use_id = id;
     isTerritoryUseDrawerOpen.value = false;
+}
+
+async function onClientAdd(id) {
+    loadingClients.value = true;
+    await fetchClients();
+    state.clientId = id;
+    loadingClients.value = false;
 }
 
 const calculateEndDate = () => {
@@ -407,6 +416,12 @@ onMounted(() => {
                                                         label: 'text-sm text-wrap',
                                                     }"
                                             >
+                                                <template v-if="user.access.clients === 2" #header>
+                                                    <Button class="mt-4 ml-4" type="button" icon="pi pi-plus"
+                                                            label="Добавить"
+                                                            outlined
+                                                            @click="isClientAddDrawerOpen = true"/>
+                                                </template>
                                             </Select>
                                         </div>
                                         <!-- Автомобиль возвращен? -->
@@ -654,6 +669,10 @@ onMounted(() => {
         title="Добавление территории использования" directory="directory_territory_car_use"
         :visible="isTerritoryUseDrawerOpen"
         @onAdd="onDirectoryTerritoryUseAdd" @onClose="isTerritoryUseDrawerOpen = false"
+    />
+    <AddClientDrawer
+        :visible="isClientAddDrawerOpen"
+        @onAdd="onClientAdd" @onClose="isClientAddDrawerOpen = false"
     />
     <Dialog v-model:visible="dialogVisible" modal dismissable-mask base-z-index="20000" :header="dialogHeader"
             :style="{ width: '40vw' }" :breakpoints="{ '1199px': '60vw', '575px': '90vw' }">
