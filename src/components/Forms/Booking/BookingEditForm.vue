@@ -166,7 +166,9 @@ async function fetchCars() {
 }
 
 async function fetchClients() {
-    clients.value = (await ClientsService.getAllForBooking(user.company_id)).filter(item => item.status === "Активен");
+    clients.value = (await ClientsService.getAllForBooking(user.company_id))
+        .filter(item => item.status === "Активен")
+        .sort((a, b) => a.full_name.localeCompare(b.full_name));
     loadingClients.value = false;
 }
 
