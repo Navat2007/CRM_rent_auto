@@ -19,7 +19,8 @@ const props = defineProps({
     },
     columns: {
         type: Array,
-        required: false
+        required: false,
+        default: ref(['-', '-'])
     },
     filters: {
         type: Object,
@@ -51,6 +52,11 @@ const props = defineProps({
         required: false,
         default: 'menu'
     },
+    pt: {
+        type: Object,
+        required: false,
+        default: {}
+    }
 })
 const emit = defineEmits(['onRowClick']);
 
@@ -153,7 +159,7 @@ initFilters();
                 columnResizeMode="expand" reorderableColumns
                 :sortOrder="1" removableSort rowHover
                 :filterDisplay="filterDisplay" v-model:filters="finalFilters" :globalFilterFields="filterFields"
-                pt:header="border-0 mr-0 pr-0"
+                pt:header="border-0 mr-0 pr-0" :pt="pt"
                 @filter="onFilterEvent"
             >
                 <template #header>

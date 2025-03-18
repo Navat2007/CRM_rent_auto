@@ -73,9 +73,18 @@ const filters = ref({
     class: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
     color: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
     ['booking.fio']: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
-    ['booking.phone']: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
-    ['booking.start_date']: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
-    ['booking.end_date']: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
+    ['booking.phone']: {
+        operator: FilterOperator.AND,
+        constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]
+    },
+    ['booking.start_date']: {
+        operator: FilterOperator.AND,
+        constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]
+    },
+    ['booking.end_date']: {
+        operator: FilterOperator.AND,
+        constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]
+    },
     status: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
     archive: {operator: FilterOperator.OR, constraints: [{value: "Активен", matchMode: FilterMatchMode.EQUALS}]},
     body_condition: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
@@ -282,7 +291,6 @@ const formatDate = (value, valueToUpdate) => {
     return moment(value.booking[valueToUpdate]).format('DD.MM.YYYY HH:mm');
 };
 
-
 async function fetchData() {
     items.value = await AutoService.getAll({company_id: user.company_id});
     carStatuses.value = await DirectoryService.getAll({
@@ -305,8 +313,7 @@ async function fetchData() {
             item.booking = {};
             item.booking.start_date = new Date('1900-01-01');
             item.booking.end_date = new Date('1900-01-01');
-        }
-        else {
+        } else {
             item.booking.start_date = new Date(item.booking.start_date);
             item.booking.end_date = new Date(item.booking.end_date);
             item.without_date = false;
@@ -328,6 +335,20 @@ onMounted(() => {
             :items="items" :pageSize="15"
             :filters="filters" :filterFields="filterFields"
             :loading="loading" @onRowClick="handleRowClick"
+            :pt="{
+                column: {
+                    bodycell: (state) => {
+                        if(state.props.field === 'booking.end_date') {
+                            const date = moment(state.parent.props.rowData.booking.end_date);
+                            const startDate = moment(date).subtract(1, 'days');
+                            const endDate = moment(date.format('DD.MM.YYYY') + ' 23:59:59', 'DD.MM.YYYY HH:mm:ss');
+
+                            if(moment().isBetween(startDate, endDate))
+                                return ({class: [{ 'bg-yellow-200': true }]})
+                        }
+                    }
+                }
+            }"
         >
             <template #columns>
                 <Column field="id" header="ID" dataType="numeric" headerStyle="width: 7rem; min-width: 7rem;" sortable>
@@ -540,7 +561,7 @@ onMounted(() => {
                 </Column>
                 <Column field="booking.end_date" dataType="date" header="Возврат" sortable>
                     <template #body="{ data }">
-                        {{ formatDate(data, 'end_date') }}
+                        <span>{{ formatDate(data, 'end_date') }}</span>
                     </template>
                     <template #filter="{ filterModel }">
                         <DatePicker

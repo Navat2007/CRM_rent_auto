@@ -97,6 +97,20 @@ onMounted(() => {
             :items="items"
             :filters="filters" :filterFields="filterFields"
             :loading="loading" @onRowClick="handleRowClick"
+            :pt="{
+                column: {
+                    bodycell: (state) => {
+                        if(state.props.field === 'end_date') {
+                            const date = moment(state.parent.props.rowData.end_date);
+                            const startDate = moment(date).subtract(1, 'days');
+                            const endDate = moment(date.format('DD.MM.YYYY') + ' 23:59:59', 'DD.MM.YYYY HH:mm:ss');
+
+                            if(moment().isBetween(startDate, endDate))
+                                return ({class: [{ 'bg-yellow-200': true }]})
+                        }
+                    }
+                }
+            }"
         >
             <template #columns>
                 <Column field="id" header="ID" dataType="numeric" headerStyle="width: 7rem; min-width: 7rem;" sortable>

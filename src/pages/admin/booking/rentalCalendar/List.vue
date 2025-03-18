@@ -40,6 +40,9 @@ const handleCellClick = (item) => {
     selectedContract.value = item;
     drawer.value = true;
 }
+const handleStateNumberCellClick = (item) => {
+    window.open('/Admin/auto/' + item.id, '_blank');
+}
 const handleOpenContract = () => {
     window.open('/Admin/booking/rentalContracts/' + selectedContract.value.id, '_blank');
 }
@@ -236,7 +239,8 @@ onMounted(fetchData);
                 <template #body="slotProps">
                     <div
                         :class="currentHoverCar && parseInt(currentHoverCar.id) === parseInt(slotProps.data.id) ? 'bg-gray-200 dark:hover:bg-gray-600' : ''"
-                        class="px-2"
+                        class="px-2 cursor-pointer hover:underline"
+                        @click="handleStateNumberCellClick(slotProps.data)"
                     >
                         {{slotProps.data.state_number}}
                     </div>
