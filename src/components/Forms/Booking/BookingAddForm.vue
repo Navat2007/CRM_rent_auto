@@ -17,6 +17,8 @@ import DirectoryService from "@services/DirectoryService.js";
 import DaDataService from "@services/DaDataService.js";
 import AddDirectoryDrawer from "@components/Drawers/Directory/AddDirectoryDrawer.vue";
 import AddClientDrawer from "@components/Drawers/Directory/AddClientDrawer.vue";
+import UserService from "@services/UserService.js";
+import LegalPersonsService from "@services/LegalPersonsService.js";
 
 const {user} = useAuthStore();
 
@@ -44,6 +46,14 @@ const isClientAddDrawerOpen = ref(false);
 const clients = ref([]);
 const currentClient = ref(null);
 
+const loadingUsers = ref(true);
+const users = ref([]);
+const currentUser = ref(null);
+
+const loadingLegalPersons = ref(true);
+const legalPersons = ref([]);
+const currentLegalPerson = ref(null);
+
 const loadingTerritoryUse = ref(true);
 const isTerritoryUseDrawerOpen = ref(false);
 const territories = ref([]);
@@ -60,6 +70,8 @@ const state = reactive({
     companyId: user.company_id,
     carId: 0,
     clientId: 0,
+    userId: 0,
+    legal_person_Id: 0,
     directory_territory_car_use_id: 0,
     address_give_out: '',
     address_take_back: '',
@@ -145,7 +157,24 @@ async function fetchClients() {
     clients.value = (await ClientsService.getAllForBooking(user.company_id))
         .filter(item => item.status === "Активен")
         .sort((a, b) => a.full_name.localeCompare(b.full_name));
+
     loadingClients.value = false;
+}
+
+async function fetchUsers() {
+    users.value = (await UserService.getUsers(user.company_id))
+        .filter(item => item.status === "Активен")
+        .sort((a, b) => a.full_name.localeCompare(b.full_name));
+
+  loadingUsers.value = false;
+}
+
+async function fetchLegalPersons() {
+  legalPersons.value = (await LegalPersonsService.getLegalPersons(user.company_id))
+      .filter(item => item.status === "Активен")
+      .sort((a, b) => a.full_name.localeCompare(b.full_name));
+
+  loadingLegalPersons.value = false;
 }
 
 async function fetchTerritoryUse() {
@@ -290,6 +319,8 @@ watch(() => state.rental_rate, () => {
 onMounted(() => {
     fetchCars();
     fetchClients();
+    fetchUsers();
+    fetchLegalPersons();
     fetchTerritoryUse();
     fetchCarClasses();
 });
@@ -447,6 +478,9 @@ onMounted(() => {
                                         </div>
                                     </div>
                                 </div>
+
+                              <div class="grid gap-2">
+                              </div>
 
                                 <div class="grid gap-2" v-if="currentCar">
                                     <Divider type="dashed"/>

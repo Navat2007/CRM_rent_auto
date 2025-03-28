@@ -20,6 +20,8 @@ import BookingOperationsService from "@services/BookingOperationsService.js";
 import BookingCalendarCell from "@components/Table/Cells/BookingCalendarCell.vue";
 import BookingService from "@services/BookingService.js";
 import AddClientDrawer from "@components/Drawers/Directory/AddClientDrawer.vue";
+import UserService from "@services/UserService.js";
+import LegalPersonsService from "@services/LegalPersonsService.js";
 
 const {user} = useAuthStore();
 
@@ -46,6 +48,14 @@ const loadingClients = ref(true);
 const isClientAddDrawerOpen = ref(false);
 const clients = ref([]);
 const currentClient = ref(null);
+
+const loadingUsers = ref(true);
+const users = ref([]);
+const currentUser = ref(null);
+
+const loadingLegalPersons = ref(true);
+const legalPersons = ref([]);
+const currentLegalPerson = ref(null);
 
 const loadingTerritoryUse = ref(true);
 const isTerritoryUseDrawerOpen = ref(false);
@@ -76,6 +86,8 @@ const state = reactive({
     carId: 0,
     carClassId: 0,
     clientId: 0,
+    userId: 0,
+    legal_person_Id: 0,
     directory_territory_car_use_id: 0,
     address_give_out: props.item.address_give_out,
     address_take_back: props.item.address_take_back,
@@ -169,7 +181,24 @@ async function fetchClients() {
     clients.value = (await ClientsService.getAllForBooking(user.company_id))
         .filter(item => item.status === "Активен")
         .sort((a, b) => a.full_name.localeCompare(b.full_name));
+
     loadingClients.value = false;
+}
+
+async function fetchUsers() {
+  users.value = (await UserService.getUsers(user.company_id))
+      .filter(item => item.status === "Активен")
+      .sort((a, b) => a.full_name.localeCompare(b.full_name));
+
+  loadingUsers.value = false;
+}
+
+async function fetchLegalPersons() {
+  legalPersons.value = (await LegalPersonsService.getLegalPersons(user.company_id))
+      .filter(item => item.status === "Активен")
+      .sort((a, b) => a.full_name.localeCompare(b.full_name));
+
+  loadingLegalPersons.value = false;
 }
 
 async function fetchTerritoryUse() {
@@ -463,6 +492,8 @@ watch(() => state.rental_rate, () => {
 onMounted(async () => {
     await fetchCars();
     await fetchClients();
+    await fetchUsers();
+    await fetchLegalPersons();
     await fetchTerritoryUse();
     await fetchCarClasses();
     await fetchOperations();
@@ -471,6 +502,12 @@ onMounted(async () => {
 
     state.carId = props.item.carId;
     state.clientId = props.item.clientId;
+
+    if(props.item.userId)
+      state.userId = props.item.userId;
+
+    if(props.item.legal_person_Id)
+      state.legal_person_Id = props.item.legal_person_Id;
 
     setTimeout(() => {
         state.rental_rate = props.item.rental_rate
