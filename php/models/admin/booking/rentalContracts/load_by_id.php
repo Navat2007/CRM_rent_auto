@@ -23,6 +23,8 @@ if(pg_num_rows($result) > 0)
     $row->id = (int)$row->id;
     $row->carId = (int)$row->car_id;
     $row->clientId = (int)$row->client_id;
+    $row->userId = (int)$row->user_id;
+    $row->legal_person_Id = (int)$row->legal_person_id;
     $row->deposit = (float)$row->deposit;
     $row->mileage_start = (float)$row->mileage_start;
     $row->mileage_end = (float)$row->mileage_end;

@@ -11,6 +11,8 @@ $ID = htmlspecialchars($_POST["id"]);
 $companyId = htmlspecialchars($_POST["companyId"]);
 $carId = htmlspecialchars($_POST["carId"]);
 $clientId = htmlspecialchars($_POST["clientId"]);
+$userId = htmlspecialchars($_POST["userId"]);
+$legal_person_Id = htmlspecialchars($_POST["legal_person_Id"]);
 $directory_territory_car_use_id = htmlspecialchars($_POST["directory_territory_car_use_id"]);
 $address_give_out = htmlspecialchars($_POST["address_give_out"]);
 $address_take_back = htmlspecialchars($_POST["address_take_back"]);
@@ -43,6 +45,8 @@ if($error === 0){
     SET 
         car_id = '$carId', 
         client_id = '$clientId', 
+        user_id = '$userId',
+        legal_person_id = '$legal_person_Id',
         directory_territory_car_use_id = '$directory_territory_car_use_id',
         address_give_out = '$address_give_out', 
         address_take_back = '$address_take_back',         
