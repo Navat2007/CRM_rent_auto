@@ -15,7 +15,7 @@ $params = array();
 
 $sql = "
     SELECT 
-        id, full_name, ogrn, inn, status, archive, updated_at
+        id, full_name, is_lessor, ogrn, inn, status, archive, updated_at
     FROM 
         legal_persons 
     WHERE 
@@ -30,6 +30,7 @@ if(pg_num_rows($result) > 0)
         $params[] = (object)[
             'id' => (int)$row->id,
             'full_name' => htmlspecialchars_decode($row->full_name),
+            'is_lessor' => (int)$row->is_lessor == 1 ? 'Да' : '',
             'ogrn' => htmlspecialchars_decode($row->ogrn),
             'inn' => htmlspecialchars_decode($row->inn),
             'status' => (int)$row->archive == 1 ? 'В архиве' : ((int)$row->status == 1 ? 'Активен' : 'Отключен'),

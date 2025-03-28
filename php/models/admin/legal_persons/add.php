@@ -8,6 +8,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 
 $user = $authorization[1];
 $full_name = htmlspecialchars($_POST["full_name"]);
+$is_lessor = htmlspecialchars($_POST["is_lessor"]) === "true" ? 1 : 0;
 $short_name = htmlspecialchars($_POST["short_name"]);
 $registration_date = htmlspecialchars($_POST["registration_date"]);
 $ogrn = htmlspecialchars($_POST["ogrn"]);
@@ -41,8 +42,8 @@ if(pg_num_rows($result) > 0)
 
 if($error === 0){
     $sql = "
-        INSERT INTO legal_persons (full_name, short_name, registration_date, ogrn, ogrnip, inn, kpp, legal_address, index_legal_address, address, index_address, manager_position, manager_fio, contact_fio, contact_phone, bookkeeper_fio, rs_legal_person, bank, bank_bik, bank_ks, status, last_user_id) 
-        VALUES ('$full_name', '$short_name', " . (empty($registration_date) ? 'NULL' : "'" . $registration_date . "'") . ", '$ogrn', '$ogrnip', '$inn', '$kpp', '$legal_address', '$index_legal_address', '$address', '$index_address', '$manager_position', '$manager_fio', '$contact_fio', '$contact_phone', '$bookkeeper_fio', '$rs_legal_person', '$bank', '$bank_bik', '$bank_ks', '$active', $user) 
+        INSERT INTO legal_persons (full_name, is_lessor, short_name, registration_date, ogrn, ogrnip, inn, kpp, legal_address, index_legal_address, address, index_address, manager_position, manager_fio, contact_fio, contact_phone, bookkeeper_fio, rs_legal_person, bank, bank_bik, bank_ks, status, last_user_id) 
+        VALUES ('$full_name', '$is_lessor', '$short_name', " . (empty($registration_date) ? 'NULL' : "'" . $registration_date . "'") . ", '$ogrn', '$ogrnip', '$inn', '$kpp', '$legal_address', '$index_legal_address', '$address', '$index_address', '$manager_position', '$manager_fio', '$contact_fio', '$contact_phone', '$bookkeeper_fio', '$rs_legal_person', '$bank', '$bank_bik', '$bank_ks', '$active', $user) 
         RETURNING id";
     $sqls[] = $sql;
     $result = pg_query($conn, $sql);

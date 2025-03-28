@@ -9,6 +9,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/php/auth.php';
 $user = $authorization[1];
 $ID = htmlspecialchars($_POST["id"]);
 $full_name = htmlspecialchars($_POST["full_name"]);
+$is_lessor = htmlspecialchars($_POST["is_lessor"]) === "true" ? 1 : 0;
 $short_name = htmlspecialchars($_POST["short_name"]);
 $registration_date = htmlspecialchars($_POST["registration_date"]);
 $ogrn = htmlspecialchars($_POST["ogrn"]);
@@ -54,6 +55,7 @@ if($error === 0){
             legal_persons 
         SET 
             full_name = '$full_name', 
+            is_lessor = '$is_lessor',
             short_name = '$short_name', 
             registration_date = " . (empty($registration_date) ? 'NULL' : "'" . $registration_date . "'") . ", 
             ogrn = '$ogrn', 

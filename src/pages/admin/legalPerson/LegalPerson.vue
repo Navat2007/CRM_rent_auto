@@ -47,8 +47,10 @@ const columns = ref([
   }
 ]);
 const statuses = ref(['Активен', 'Отключен', 'В архиве']);
+const isLessorStatuses = ref(['Да']);
 const filters = ref({
   id: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+  is_lessor: {operator: FilterOperator.OR, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
   full_name: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
   ogrn: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
   inn: {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
@@ -108,6 +110,12 @@ onMounted(() => {
         <Column field="full_name" header="Название" sortable>
           <template #filter="{ filterModel }">
             <InputText v-model="filterModel.value" type="text" placeholder="Поиск по названию"/>
+          </template>
+        </Column>
+        <Column field="is_lessor" header="Арендодатель" sortable>
+          <template #filter="{ filterModel }">
+            <Dropdown v-model="filterModel.value" :options="isLessorStatuses" placeholder="Все" class="p-column-filter"
+                      showClear/>
           </template>
         </Column>
         <Column field="ogrn" header="ОГРН" sortable>

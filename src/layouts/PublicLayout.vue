@@ -3,13 +3,10 @@ import {ref, onBeforeMount, onMounted} from "vue";
 import {RouterLink} from "vue-router";
 import Logo from "@assets/images/logo.svg";
 
-const appButton = ref();
+const isShowingUpButton = ref(false);
+
 const userScroll = () => {
-  if (window.scrollY > 0) {
-    appButton.value.classList.add("showButton");
-  } else {
-    appButton.value.classList.remove("showButton");
-  }
+  isShowingUpButton.value = window.scrollY > 0;
 };
 
 onMounted(() => {
@@ -113,11 +110,12 @@ const scrollToTop = () => {
     </div>
   </div>
   <button
+      v-if="isShowingUpButton"
       :onclick="scrollToTop" ref="appButton"
       type="button"
       data-twe-ripple-init
       data-twe-ripple-color="light"
-      class="!fixed bottom-5 end-5 hidden rounded-full bg-red-600 p-3 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg"
+      class="!fixed bottom-5 end-5 rounded-full bg-red-300 p-3 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-red-400 hover:shadow-lg focus:bg-red-400 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-500 active:shadow-lg"
   >
     <span class="[&>svg]:w-4">
       <svg

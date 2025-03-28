@@ -3,7 +3,7 @@ import {ref, markRaw, onMounted} from "vue";
 import {onClickOutside} from '@vueuse/core';
 import {useAuthStore, useSidebarStore} from '@stores';
 import {Icon} from '@vicons/utils'
-import {Home, Building, Group, Car, TrafficEvent, Folders, ArrowLeft} from '@vicons/carbon';
+import {Home, Building, Group, Car, TrafficEvent, Folders, ArrowLeft, EventsAlt} from '@vicons/carbon';
 
 import SidebarItem from "@components/Containers/Admin/Sidebar/SidebarItem.vue";
 import Logo from "@assets/images/logo.png";
@@ -38,13 +38,15 @@ const menuGroups = ref([
         visible: user.access?.employers && user.access.employers !== 0
       },
       {
+        icon: markRaw(EventsAlt),
+        label: 'Юрлица',
+        route: '/Admin/legalPerson',
+        visible: user.access?.clients && user.access.clients !== 0
+      },
+      {
         icon: markRaw(Group),
         label: 'Клиенты',
-        route: '',
-        children: [
-          {label: 'Клиенты', route: '/Admin/clients', visible: user.access?.clients !== 0},
-          {label: 'Юрлица', route: '/Admin/legalPerson', visible: user.access?.clients !== 0},
-        ],
+        route: '/Admin/clients',
         visible: user.access?.clients && user.access?.clients !== 0
       },
       {
