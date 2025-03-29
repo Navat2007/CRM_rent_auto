@@ -62,7 +62,7 @@ if($error === 0){
         VALUES (
                 '$carId', 
                 '$clientId', 
-                '$userId',
+                " . (empty($userId) ? 'NULL' : "'" . $userId . "'") . ", 
                 '$legal_person_Id',
                 '$directory_territory_car_use_id', 
                 '$address_give_out', 

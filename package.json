@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "packageManager": "pnpm@8.15.2",
+  "packageManager": "pnpm@10.7.0",
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@primevue/core": "^4.3.2",

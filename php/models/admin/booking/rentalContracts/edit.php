@@ -45,7 +45,7 @@ if($error === 0){
     SET 
         car_id = '$carId', 
         client_id = '$clientId', 
-        user_id = '$userId',
+        user_id = " . (empty($userId) ? 'NULL' : "'" . $userId . "'") . ", 
         legal_person_id = '$legal_person_Id',
         directory_territory_car_use_id = '$directory_territory_car_use_id',
         address_give_out = '$address_give_out', 
