@@ -42,11 +42,6 @@ const onDelete = () => {
     state.modal = false;
     emit('onDelete');
 }
-
-onMounted(async () => {
-    console.log(props.value);
-    console.log(state.file);
-});
 </script>
 
 <template>
