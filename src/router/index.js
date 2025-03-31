@@ -23,6 +23,7 @@ import AdminEditClient from "@pages/admin/clients/EditClient.vue";
 import AdminAuto from "@pages/admin/auto/List.vue";
 import AdminAddAuto from "@pages/admin/auto/Add.vue";
 import AdminEditAuto from "@pages/admin/auto/Edit.vue";
+import ContractsTemplate from "@pages/admin/contractsTemplate/ContractsTemplate.vue";
 
 const publicRoutes = [
     {
@@ -81,6 +82,17 @@ const adminRoutes = [
             layout: AdminLayout,
             requiresAuth: true,
             title: 'Редактирование сотрудника',
+        }
+    },
+    // ContractsTemplate
+    {
+        path: '/Admin/contractsTemplate',
+        exact: true,
+        component: ContractsTemplate,
+        meta: {
+            layout: AdminLayout,
+            requiresAuth: true,
+            title: 'Шаблоны договоров',
         }
     },
     // Clients
