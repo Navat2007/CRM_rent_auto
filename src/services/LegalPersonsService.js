@@ -16,6 +16,20 @@ class LegalPersonsService {
         return result;
     }
 
+    static async getLegalPersonsForBooking(company_id) {
+        let form = new FormData();
+        form.append('company_id', company_id);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/legal_persons/load_for_booking.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
     static async getLegalPersonById(id) {
         let form = new FormData();
         form.append('id', id);

@@ -62,12 +62,52 @@ const tags = ref([
         label: 'атрибуты клиента',
         list: [
             {
-                label: '',
-                value: ''
+                label: 'идентификатор клиента',
+                value: '#client_id#'
             },
             {
-                label: '',
-                value: ''
+                label: 'Фамилия клиента',
+                value: '#client_first#'
+            },
+            {
+                label: 'Имя клиента',
+                value: '#client_second#'
+            },
+            {
+                label: 'Отчество клиента',
+                value: '#client_middle# '
+            },
+            {
+                label: 'Фамилия И.О. клиента',
+                value: '#client_fio_short#'
+            },
+            {
+                label: 'Дата рождения',
+                value: '#client_bd#'
+            },
+            {
+                label: 'Адрес регистрации',
+                value: '#client_registration#'
+            },
+            {
+                label: 'Адрес фактический',
+                value: '#client_fact#'
+            },
+            {
+                label: 'Паспорт: серия и номер',
+                value: '#client_ser_num#'
+            },
+            {
+                label: 'Паспорт: Кем выдан',
+                value: '#client_issued_by#'
+            },
+            {
+                label: 'Паспорт: Дата выдачи',
+                value: '#client_issued_date#'
+            },
+            {
+                label: 'Телефон клиента',
+                value: '#client_phone#'
             },
         ]
     },
@@ -75,12 +115,60 @@ const tags = ref([
         label: 'атрибуты авто',
         list: [
             {
-                label: '',
-                value: ''
+                label: 'ПТС Номер кузова ',
+                value: '#cars_body_number#'
             },
             {
-                label: '',
-                value: ''
+                label: 'Резина авто',
+                value: '#car_tires_type#'
+            },
+            {
+                label: 'Марка',
+                value: '#car_brand#'
+            },
+            {
+                label: 'модель',
+                value: ' #car_model#'
+            },
+            {
+                label: 'Рег. номер',
+                value: '#car_state_number#'
+            },
+            {
+                label: 'VIN',
+                value: '#car_vin#'
+            },
+            {
+                label: 'Цвет кузова',
+                value: '#car_color#'
+            },
+            {
+                label: 'Год выпуска',
+                value: '#car_year#'
+            },
+            {
+                label: 'СТС Серия',
+                value: '#sts_series#'
+            },
+            {
+                label: 'СТС Номер',
+                value: '#sts_number#'
+            },
+            {
+                label: 'Объем бака',
+                value: '#fuel_tank#'
+            },
+            {
+                label: 'Тип топлива',
+                value: '#car_fuel_type#'
+            },
+            {
+                label: 'Стоимость 1 км перепробега',
+                value: '#cost_extra_mileage#'
+            },
+            {
+                label: 'Стоимость ТС',
+                value: '#cost_assessment#'
             },
         ]
     },
@@ -88,12 +176,84 @@ const tags = ref([
         label: 'атрибуты фирмы-арендодателя',
         list: [
             {
-                label: '',
-                value: ''
+                label: 'Полное наименование',
+                value: '#firm_full_name#'
             },
             {
-                label: '',
-                value: ''
+                label: 'ОГРН',
+                value: '#firm_ogrn#'
+            },
+            {
+                label: 'Краткое наименование',
+                value: '#firm_short_name#'
+            },
+            {
+                label: 'Дата регистрации',
+                value: '#firm_registration_date#'
+            },
+            {
+                label: 'ОГРНИП',
+                value: '#firm_ogrnip#'
+            },
+            {
+                label: 'ИНН',
+                value: '#firm_inn#'
+            },
+            {
+                label: 'КПП',
+                value: '#firm_kpp#'
+            },
+            {
+                label: 'Юридический адрес',
+                value: '#firm_legal_address#'
+            },
+            {
+                label: 'Индекс Юр адреса',
+                value: '#firm_index_legal_address#'
+            },
+            {
+                label: 'Почтовый адрес',
+                value: '#firm_address#'
+            },
+            {
+                label: 'Индекс Почтового адреса',
+                value: '#firm_index_address#'
+            },
+            {
+                label: 'Должность руководителя',
+                value: '#firm_manager_position#'
+            },
+            {
+                label: 'ФИО руководителя',
+                value: '#firm_manager_fio#'
+            },
+            {
+                label: 'ФИО контактного лица',
+                value: '#firm_contact_fio#'
+            },
+            {
+                label: 'телефон контактного лица',
+                value: '#firm_contact_phone#'
+            },
+            {
+                label: 'ФИО Бухгалтера',
+                value: '#firm_bookkeeper_fio#'
+            },
+            {
+                label: 'Расчетный счет юр лица',
+                value: '#firm_rs_legal_person#'
+            },
+            {
+                label: 'Банк',
+                value: '#firm_bank#'
+            },
+            {
+                label: 'БИК Банка',
+                value: '#firm_bank_bik#'
+            },
+            {
+                label: 'корреспондентский счет Банка',
+                value: '#firm_bank_ks#'
             },
         ]
     },
@@ -101,12 +261,24 @@ const tags = ref([
         label: 'атрибуты сотрудника',
         list: [
             {
-                label: '',
-                value: ''
+                label: 'Фамилия сотрудника',
+                value: '#employee_first#'
             },
             {
-                label: '',
-                value: ''
+                label: 'Имя сотрудника',
+                value: '#employee_second#'
+            },
+            {
+                label: 'Отчество сотрудника',
+                value: '#employee_middle#'
+            },
+            {
+                label: 'Фамилия И.О. сотрудника',
+                value: '#employee_fio_short#'
+            },
+            {
+                label: 'Действует на основании',
+                value: '#employee_acts_on_basis#'
             },
         ]
     }
@@ -118,6 +290,7 @@ async function fetchBookingContract() {
     if(result){
         state.bookingContractTemplate = result;
         state.bookingContractTemplate.name = result.file_name + "." + result.file_ext;
+        state.bookingContractTemplate.full_url = import.meta.env.VITE_FILE_URL + result.file_url;
     }
 
     loading.value = false;

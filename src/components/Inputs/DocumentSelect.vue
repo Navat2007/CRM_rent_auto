@@ -46,9 +46,12 @@ const onDelete = () => {
 
 <template>
     <div class="flex flex-col gap-4 sm:flex-row items-center justify-between" >
-        <span>
+        <span v-if="!props.value && state.file">
             {{state.file?.name}}
         </span>
+        <a v-if="props.value && props.value !== ''" :href="state.file?.full_url" target="_blank" class="text-blue-500 hover:text-blue-700 cursor-pointer">
+            {{state.file?.name}}
+        </a>
         <Button v-if="!props.value && state.file" type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined @click="emit('onSave')"/>
         <Button v-if="props.value && props.value !== ''" type="submit" icon="pi pi-trash" label="Удалить" :loading="sending" outlined @click="state.modal = true"/>
     </div>

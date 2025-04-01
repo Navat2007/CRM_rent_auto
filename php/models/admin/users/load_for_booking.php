@@ -14,20 +14,18 @@ $params = array();
 
 $sql = "
     SELECT 
-        users.id, users.email, users.status, users.archive,
-        ui.first_name, ui.second_name, ui.middle_name,
-        ui.full_name, ui.birth_date, ui.phone, ui.gender, ui.user_photo_avatar as avatar,
-        up.fact_address, up.registration_address, up.issued_by_who, up.issued_date, up.series_number
+        users.*, ui.full_name, ui.firing_date, dp.name as position_name,
+        ui.first_name, ui.second_name, ui.middle_name, ui.acts_on_basis    
     FROM 
         users as users
     LEFT JOIN 
         users_company as uc on users.id = uc.user_id
     LEFT JOIN 
-        users_passport as up on users.id = up.user_id
-    LEFT JOIN 
         users_info as ui on users.id = ui.user_id
+    LEFT JOIN 
+        directory_position as dp on dp.id = ui.user_type
     WHERE 
-        users.id != 1";
+        users.is_employee = true";
 
 if($company_id != 0){
     $sql .= " AND uc.company_id = '{$company_id}'";
@@ -42,21 +40,15 @@ if(pg_num_rows($result) > 0)
     {
         $params[] = (object)[
             'id' => (int)$row->id,
-            'avatar' => $row->avatar == null ? "" : ("https://" . $_SERVER['HTTP_HOST'] . $row->avatar),
             'full_name' => $row->full_name == null ? "" : htmlspecialchars_decode($row->full_name),
             'first_name' => $row->first_name == null ? "" : htmlspecialchars_decode($row->first_name),
             'second_name' => $row->second_name == null ? "" : htmlspecialchars_decode($row->second_name),
-            'middle_name' => $row->middle_name == null ? "" : htmlspecialchars_decode($row->middle_name),
-            'birth_date' => $row->birth_date,
+            'middle_name' => $row->second_name == null ? "" : htmlspecialchars_decode($row->middle_name),
+            'acts_on_basis' => $row->second_name == null ? "" : htmlspecialchars_decode($row->acts_on_basis),
+            'position' => (int)$row->id == 1 ? 'Разработчик' : ($row->position_name == null ? "Не найдена" : htmlspecialchars_decode($row->position_name)),
+            'firing_date' => $row->firing_date,
             'email' => htmlspecialchars_decode($row->email),
-            'phone' => htmlspecialchars_decode($row->phone),
             'status' => (int)$row->archive == 1 ? "В архиве" : ((int)$row->status == 1 ? "Активен" : "Отключен"),
-            'gender' => (int)$row->gender == 0 ? "Мужской" : "Женский",
-            'fact_address' => $row->fact_address == null ? "" : htmlspecialchars_decode($row->fact_address),
-            'registration_address' => $row->registration_address == null ? "" : htmlspecialchars_decode($row->registration_address),
-            'issued_by_who' => $row->issued_by_who == null ? "" : htmlspecialchars_decode($row->issued_by_who),
-            'series_number' => $row->issued_by_who == null ? "" : htmlspecialchars_decode($row->series_number),
-            'issued_date' => $row->issued_date == null ? "" : $row->issued_date,
         ];
     }
 

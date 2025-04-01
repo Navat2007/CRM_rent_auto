@@ -128,7 +128,3 @@ const getOCRDL = async (e) => {
 
   <AlertModal :isOpen="isAlertModalOpen" @close="isAlertModalOpen = false" :title="error" info/>
 </template>
-
-<style scoped>
-
-</style>

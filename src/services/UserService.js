@@ -16,6 +16,20 @@ class UserService {
         return result;
     }
 
+    static async getEmployersForBooking(company_id) {
+        let form = new FormData();
+        form.append('company_id', company_id);
+
+        let result = [];
+        const response = await axios.postForm(`${import.meta.env.VITE_API_URL}/admin/users/load_for_booking.php`, form);
+
+        if (response.data.params) {
+            result = response.data.params;
+        }
+
+        return result;
+    }
+
     static async getUserById(id) {
         let form = new FormData();
         form.append('id', id);
