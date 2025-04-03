@@ -6,7 +6,7 @@ import {helpers, minValue, required} from '@vuelidate/validators';
 import moment from "moment";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
-import { saveAs } from "file-saver";
+import {saveAs} from "file-saver";
 import {isNumber} from "lodash";
 import Select from "primevue/select";
 import Divider from "primevue/divider";
@@ -269,7 +269,7 @@ async function fetchTotals() {
 async function fetchBookingContract() {
     const result = await ContractsTemplateService.getBookingContractTemplate(state.companyId);
 
-    if(result){
+    if (result) {
         state.bookingContractTemplate = result;
         state.bookingContractTemplate.name = result.file_name + "." + result.file_ext;
         state.bookingContractTemplate.full_url = import.meta.env.VITE_FILE_URL + result.file_url;
@@ -505,11 +505,11 @@ const downloadContract = async () => {
         // атрибуты клиента
         let shortFIO = currentClient.value.second_name;
 
-        if(currentClient.value.first_name && currentClient.value.first_name.length > 0) {
+        if (currentClient.value.first_name && currentClient.value.first_name.length > 0) {
             shortFIO += ' ' + currentClient.value.first_name.charAt(0) + '.';
         }
 
-        if(currentClient.value.middle_name && currentClient.value.middle_name.length > 0) {
+        if (currentClient.value.middle_name && currentClient.value.middle_name.length > 0) {
             shortFIO += ' ' + currentClient.value.middle_name.charAt(0) + '.';
         }
 
@@ -571,14 +571,14 @@ const downloadContract = async () => {
 
         shortFIO = "";
 
-        if(employer){
+        if (employer) {
             shortFIO = employer.second_name;
 
-            if(employer.first_name && employer.first_name.length > 0) {
+            if (employer.first_name && employer.first_name.length > 0) {
                 shortFIO += ' ' + employer.first_name.charAt(0) + '.';
             }
 
-            if(employer.middle_name && employer.middle_name.length > 0) {
+            if (employer.middle_name && employer.middle_name.length > 0) {
                 shortFIO += ' ' + employer.middle_name.charAt(0) + '.';
             }
         }
