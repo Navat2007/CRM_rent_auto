@@ -75,7 +75,7 @@ const tags = ref([
             },
             {
                 label: 'Отчество клиента',
-                value: '{client_middle# '
+                value: '{client_middle}'
             },
             {
                 label: 'Фамилия И.О. клиента',
@@ -128,7 +128,7 @@ const tags = ref([
             },
             {
                 label: 'модель',
-                value: ' #car_model}'
+                value: '{car_model}'
             },
             {
                 label: 'Рег. номер',
