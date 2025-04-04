@@ -598,12 +598,6 @@ const downloadContract = async () => {
         const arrayBuffer = await response.arrayBuffer();
         
         const zip = new PizZip(arrayBuffer);
-        const xmlContent = zip.files['word/document.xml'].asText();
-        
-        console.log('Найденные теги:', xmlContent.match(/#\w+#/g));
-        
-        zip.file('word/document.xml',);
-        
         const doc = new Docxtemplater(zip, {
             paragraphLoop: true,
             linebreaks: true
