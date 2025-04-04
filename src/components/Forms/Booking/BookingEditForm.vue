@@ -159,27 +159,27 @@ const v$ = useVuelidate(rules, state);
 const mileage = computed(() => {
     if (state.mileage_start > state.mileage_end)
         return 0;
-
+    
     return state.mileage_end - state.mileage_start;
 });
 const over_mileage = computed(() => {
     if (currentCarClass.value && mileage.value > 0) {
         return mileage.value - (state.rental_days * parseFloat(currentCarClass.value.limit));
     }
-
+    
     return 0;
 });
 const over_mileage_cost = computed(() => {
     if (currentCarClass.value) {
         return over_mileage.value * parseFloat(currentCarClass.value.cost_extra_mileage);
     }
-
+    
     return 0;
 });
 
 const onFormSubmit = async (e) => {
     const isFormCorrect = await unref(v$).$validate();
-
+    
     if (isFormCorrect) {
         emit('onSubmit', state);
     }
@@ -194,7 +194,7 @@ async function fetchClients() {
     clients.value = (await ClientsService.getAllForBooking(user.company_id))
         .filter(item => item.status === "Активен")
         .sort((a, b) => a.full_name.localeCompare(b.full_name));
-
+    
     loadingClients.value = false;
 }
 
@@ -202,7 +202,7 @@ async function fetchEmployers() {
     employers.value = (await UserService.getEmployersForBooking(user.company_id))
         .filter(item => item.status === "Активен")
         .sort((a, b) => a.full_name.localeCompare(b.full_name));
-
+    
     loadingEmployers.value = false;
 }
 
@@ -211,7 +211,7 @@ async function fetchLegalPersons() {
         .filter(item => item.status === "Активен")
         .filter(item => item.is_lessor === 1)
         .sort((a, b) => a.full_name.localeCompare(b.full_name));
-
+    
     loadingLegalPersons.value = false;
 }
 
@@ -221,7 +221,7 @@ async function fetchTerritoryUse() {
         company_id: user.company_id
     })).filter(item => item.archive === "Активен");
     loadingTerritoryUse.value = false;
-
+    
     state.directory_territory_car_use_id = props.item.directory_territory_car_use_id;
 }
 
@@ -246,10 +246,10 @@ async function fetchOperationTypes() {
         directory: 'directory_operation_types',
         company_id: user.company_id
     });
-
+    
     operationTypes.value = result
         .filter(item => item.archive === "Активен");
-
+    
     loadingOperationTypes.value = false;
 }
 
@@ -258,17 +258,17 @@ async function fetchTotals() {
         id: props.item.id,
         company_id: user.company_id
     });
-
+    
     state.accrued_total = result.accrued_total;
     state.paid_total = result.paid_total;
     state.balance = result.balance;
-
+    
     loadingTotals.value = false;
 }
 
 async function fetchBookingContract() {
     const result = await ContractsTemplateService.getBookingContractTemplate(state.companyId);
-
+    
     if (result) {
         state.bookingContractTemplate = result;
         state.bookingContractTemplate.name = result.file_name + "." + result.file_ext;
@@ -311,7 +311,7 @@ const calculateEndDate = () => {
         dialogVisible.value = true;
         return;
     }
-
+    
     state.end_date = moment(state.start_date, 'DD.MM.YYYY HH:mm').add(state.rental_days, 'days').format('DD.MM.YYYY HH:mm');
 }
 
@@ -328,28 +328,28 @@ const saveMileage = () => {
         dialogVisible.value = true;
         return;
     }
-
+    
     if (state.mileage_end === null || state.mileage_end === 0 || state.mileage_end === '') {
         dialogHeader.value = "Ошибка";
         dialogText.value = "Нужно ввести пробег на момент приема";
         dialogVisible.value = true;
         return;
     }
-
+    
     if (state.mileage_end === currentCar.value.mileage) {
         dialogHeader.value = "Ошибка";
         dialogText.value = "Пробег совпадает с пробегом на автомобиле";
         dialogVisible.value = true;
         return;
     }
-
+    
     AutoService.updateMileage({id: currentCar.value.id, mileage: state.mileage_end})
 }
 
 const calculateTariff = () => {
     let price = 0;
     state.rental_rate_text = '';
-
+    
     currentCar.value.saved_price_periods.map(period => {
         if (state.rental_days >= period.days_from && state.rental_days <= period.days_until) {
             if (isNumber(period.price)) {
@@ -364,13 +364,13 @@ const calculateTariff = () => {
             state.rental_rate_text = period.name;
         }
     })
-
+    
     state.rental_rate = price;
 }
 
 const setTariffText = () => {
     state.rental_rate_text = '';
-
+    
     currentCar.value.saved_price_periods.map(period => {
         if (state.rental_days >= period.days_from && state.rental_days <= period.days_until) {
             if (isNumber(period.price)) {
@@ -395,14 +395,14 @@ const handleAddOperationButtonClick = (template) => {
         dialogVisible.value = true;
         return;
     }
-
+    
     operationItem.value = null;
     let directory_operation_types_id = undefined;
-
+    
     switch (template) {
         case 'pay_rent':
             directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'pay_rent')?.id;
-
+            
             operationAddItem.value = {
                 directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
                 period_from: state.start_date,
@@ -413,10 +413,10 @@ const handleAddOperationButtonClick = (template) => {
                 accrued: state.rental_cost,
             };
             break;
-
+        
         case 'pay_deposit':
             directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'pay_deposit')?.id;
-
+            
             operationAddItem.value = {
                 directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
                 period_from: state.start_date,
@@ -428,10 +428,10 @@ const handleAddOperationButtonClick = (template) => {
                 paid: state.deposit
             };
             break;
-
+        
         case 'return_deposit':
             directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'return_deposit')?.id;
-
+            
             operationAddItem.value = {
                 directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
                 period_from: state.start_date,
@@ -443,10 +443,10 @@ const handleAddOperationButtonClick = (template) => {
                 paid: state.deposit
             };
             break;
-
+        
         case 'pay_over_mileage':
             directory_operation_types_id = operationTypes.value.find(item => item.used_for === 'pay_over_mileage')?.id;
-
+            
             operationAddItem.value = {
                 directory_operation_types_id: directory_operation_types_id ? directory_operation_types_id : 0,
                 period_from: state.start_date,
@@ -458,12 +458,12 @@ const handleAddOperationButtonClick = (template) => {
                 paid: over_mileage_cost.value
             };
             break;
-
+        
         default:
             operationAddItem.value = null;
             break;
     }
-
+    
     isOperationPopUpOpen.value = true;
 }
 
@@ -474,7 +474,7 @@ const handleEditOperationButtonClick = (item) => {
         dialogVisible.value = true;
         return;
     }
-
+    
     operationItem.value = item.data;
     isOperationPopUpOpen.value = true;
 }
@@ -494,134 +494,128 @@ const rowClass = (data) => {
 
 const downloadContract = async () => {
     const replaceTags = (content) => {
-        // атрибуты проката
-        content = content.replaceAll(/#booking_id#/g, props.item.id);
-        content = content.replaceAll(/#booking_start_d#/g, state.start_date);
-        content = content.replaceAll(/#rental_rate#/g, state.rental_rate);
-        content = content.replaceAll(/#rental_days#/g, state.rental_days);
-        content = content.replaceAll(/#deposit_booking#/g, state.deposit);
-        content = content.replaceAll(/#booking_territory#/g, territories.value.find(item => item.id === state.directory_territory_car_use_id).name);
-
-        // атрибуты клиента
         let shortFIO = currentClient.value.second_name;
-
+        
         if (currentClient.value.first_name && currentClient.value.first_name.length > 0) {
             shortFIO += ' ' + currentClient.value.first_name.charAt(0) + '.';
         }
-
         if (currentClient.value.middle_name && currentClient.value.middle_name.length > 0) {
             shortFIO += ' ' + currentClient.value.middle_name.charAt(0) + '.';
         }
-
-        content = content.replaceAll(/#client_id#/g, currentClient.value.id);
-        content = content.replaceAll(/#client_first#/g, currentClient.value.second_name);
-        content = content.replaceAll(/#client_second#/g, currentClient.value.first_name);
-        content = content.replaceAll(/#client_middle#/g, currentClient.value.middle_name);
-        content = content.replaceAll(/#client_fio_short#/g, shortFIO);
-        content = content.replaceAll(/#client_bd#/g, currentClient.value.birth_date && currentClient.value.birth_date !== '' ? moment(currentClient.value.birth_date).format('DD.MM.YYYY') : "");
-        content = content.replaceAll(/#client_registration#/g, currentClient.value.registration_address);
-        content = content.replaceAll(/#client_fact#/g, currentClient.value.fact_address);
-        content = content.replaceAll(/#client_ser_num#/g, currentClient.value.series_number);
-        content = content.replaceAll(/#client_issued_by#/g, currentClient.value.issued_by_who);
-        content = content.replaceAll(/#client_issued_date#/g, currentClient.value.issued_date && currentClient.value.issued_date !== '' ? moment(currentClient.value.issued_date).format('DD.MM.YYYY') : "");
-        content = content.replaceAll(/#client_phone#/g, currentClient.value.phone);
-
-        // атрибуты автомобиля
-        content = content.replaceAll(/#cars_body_number#/g, currentCar.value.body_number);
-        content = content.replaceAll(/#car_tires_type#/g, currentCar.value.tires_type);
-        content = content.replaceAll(/#car_brand#/g, currentCar.value.brand);
-        content = content.replaceAll(/#car_model#/g, currentCar.value.model);
-        content = content.replaceAll(/#car_state_number#/g, currentCar.value.state_number);
-        content = content.replaceAll(/#car_vin#/g, currentCar.value.vin);
-        content = content.replaceAll(/#car_color#/g, currentCar.value.color);
-        content = content.replaceAll(/#car_year#/g, currentCar.value.release_year);
-        content = content.replaceAll(/#sts_series#/g, currentCar.value.sts_series);
-        content = content.replaceAll(/#sts_number#/g, currentCar.value.sts_number);
-        content = content.replaceAll(/#fuel_tank#/g, currentCar.value.fuel_tank_capacity);
-        content = content.replaceAll(/#car_fuel_type#/g, currentCar.value.fuel_type);
-        content = content.replaceAll(/#cost_extra_mileage#/g, currentCar.value.cost_extra_mileage);
-        content = content.replaceAll(/#cost_assessment#/g, currentCar.value.cost_assessment);
-
-        // атрибуты фирмы-арендодателя
+        
         const legalPerson = legalPersons.value.find(item => item.id === state.legal_person_Id);
-
-        content = content.replaceAll(/#firm_full_name#/g, legalPerson ? legalPerson.full_name : "");
-        content = content.replaceAll(/#firm_ogrn#/g, legalPerson ? legalPerson.ogrn : "");
-        content = content.replaceAll(/#firm_short_name#/g, legalPerson ? legalPerson.short_name : "");
-        content = content.replaceAll(/#firm_registration_date#/g, legalPerson ? (legalPerson.registration_date ? moment(legalPerson.registration_date).format('DD.MM.YYYY') : "") : "");
-        content = content.replaceAll(/#firm_ogrnip#/g, legalPerson ? legalPerson.ogrnip : "");
-        content = content.replaceAll(/#firm_inn#/g, legalPerson ? legalPerson.inn : "");
-        content = content.replaceAll(/#firm_kpp#/g, legalPerson ? legalPerson.kpp : "");
-        content = content.replaceAll(/#firm_legal_address#/g, legalPerson ? legalPerson.legal_address : "");
-        content = content.replaceAll(/#firm_index_legal_address#/g, legalPerson ? legalPerson.index_legal_address : "");
-        content = content.replaceAll(/#firm_address#/g, legalPerson ? legalPerson.address : "");
-        content = content.replaceAll(/#firm_index_address#/g, legalPerson ? legalPerson.index_address : "");
-        content = content.replaceAll(/#firm_manager_position#/g, legalPerson ? legalPerson.manager_position : "");
-        content = content.replaceAll(/#firm_manager_fio#/g, legalPerson ? legalPerson.manager_fio : "");
-        content = content.replaceAll(/#firm_contact_fio#/g, legalPerson ? legalPerson.contact_fio : "");
-        content = content.replaceAll(/#firm_contact_phone#/g, legalPerson ? legalPerson.contact_phone : "");
-        content = content.replaceAll(/#firm_bookkeeper_fio#/g, legalPerson ? legalPerson.bookkeeper_fio : "");
-        content = content.replaceAll(/#firm_rs_legal_person#/g, legalPerson ? legalPerson.rs_legal_person : "");
-        content = content.replaceAll(/#firm_bank#/g, legalPerson ? legalPerson.bank : "");
-        content = content.replaceAll(/#firm_bank_bik#/g, legalPerson ? legalPerson.bank_bik : "");
-        content = content.replaceAll(/#firm_bank_ks#/g, legalPerson ? legalPerson.bank_ks : "");
-
-        // атрибуты сотрудника
+        
         const employer = employers.value.find(item => item.id === state.employer_Id);
-
-        shortFIO = "";
-
+        
+        let employerShortFIO = "";
+        
         if (employer) {
-            shortFIO = employer.second_name;
-
+            employerShortFIO = employer.second_name;
+            
             if (employer.first_name && employer.first_name.length > 0) {
-                shortFIO += ' ' + employer.first_name.charAt(0) + '.';
+                employerShortFIO += ' ' + employer.first_name.charAt(0) + '.';
             }
-
+            
             if (employer.middle_name && employer.middle_name.length > 0) {
-                shortFIO += ' ' + employer.middle_name.charAt(0) + '.';
+                employerShortFIO += ' ' + employer.middle_name.charAt(0) + '.';
             }
         }
-
-        content = content.replaceAll(/#employee_first#/g, employer ? employer.second_name : "");
-        content = content.replaceAll(/#employee_second#/g, employer ? employer.first_name : "");
-        content = content.replaceAll(/#employee_middle#/g, employer ? employer.middle_name : "");
-        content = content.replaceAll(/#employee_fio_short#/g, employer ? shortFIO : "");
-        content = content.replaceAll(/#employee_acts_on_basis#/g, employer ? employer.acts_on_basis : "");
-
-        return content;
+        
+        return {
+            'booking_id': props.item.id,
+            'booking_start_d': state.start_date,
+            'rental_rate': state.rental_rate,
+            'rental_days': state.rental_days,
+            'deposit_booking': state.deposit,
+            'booking_territory': territories.value.find(item => item.id === state.directory_territory_car_use_id).name,
+            
+            'client_id': currentClient.value.id,
+            'client_first': currentClient.value.second_name,
+            'client_second': currentClient.value.first_name,
+            'client_middle': currentClient.value.middle_name,
+            'client_fio_short': shortFIO,
+            'client_bd': currentClient.value.birth_date && currentClient.value.birth_date !== '' ? moment(currentClient.value.birth_date).format('DD.MM.YYYY') : "",
+            'client_registration': currentClient.value.registration_address,
+            'client_fact': currentClient.value.fact_address,
+            'client_ser_num': currentClient.value.series_number,
+            'client_issued_by': currentClient.value.issued_by_who,
+            'client_issued_date': currentClient.value.issued_date && currentClient.value.issued_date !== '' ? moment(currentClient.value.issued_date).format('DD.MM.YYYY') : "",
+            'client_phone': currentClient.value.phone,
+            
+            'cars_body_number': currentCar.value.body_number,
+            'cars_tires_type': currentCar.value.tires_type,
+            'cars_brand': currentCar.value.brand,
+            'cars_model': currentCar.value.model,
+            'cars_state_number': currentCar.value.state_number,
+            'cars_vin': currentCar.value.vin,
+            'cars_color': currentCar.value.color,
+            'cars_year': currentCar.value.release_year,
+            'sts_series': currentCar.value.sts_series,
+            'sts_number': currentCar.value.sts_number,
+            'fuel_tank': currentCar.value.fuel_tank_capacity,
+            'car_fuel_type': currentCar.value.fuel_type,
+            'cost_extra_mileage': currentCar.value.cost_extra_mileage,
+            'cost_assessment': currentCar.value.cost_assessment,
+            
+            'firm_full_name': legalPerson ? legalPerson.full_name : "",
+            'firm_ogrn': legalPerson ? legalPerson.ogrn : "",
+            'firm_short_name': legalPerson ? legalPerson.short_name : "",
+            'firm_registration_date': legalPerson ? (legalPerson.registration_date ? moment(legalPerson.registration_date).format('DD.MM.YYYY') : "") : "",
+            'firm_ogrnip': legalPerson ? legalPerson.ogrnip : "",
+            'firm_inn': legalPerson ? legalPerson.inn : "",
+            'firm_kpp': legalPerson ? legalPerson.kpp : "",
+            'firm_legal_address': legalPerson ? legalPerson.legal_address : "",
+            'firm_index_legal_address': legalPerson ? legalPerson.index_legal_address : "",
+            'firm_address': legalPerson ? legalPerson.address : "",
+            'firm_index_address': legalPerson ? legalPerson.index_address : "",
+            'firm_manager_position': legalPerson ? legalPerson.manager_position : "",
+            'firm_manager_fio': legalPerson ? legalPerson.manager_fio : "",
+            'firm_contact_fio': legalPerson ? legalPerson.contact_fio : "",
+            'firm_contact_phone': legalPerson ? legalPerson.contact_phone : "",
+            'firm_bookkeeper_fio': legalPerson ? legalPerson.bookkeeper_fio : "",
+            'firm_rs_legal_person': legalPerson ? legalPerson.rs_legal_person : "",
+            'firm_bank': legalPerson ? legalPerson.bank : "",
+            'firm_bank_bik': legalPerson ? legalPerson.bank_bik : "",
+            'firm_bank_ks': legalPerson ? legalPerson.bank_ks : "",
+            
+            'employee_first': employer ? employer.first_name : "",
+            'employee_second': employer ? employer.second_name : "",
+            'employee_middle': employer ? employer.middle_name : "",
+            'employee_fio_short': employer ? shortFIO : "",
+            'employee_acts_on_basis': employer ? employer.acts_on_basis : "",
+        }
     }
-
+    
     if (!state.bookingContractTemplate) {
         dialogHeader.value = "Ошибка";
         dialogText.value = "Договор проката не прикреплен";
         dialogVisible.value = true;
         return;
     }
-
+    
     try {
         const response = await fetch(state.bookingContractTemplate.full_url);
         const arrayBuffer = await response.arrayBuffer();
-
+        
         const zip = new PizZip(arrayBuffer);
         const xmlContent = zip.files['word/document.xml'].asText();
-
-        // console.log('Найденные теги:', xmlContent.match(/#\w+#/g));
-
-        zip.file('word/document.xml', replaceTags(xmlContent));
-
+        
+        console.log('Найденные теги:', xmlContent.match(/#\w+#/g));
+        
+        zip.file('word/document.xml',);
+        
         const doc = new Docxtemplater(zip, {
             paragraphLoop: true,
             linebreaks: true
         });
-
-        doc.render();
-
+        
+        doc.render(replaceTags());
+        
         const out = doc.getZip().generate({
             type: 'blob',
             mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         });
-
+        
         saveAs(out, state.bookingContractTemplate.file_name + "." + state.bookingContractTemplate.file_ext);
     } catch (error) {
         dialogHeader.value = "Ошибка обработки .docx";
@@ -633,18 +627,18 @@ const downloadContract = async () => {
 watchEffect(() => {
     if (state.carId !== 0) {
         currentCar.value = cars.value.find(car => car.id === state.carId);
-
+        
         if (currentCar.value) {
             currentCarClass.value = carClasses.value.find(carClass => carClass.id === currentCar.value.class_id);
             state.carClassId = currentCar.value.class_id;
-
+            
             calculateTariff();
         }
     } else {
         currentCar.value = null;
         state.carClassId = null;
     }
-
+    
     if (state.clientId !== 0) {
         currentClient.value = clients.value.find(client => client.id === state.clientId);
     } else {
@@ -656,7 +650,7 @@ watch(() => state.rental_days, () => {
     if (state.start_date !== null) {
         calculateEndDate();
     }
-
+    
     calculateTariff();
     calculateRentalCost();
 });
@@ -676,16 +670,16 @@ onMounted(async () => {
     await fetchOperationTypes();
     await fetchTotals();
     await fetchBookingContract();
-
+    
     state.carId = props.item.carId;
     state.clientId = props.item.clientId;
-
+    
     if (props.item.userId)
         state.employer_Id = props.item.userId;
-
+    
     if (props.item.legal_person_Id)
         state.legal_person_Id = props.item.legal_person_Id;
-
+    
     setTimeout(() => {
         state.rental_rate = props.item.rental_rate
     }, 10);
@@ -739,7 +733,7 @@ onMounted(async () => {
                                                         </div>
                                                     </div>
                                                     <span v-else>
-                                                        {{ slotProps.placeholder }}
+                                                        {{slotProps.placeholder}}
                                                     </span>
                                                 </template>
                                                 <template #option="slotProps">
@@ -756,9 +750,9 @@ onMounted(async () => {
                                                             />
                                                         </div>
                                                         <div class="flex flex-col gap-0.5">
-                                                            <span>Номер: {{ slotProps.option.state_number }} </span>
-                                                            <span>Марка: {{ slotProps.option.brand }}</span>
-                                                            <span>Модель {{ slotProps.option.model }}</span>
+                                                            <span>Номер: {{slotProps.option.state_number}} </span>
+                                                            <span>Марка: {{slotProps.option.brand}}</span>
+                                                            <span>Модель {{slotProps.option.model}}</span>
                                                         </div>
                                                     </div>
                                                 </template>
@@ -848,7 +842,7 @@ onMounted(async () => {
                                         </div>
                                     </div>
                                 </div>
-
+                                
                                 <div class="grid gap-2">
                                     <!-- Фирма-арендодатель -->
                                     <div>
@@ -889,10 +883,10 @@ onMounted(async () => {
                                         </Select>
                                     </div>
                                 </div>
-
+                                
                                 <div class="grid gap-2" v-if="currentCar">
                                     <Divider type="dashed"/>
-
+                                    
                                     <!-- Тариф -->
                                     <div class="grid gap-2">
                                         <div class="flex flex-col">
@@ -907,7 +901,7 @@ onMounted(async () => {
                                                     v-tooltip.top="{ value: 'Выполнить автоматический расчет'}"
                                                     @click="calculateTariff"
                                                 />
-                                                <span><i>{{ state.rental_rate_text }}</i></span>
+                                                <span><i>{{state.rental_rate_text}}</i></span>
                                             </div>
                                         </div>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -934,9 +928,9 @@ onMounted(async () => {
                                             </div>
                                         </div>
                                     </div>
-
+                                    
                                     <Divider type="dashed"/>
-
+                                    
                                     <!-- Территория использования -->
                                     <div>
                                         <label for="position"
@@ -1022,7 +1016,7 @@ onMounted(async () => {
                                                      disabled fluid/>
                                     </div>
                                 </div>
-
+                                
                                 <div class="flex flex-col sm:flex-row gap-4">
                                     <!-- Пробег начало (км) -->
                                     <div class="flex flex-col justify-end">
@@ -1094,7 +1088,7 @@ onMounted(async () => {
                                         />
                                     </div>
                                 </div>
-
+                                
                                 <div class="flex flex-col sm:flex-row gap-4">
                                     <!-- Начислено -->
                                     <div class="flex flex-col justify-end">
@@ -1139,9 +1133,9 @@ onMounted(async () => {
                                         />
                                     </div>
                                 </div>
-
+                                
                                 <Divider type="dashed"/>
-
+                                
                                 <div class="">
                                     <div class="flex flex-col sm:flex-row gap-2">
                                         <Button class="mb-2" type="button" icon="pi pi-plus" label="Добавить" outlined
@@ -1194,12 +1188,12 @@ onMounted(async () => {
                                         <Column field="quantity" header="Кол-во" sortable></Column>
                                         <Column field="accrued" header="Начислено" sortable>
                                             <template #body="{data}">
-                                                {{ data.accrued && parseFloat(data.accrued) > 0 ? data.accrued : null }}
+                                                {{data.accrued && parseFloat(data.accrued) > 0 ? data.accrued : null}}
                                             </template>
                                         </Column>
                                         <Column field="paid" header="Оплачено" sortable>
                                             <template #body="{data}">
-                                                {{ data.paid && parseFloat(data.paid) > 0 ? data.paid : null }}
+                                                {{data.paid && parseFloat(data.paid) > 0 ? data.paid : null}}
                                             </template>
                                         </Column>
                                         <Column field="directory_payment_types_name" header="Вид оплаты"
@@ -1212,7 +1206,7 @@ onMounted(async () => {
                     </TabPanels>
                     <Divider v-if="user.access.booking === 2" type="dashed"/>
                     <p v-for="error of v$.$errors" :key="error.$uid" class="text-red-500 mb-4">
-                        {{ error.$message }}
+                        {{error.$message}}
                     </p>
                     <div v-if="user.access.booking === 2">
                         <Button type="submit" icon="pi pi-save" label="Сохранить" :loading="sending" outlined/>
@@ -1226,7 +1220,7 @@ onMounted(async () => {
             </Tabs>
         </template>
     </Card>
-
+    
     <PopUpBookingOperation
         :item="operationItem" :add-item="operationAddItem" :visible="isOperationPopUpOpen" :carState="state"
         @onClose="isOperationPopUpOpen = false" @onDone="onOperationDone"
@@ -1248,11 +1242,11 @@ onMounted(async () => {
         :visible="isLegalPersonAddDrawerOpen"
         @onAdd="onLegalPersonAdd" @onClose="isLegalPersonAddDrawerOpen = false"
     />
-
+    
     <Dialog v-model:visible="dialogVisible" modal dismissable-mask base-z-index="20000" :header="dialogHeader"
             :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
         <p class="m-0">
-            {{ dialogText }}
+            {{dialogText}}
         </p>
     </Dialog>
 </template>
